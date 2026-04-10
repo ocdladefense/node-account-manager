@@ -13,7 +13,7 @@ export default function HomePage() {
         async function fetchContacts() {
 
             try {
-                const response = await client.query("SELECT Id, Name FROM Contact LIMIT 10");
+                const response = await client.query("SELECT name, id, Ocdla_Member_Status__c FROM Contact LIMIT 10");
 
                 console.log(response.records);
 
@@ -28,7 +28,14 @@ export default function HomePage() {
                         "done": true
                         // ... other properties
                     }
-                    dev_modules/@ocdla/salesforce/SalesforceRestApi.js?
+                    
+
+
+                    Ask about:
+                        Noticed a response about __c required for custom objects? What are custom objects?
+                            SELECT Name, AccountNumber, DonorNotes__c, OrderApi__Account_Email__c FROM Account
+
+                    dev_modules/@ocdla/salesforce/SalesforceRestApi.js
                 */
                 setContacts(response.records);
             } catch (error) {
@@ -45,12 +52,27 @@ export default function HomePage() {
     return (
         <div className="container mx-auto p-6 mt-20">
             <h1 className="text-3xl font-bold mb-4">Home Page</h1>
+            <p className="my-6 text-lg font-semibold text-gray-700">Our Law Student Member List</p>
             <ul className="space-y-2">
-                {contacts.map(contact => (
-                    <li key={contact.Id} className="text-lg p-2 border-b border-gray-300">
-                        {contact.Name}
-                    </li>
-                ))}
+                {contacts
+                    .filter(contact => contact.Ocdla_Member_Status__c === "A")
+                    .map(contact => (
+                        <li key={contact.Id} className="text-lg p-2 border-b border-gray-300">
+                            <div><strong>{contact.Name}</strong></div>
+                            <div className="text-sm text-gray-600">Status: {contact.Ocdla_Member_Status__c}</div>
+                        </li>
+                    ))}
+            </ul>
+            <p className="my-6 text-lg font-semibold text-gray-700">Other Members</p>
+            <ul className="space-y-2">
+                {contacts
+                    .filter(contact => contact.Ocdla_Member_Status__c !== "A")
+                    .map(contact => (
+                        <li key={contact.Id} className="text-lg p-2 border-b border-gray-300">
+                            <div><strong>{contact.Name}</strong></div>
+                            <div className="text-sm text-gray-600">Status: {contact.Ocdla_Member_Status__c}</div>
+                        </li>
+                    ))}
             </ul>
         </div>
     );
