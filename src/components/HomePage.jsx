@@ -36,6 +36,8 @@ export default function HomePage() {
                             SELECT Name, AccountNumber, DonorNotes__c, OrderApi__Account_Email__c FROM Account
 
                     dev_modules/@ocdla/salesforce/SalesforceRestApi.js
+
+                    Using SQL to shorten query or jS to filter query
                 */
                 setContacts(response.records);
             } catch (error) {
