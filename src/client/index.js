@@ -8,14 +8,16 @@ import App from '../components/App.jsx';
 import Sites from '../components/ui/Sites.jsx';
 import LegislativeAction from '../components/legislative/LegislativeAction.jsx';
 import LegislativeActionHome from '../components/legislative/LegislativeActionHome.jsx';
+
+import AccountsAction from '../components/accounts/AccountsAction.jsx';
+
 import HomePage from "../components/HomePage.jsx";
 import Map from '../components/Map.jsx';
 
 
 
 
-if (process.env.NODE_ENV === 'debug')
-{
+if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
 
@@ -51,6 +53,10 @@ root.render(
                 <Route path="action">
                     <Route index element={<LegislativeActionHome />} />
                     <Route path=":type" element={<LegislativeAction />} />
+                </Route>
+                <Route path="account">
+                    {/* <Route index element={<LegislativeActionHome />} /> */}
+                    <Route path=":accountId" element={<AccountsAction />} />
                 </Route>
             </Route>
             <Route path="/map">
