@@ -7,7 +7,6 @@ export default function HomePage() {
 
     let { client } = useOutletContext();
     let [contacts, setContacts] = useState([]);
-    let [accounts, setAccounts] = useState([]);
 
 
     useEffect(function() {
@@ -26,20 +25,6 @@ export default function HomePage() {
         }
 
         fetchContacts();
-
-        async function fetchAccounts() {
-            try {
-                const response = await client.query("SELECT Id, AccountId, Name FROM Contact WHERE AccountId='001j000000oPG6eAAG'");
-
-                console.log(response.records);
-
-                setAccounts(response.records);
-            } catch (error) {
-                console.error("Error fetching contacts:", error);
-            }
-        }
-
-        fetchAccounts();
 
     }, []); // Run once on component mount  padding-left: env(safe-area-inset-left);
 
