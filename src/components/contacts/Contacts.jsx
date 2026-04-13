@@ -41,18 +41,14 @@ export default function Contacts() {
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error loading contacts</p>}
 
-            {contacts.length > 0 ? (
-                <div className="space-y-2">
-                    {contacts.map((contact) => (
-                        <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-                            onClick={() => handleSelectContact(contact.Id)}>
-                            <p>{contact.Name}</p>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                !loading && <p>No contacts found</p>
-            )}
+            <div className="space-y-2">
+                {contacts.map((contact) => (
+                    <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSelectContact(contact.Id)}>
+                        <p>{contact.Name}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
