@@ -6,11 +6,12 @@ import { useLocation } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from '../components/App.jsx';
 import Sites from '../components/ui/Sites.jsx';
+import Accounts from '../components/accounts/Accounts.jsx';
+import Contacts from '../components/contacts/Contacts.jsx';
+import ContactId from '../components/contacts/ContactId.jsx';
+import ContactIdEdit from '../components/contacts/ContactIdEdit.jsx';
 import LegislativeAction from '../components/legislative/LegislativeAction.jsx';
 import LegislativeActionHome from '../components/legislative/LegislativeActionHome.jsx';
-
-import AccountsAction from '../components/accounts/AccountsAction.jsx';
-
 import HomePage from "../components/HomePage.jsx";
 import Map from '../components/Map.jsx';
 
@@ -55,8 +56,13 @@ root.render(
                     <Route path=":type" element={<LegislativeAction />} />
                 </Route>
                 <Route path="account">
-                    {/* <Route index element={<LegislativeActionHome />} /> */}
-                    <Route path=":accountId" element={<AccountsAction />} />
+                    <Route path=":accountId" element={<Accounts />} />
+                </Route>
+                {/* Assignment Friday 04-11 Contact Get/Post}*/}
+                <Route path="contacts">
+                    <Route index element={<Contacts />} />
+                    <Route path=":contactId" element={<ContactId />} />
+                    <Route path=":contactId/edit" element={<ContactIdEdit />} />
                 </Route>
             </Route>
             <Route path="/map">

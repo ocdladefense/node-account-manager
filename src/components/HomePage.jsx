@@ -60,7 +60,7 @@ export default function HomePage() {
                     ))}
 
             </ul>
-            <p className="my-6 text-lg font-semibold text-gray-700">Other Members</p>
+            <p className="my-6 text-lg font-semibold text-gray-700">Other  Members</p>
             <ul className="space-y-2">
                 {contacts
                     .filter(contact => contact.Ocdla_Member_Status__c !== "A")
@@ -68,16 +68,6 @@ export default function HomePage() {
                         <li key={contact.Id} className="text-lg p-2 border-b border-gray-300">
                             <div><strong>{contact.Name}</strong></div>
                             <div className="text-sm text-gray-600">Status: {contact.Ocdla_Member_Status__c}</div>
-                        </li>
-                    ))}
-            </ul>
-
-            <p className="my-6 text-lg font-semibold text-gray-700">Our Law Student  Member List</p>
-            <ul className="space-y-2">
-                {accounts
-                    .map(contact => (
-                        <li key={accounts.AccountId} className="text-lg p-2 border-b border-gray-300"><p>account ID: {accounts.AccountId}</p>
-                            <div><strong>{account.Name}</strong></div>
                         </li>
                     ))}
             </ul>

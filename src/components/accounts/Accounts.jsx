@@ -4,7 +4,7 @@ import { useOutletContext } from "react-router-dom";
 
 
 
-export default function AccountsAction() {
+export default function Accounts() {
 
     let { client } = useOutletContext();
 
