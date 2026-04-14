@@ -10,6 +10,7 @@ export default function ContactIdEdit() {
     const { contactId } = useParams();
 
     const initialContact = location.state?.contact || {};
+
     const [formData, setFormData] = useState({
         Name: initialContact.Name || "",
         Ocdla_Bar_Number__c: initialContact.Ocdla_Bar_Number__c || "",
@@ -33,7 +34,37 @@ export default function ContactIdEdit() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
+    // TODO:
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            // Reconstruct the contact object for Salesforce update
+            const contactRecord = {
+                Id: contactId,
+                Name: formData.Name,
+                Ocdla_Bar_Number__c: formData.Ocdla_Bar_Number__c,
+                Ocdla_Investigator_License_Number__c: formData.Ocdla_Investigator_License_Number__c,
+                Ocdla_Home_Street__c: formData.Ocdla_Home_Street__c,
+                Ocdla_Home_City__c: formData.Ocdla_Home_City__c,
+                Ocdla_Home_State__c: formData.Ocdla_Home_State__c,
+                Ocdla_Home_Zip__c: formData.Ocdla_Home_Zip__c,
+                // Mailing Address as composite field
+                MailingAddress: {
+                    street: formData.MailingAddress_Street,
+                    city: formData.MailingAddress_City,
+                    state: formData.MailingAddress_State,
+                    postalCode: formData.MailingAddress_Zip
+                }
+            };
+
+            // Call Salesforce API to update the contact
+            await client.update('Contact', contactRecord);
+
+            // Navigate back to contact detail page on success
+            navigate(`/contacts/${contactId}`);
+        } catch (err) {
+            console.error("Error updating contact:", err);
+        }
     };
 
     // Return to previous page
