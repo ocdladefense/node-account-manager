@@ -26,6 +26,7 @@ export default function ContactIdEdit() {
     });
 
 
+    console.log(initialContact);
 
     const handleChange = (e) => {
         // destructures the two properties from the element input (the name of the element and the value of the element)
