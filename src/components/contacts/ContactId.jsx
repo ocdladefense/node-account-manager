@@ -17,7 +17,37 @@ export default function ContactId() {
             try {
                 setLoading(true);
                 // TODO: Fetch contact from server by passed in Id
-                const response = await client.query(`SELECT Id, Name, Ocdla_Address_Line_1__c, Ocdla_Address_Line_2__c, Ocdla_Bar_Number__c, Ocdla_Investigator_License_Number__c, Ocdla_Home_Street__c, Ocdla_Home_City__c, Ocdla_Home_State__c, Ocdla_Home_Zip__c, MailingAddress FROM contact WHERE Id = '${contactId}'`);
+                // const response = await client.query(`SELECT Id, FirstName, LastName, MiddleName, Suffix, Salutation, Ocdla_Organization__c, OrderApi__Work_Phone__c, LegislativeAdvocacyOptIn__c, Ocdla_Is_Expert_Witness__c, Ocdla_Address_Line_1__c, Ocdla_Address_Line_2__c, Ocdla_Bar_Number__c, Ocdla_Investigator_License_Number__c, Ocdla_Home_Street__c, Ocdla_Home_City__c, Ocdla_Home_State__c, Ocdla_Home_Zip__c, MailingAddress FROM contact WHERE Id = '${contactId}'`);
+                const response = await client.query(`
+                    SELECT 
+                        Id, 
+                        FirstName, 
+                        LastName, 
+                        MiddleName, 
+                        Suffix, 
+                        Salutation,
+                        Ocdla_Organization__c, 
+                        OrderApi__Work_Phone__c, 
+                        OrderApi__Work_Email__c,
+                        LegislativeAdvocacyOptIn__c, 
+                        Ocdla_Is_Expert_Witness__c, 
+                        Ocdla_Address_Line_1__c, 
+                        Ocdla_Address_Line_2__c, 
+                        Ocdla_Bar_Number__c, 
+                        Ocdla_Investigator_License_Number__c, 
+                        Ocdla_Home_Street__c, 
+                        Ocdla_Home_City__c, 
+                        Ocdla_Home_State__c, 
+                        Ocdla_Home_Zip__c, 
+                        MailingAddress,
+                        Name,
+                        Phone, 
+                        Ocdla_Cell_Phone__c, 
+                        Fax, 
+                        Ocdla_Website__c
+                    FROM Contact 
+                    WHERE Id = '${contactId}'
+                `);
                 console.log(response.records)
                 setContact(response.records[0]);
             } catch (err) {
@@ -101,6 +131,10 @@ export default function ContactId() {
                         </ul>
                     </div>
 
+                    {/* Organization */}
+                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
+                        <p className="text-xl mb-3">Organization: {contact.Ocdla_Organization__c}</p>
+                    </div>
                     {/* Edit Button */}
                     <button
                         onClick={handleEdit}
@@ -113,4 +147,3 @@ export default function ContactId() {
         </div>
     );
 }
-

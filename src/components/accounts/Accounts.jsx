@@ -5,13 +5,12 @@ import { useOutletContext } from "react-router-dom";
 
 
 export default function Accounts() {
-
     let { client } = useOutletContext();
+    const navigate = useNavigate();
 
+    // We might need to switch index.js from path=":accountId" to whatever we assign to params.type
     let params = useParams();
     let type = params.type;
-
-    let accountId = '001j000000oPG6eAAG';
 
     let [accounts, setAccounts] = useState([]);
 
@@ -20,7 +19,7 @@ export default function Accounts() {
         async function fetchAccounts() {
 
             try {
-                const response = await client.query("SELECT Id, AccountId, Name FROM Contact WHERE AccountId = '001j000000oPG6eAAG'");
+                const response = await client.query(`SELECT Id, Name FROM Account`);
 
                 console.log(response.records);
 
@@ -33,17 +32,23 @@ export default function Accounts() {
         fetchAccounts();
     }, []);
 
+    const handleSelectContact = (accountId) => {
+        navigate(`/accounts/${accountId}`);
+    };
+
     return (
         <div className="container mx-auto p-6 mt-20">
-            <h1 className="text-3xl font-bold mb-4">Accounts from Metro PD Law </h1>
-            <ul className="space-y-2">
-                {accounts
-                    .map(account => (
-                        <li key={account.Id} className="text-lg p-2 border-b border-gray-300">
-                            <div><strong>{account.Name}</strong></div>
-                        </li>
-                    ))}
-            </ul>
+            <h1 className="text-2xl font-bold mb-4">All Contacts</h1>
+
+            {/* removed key={account.} for now until we figure out what to do here*/}
+            <div className="space-y-2">
+                {accounts.map((account) => (
+                    <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleSelectContact(account.Id)}>
+                        <p>{account.Name}</p>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
