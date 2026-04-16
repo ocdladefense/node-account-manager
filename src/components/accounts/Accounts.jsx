@@ -18,13 +18,15 @@ export default function Accounts() {
 
         async function fetchAccounts() {
 
-            try {
-                const response = await client.query(`SELECT Id, Name FROM Account`);
+            try
+            {
+                const response = await client.query(`SELECT Id, Name FROM Account WHERE NOT (Name LIKE '%Person%') LIMIT 250`);
 
                 console.log(response.records);
 
                 setAccounts(response.records);
-            } catch (error) {
+            } catch (error)
+            {
                 console.error("Error fetching accounts:", error);
             }
         }
