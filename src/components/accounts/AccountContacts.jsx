@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router";
 
 
-export default function Contacts() {
+export default function AccountContacts() {
 
     let { client } = useOutletContext();
 

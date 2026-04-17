@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 
-export default function ContactId() {
+export default function Contact() {
     const { client } = useOutletContext();
     const navigate = useNavigate();
 
@@ -16,8 +16,6 @@ export default function ContactId() {
         async function fetchContact() {
             try {
                 setLoading(true);
-                // TODO: Fetch contact from server by passed in Id
-                // const response = await client.query(`SELECT Id, FirstName, LastName, MiddleName, Suffix, Salutation, Ocdla_Organization__c, OrderApi__Work_Phone__c, LegislativeAdvocacyOptIn__c, Ocdla_Is_Expert_Witness__c, Ocdla_Address_Line_1__c, Ocdla_Address_Line_2__c, Ocdla_Bar_Number__c, Ocdla_Investigator_License_Number__c, Ocdla_Home_Street__c, Ocdla_Home_City__c, Ocdla_Home_State__c, Ocdla_Home_Zip__c, MailingAddress FROM contact WHERE Id = '${contactId}'`);
                 const response = await client.query(`
                     SELECT 
                         Id, 
@@ -59,7 +57,7 @@ export default function ContactId() {
         }
 
         fetchContact();
-    }, [contactId, client]); // dependency array for the useEffect hook, controls when the effects runs (every change to contactId or client)
+    }, []); // dependency array for the useEffect hook, controls when the effects runs (every change to contactId or client)
 
     // navigate() is a React Router hook that changes the URL
     // First argument /contacts/${contactId}/edit - The URL path to navigate to
@@ -84,10 +82,6 @@ export default function ContactId() {
                 </button>
             </div>
 
-            {loading && <p>Loading...</p>}
-
-            {error && <p className="text-red-500">Error loading contact</p>}
-
             {contact && (
                 <div className="border rounded p-6">
                     {/* Contact Name */}
@@ -95,10 +89,58 @@ export default function ContactId() {
                         <h2 className="text-3xl font-bold mb-6">{contact.Name}</h2>
                     </div>
 
+                    {/* Salutation */}
+                    <div className="grid-col-1">
+                        <h2 className="text-3xl font-bold mb-6">Salutation: {contact.Salutation}</h2>
+                    </div>
+
                     {/* Bar Number and License */}
                     <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
                         <p className="text-xl">Bar Number: {contact.Ocdla_Bar_Number__c}</p>
                         <p className="text-xl">Investigator License Number: {contact.Ocdla_Investigator_License_Number__c}</p>
+                    </div>
+
+                    {/* Organization */}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">Organization: {contact.Ocdla_Organization__c}</p>
+                    </div>
+
+                    {/* Work Phone / Email */}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">Work Phone: {contact.OrderApi__Work_Phone__c}</p>
+                        <p className="text-xl">Work Email: {contact.OrderApi__Work_Email__c}</p>
+                    </div>
+
+                    {/* Phone Number / Fax */}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">Phone: {contact.Phone}</p>
+                        <p className="text-xl">Fax: {contact.Fax}</p>
+                    </div>
+
+                    {/* OCDLA Phone / Website */}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">OCDLA Phone: {contact.Ocdla_Cell_Phone__c}</p>
+                        <p className="text-xl">OCDLA Website: {contact.Ocdla_Website__c}</p>
+                    </div>
+
+                    {/* Legislative Advocacy Opt In*/}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">Legislative Advocacy Opt in:</p>
+                        <input
+                            type="checkbox"
+                            checked={contact.LegislativeAdvocacyOptIn__c}
+                            disabled
+                        />
+                    </div>
+
+                    {/* Expert Witness Status */}
+                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <p className="text-xl">Expert Witness Status:</p>
+                        <input
+                            type="checkbox"
+                            checked={contact.Ocdla_Is_Expert_Witness__c}
+                            disabled
+                        />
                     </div>
 
                     {/* Mailing Address */}
@@ -135,6 +177,7 @@ export default function ContactId() {
                     <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
                         <p className="text-xl mb-3">Organization: {contact.Ocdla_Organization__c}</p>
                     </div>
+
                     {/* Edit Button */}
                     <button
                         onClick={handleEdit}

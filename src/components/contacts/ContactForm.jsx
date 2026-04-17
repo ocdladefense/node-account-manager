@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 
-export default function ContactIdEdit() {
+export default function ContactForm() {
     const { client } = useOutletContext();
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,9 +25,25 @@ export default function ContactIdEdit() {
         Ocdla_Home_Zip__c: initialContact.Ocdla_Home_Zip__c || "",
     });
 
+    const [salutations, setSalutations] = useState([]);
 
-    console.log(initialContact);
+    useEffect(() => {
+        const fetchPicklistValues = async () => {
+            try {
+                const response = await client.queryObjectMetadata("Contact");
+                console.log("Salutations Values: ", response.fields.find((f) => f.name == "Salutation").picklistValues);
+                const salutationField = response.fields.find(
+                    (f) => f.name === "Salutation"
+                );
+                setSalutations(salutationField.picklistValues);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchPicklistValues();
+    }, []);
 
+    // No longer need
     const handleChange = (e) => {
         // destructures the two properties from the element input (the name of the element and the value of the element)
         const { name, value } = e.target;
@@ -37,35 +53,24 @@ export default function ContactIdEdit() {
 
     // TODO: Does this need 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            // Reconstruct the contact object for Salesforce update
-            const contactRecord = {
-                Id: contactId,
-                Name: formData.Name,
-                Ocdla_Bar_Number__c: formData.Ocdla_Bar_Number__c,
-                Ocdla_Investigator_License_Number__c: formData.Ocdla_Investigator_License_Number__c,
-                Ocdla_Home_Street__c: formData.Ocdla_Home_Street__c,
-                Ocdla_Home_City__c: formData.Ocdla_Home_City__c,
-                Ocdla_Home_State__c: formData.Ocdla_Home_State__c,
-                Ocdla_Home_Zip__c: formData.Ocdla_Home_Zip__c,
-                // Mailing Address as composite field
-                MailingAddress: {
-                    street: formData.MailingAddress_Street,
-                    city: formData.MailingAddress_City,
-                    state: formData.MailingAddress_State,
-                    postalCode: formData.MailingAddress_Zip
-                }
-            };
 
-            // Call Salesforce API to update the contact
-            await client.update('Contact', contactRecord);
+        let target = e.target;
+        let contactRecord = new FormData(target);
 
-            // Navigate back to contact detail page on success
-            navigate(`/contacts/${contactId}`);
-        } catch (err) {
-            console.error("Error updating contact:", err);
+        // Call Salesforce API to update the contact
+        const response = await client.update('Contact', contactRecord);
+
+        if (!response.ok) {
+            const result = await response.json();
+            console.log(result);
+            return;
         }
+
+        return;
+
+        // Navigate back to contact detail page on success
+        navigate(`/contacts/${contactId}`);
+
     };
 
     // Return to previous page
@@ -73,27 +78,61 @@ export default function ContactIdEdit() {
         navigate(`/contacts/${contactId}`);
     };
 
-    // console.log(contact);
-
-
     return (
         <div className="container mx-auto p-6 mt-20">
             <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
             <form onSubmit={handleSubmit} className="max-w-2xl">
                 {/* Name */}
-                <div className="mb-4">
-                    <label className="block text-sm font-semibold mb-2">Name</label>
-                    <input
-                        type="text"
-                        name="Name"
-                        value={formData.Name}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded"
-                    />
-                </div>
+                <fieldset className="border rounded p-4 mb-6">
+                    <legend className="text-lg font-semibold">Name</legend>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold mb-2" htmlFor="FName">
+                                First Name
+                                <input type="text" name="FName" value={formData.FirstName}
+                                    onChange={handleChange} className="w-full px-3 py-2 border rounded" />
+                            </label>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold mb-2" htmlFor="LName">
+                                Last Name
+                                <input type="text" name="LName" value={formData.LastName}
+                                    onChange={handleChange} className="w-full px-3 py-2 border rounded" />
+                            </label>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold mb-2" htmlFor="Suff">
+                                Suffix
+                                <input type="text" name="Suff" value={formData.Suffix}
+                                    onChange={handleChange} className="w-full px-3 py-2 border rounded" />
+                            </label>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold mb-2" htmlFor="Salutation">
+                                Salutation
+                                <select
+                                    name="Salutation"
+                                    value={formData.Salutation}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2 border rounded"
+                                >
+                                    <option value="">-- None --</option>
 
-                {/* Bar Number and License Number */}
+                                    {salutations.map((item) => (
+                                        <option key={item.value} value={item.value}>
+                                            {item.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* Bar Number and License Number */}
+                </fieldset>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label className="block text-sm font-semibold mb-2">Bar Number</label>

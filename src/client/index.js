@@ -6,30 +6,19 @@ import { useLocation } from 'react-router-dom';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from '../components/App.jsx';
 import Sites from '../components/ui/Sites.jsx';
+import Account from '../components/accounts/Account.jsx';
 import Accounts from '../components/accounts/Accounts.jsx';
-import AccountId from '../components/accounts/AccountId.jsx';
-import Contacts from '../components/contacts/Contacts.jsx';
-import ContactId from '../components/contacts/ContactId.jsx';
-import ContactIdEdit from '../components/contacts/ContactIdEdit.jsx';
-import LegislativeAction from '../components/legislative/LegislativeAction.jsx';
-import LegislativeActionHome from '../components/legislative/LegislativeActionHome.jsx';
+import AccountContacts from '../components/accounts/AccountContacts.jsx';
+import Contact from '../components/contacts/Contact.jsx';
+import ContactForm from '../components/contacts/ContactForm.jsx';
 import HomePage from "../components/HomePage.jsx";
-import Map from '../components/Map.jsx';
-
-
-
 
 if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
 
-
-
-
 const $root = document.getElementById("app");
 const root = createRoot($root);
-
-
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -41,8 +30,6 @@ const ScrollToTop = () => {
     return null; // This component doesn't render anything
 };
 
-
-
 root.render(
     <BrowserRouter>
         <ScrollToTop />
@@ -52,21 +39,17 @@ root.render(
                 <Route path="sites">
                     <Route index element={<Sites />} />
                 </Route>
-                <Route path="action">
-                    <Route index element={<LegislativeActionHome />} />
-                    <Route path=":type" element={<LegislativeAction />} />
-                </Route>
                 <Route path="accounts">
                     <Route index element={<Accounts />} />
-                    <Route path=":accountId" element={<AccountId />} />
                 </Route>
-                <Route path="contacts">
-                    <Route path=":contactId" element={<ContactId />} />
-                    <Route path=":contactId/edit" element={<ContactIdEdit />} />
+                <Route path="account">
+                    <Route path=":accountId" element={<Account />} />
+                    <Route path=":accountId/contacts" element={<AccountContacts />} />
                 </Route>
-            </Route>
-            <Route path="/map">
-                <Route index element={<Map />} />
+                <Route path="contact">
+                    <Route path=":contactId" element={<Contact />} />
+                    <Route path=":contactId/edit" element={<ContactForm />} />
+                </Route>
             </Route>
         </Routes>
     </BrowserRouter>

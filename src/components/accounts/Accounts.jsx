@@ -18,15 +18,17 @@ export default function Accounts() {
 
         async function fetchAccounts() {
 
-            try
-            {
-                const response = await client.query(`SELECT Id, Name FROM Account WHERE NOT (Name LIKE '%Person%') LIMIT 250`);
+            try {
+                const response = await client.query(`
+                    SELECT Id, Name, 
+                    FROM Account 
+                    WHERE NOT (Name LIKE '%Person%') 
+                `);
 
                 console.log(response.records);
 
                 setAccounts(response.records);
-            } catch (error)
-            {
+            } catch (error) {
                 console.error("Error fetching accounts:", error);
             }
         }
@@ -34,19 +36,21 @@ export default function Accounts() {
         fetchAccounts();
     }, []);
 
-    const handleSelectContact = (accountId) => {
+    const handleSelectAccount = (accountId) => {
         navigate(`/accounts/${accountId}`);
     };
 
     return (
         <div className="container mx-auto p-6 mt-20">
-            <h1 className="text-2xl font-bold mb-4">All Contacts</h1>
+            <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
+
+            <h1 className="text-2xl font-bold mb-4">All Accounts With Multiple Conacts *FOR TESTING* </h1>
 
             {/* removed key={account.} for now until we figure out what to do here*/}
             <div className="space-y-2">
                 {accounts.map((account) => (
                     <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSelectContact(account.Id)}>
+                        onClick={() => handleSelectAccount(account.Id)}>
                         <p>{account.Name}</p>
                     </div>
                 ))}

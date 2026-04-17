@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useOutletContext } from "react-router-dom";
 
-export default function AccountId() {
+export default function Account() {
 
     let { client } = useOutletContext();
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function AccountId() {
 
                 setContacts(response.records)
             }
-            catch(error) {
+            catch (error) {
                 console.error("Error fetching accounts:", error);
             }
 
@@ -31,7 +31,7 @@ export default function AccountId() {
     return (
         <div className="container mx-auto p-6 mt-20">
             <h1 className="text-2xl font-bold mb-4">Contacts for Account</h1>
-            
+
             <div className="space-y-2">
                 {contacts && contacts.map((contact) => (
                     <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
