@@ -63,7 +63,7 @@ export default function Contact() {
     // First argument /contacts/${contactId}/edit - The URL path to navigate to
     // Second argument { state: { contact } } - This passes data along with the navigation
     const handleEdit = () => {
-        navigate(`/contacts/${contactId}/edit`, { state: { contact } });
+        navigate(`/contact/${contactId}/edit`, { state: { contact } });
     };
 
     const handleBack = () => {
