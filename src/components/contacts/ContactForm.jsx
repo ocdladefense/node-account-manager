@@ -100,7 +100,7 @@ export default function ContactForm() {
     };
 
     console.log("State object: ", Contact);
-    if (Contact) {
+    if (Contact && salutations.length > 0) {
         return (
             <div className="container mx-auto p-6 mt-20">
                 <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
@@ -141,7 +141,7 @@ export default function ContactForm() {
                                         defaultValue={Contact.Salutation}
                                         className="w-full px-3 py-2 border rounded"
                                     >
-                                        <option defaultValue="">-- None --</option>
+                                        {/* <option value="">-- None --</option> */}
 
                                         {salutations.map((item) => (
                                             <option key={item.value} value={item.value}>
