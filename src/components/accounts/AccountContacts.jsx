@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext, useParams } from "react-router";
 
 
 export default function AccountContacts() {
@@ -8,6 +8,9 @@ export default function AccountContacts() {
 
     const navigate = useNavigate();
 
+    let params = useParams();
+
+
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,9 +18,10 @@ export default function AccountContacts() {
     useEffect(() => {
         async function fetchContacts() {
             try {
+                console.log(params.accountId);
                 setLoading(true);
                 // Fetch all contacts from server (limiting to 30 for now)
-                const response = await client.query("SELECT Id, Name FROM Contact LIMIT 30");
+                const response = await client.query(`SELECT Id, Name FROM Contact where AccountId = '${params.accountId}'`);
                 setContacts(response.records);
             } catch (error) {
                 setError(error);
@@ -33,6 +37,9 @@ export default function AccountContacts() {
     const handleSelectContact = (contactId) => {
         navigate(`/contacts/${contactId}`);
     };
+    if (!contacts) {
+        return <div className="container mx-auto p-6 mt-20">Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-6 mt-20">

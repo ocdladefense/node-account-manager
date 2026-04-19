@@ -20,9 +20,9 @@ export default function Accounts() {
 
             try {
                 const response = await client.query(`
-                    SELECT Id, Name, 
+                    SELECT Id, Name
                     FROM Account 
-                    WHERE NOT (Name LIKE '%Person%') 
+                    WHERE NOT (Name LIKE '%Person%') LIMIT 250
                 `);
 
                 console.log(response.records);
@@ -37,7 +37,7 @@ export default function Accounts() {
     }, []);
 
     const handleSelectAccount = (accountId) => {
-        navigate(`/accounts/${accountId}`);
+        navigate(`/account/${accountId}`);
     };
 
     return (
