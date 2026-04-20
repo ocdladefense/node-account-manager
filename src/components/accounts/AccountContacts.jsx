@@ -35,7 +35,7 @@ export default function AccountContacts() {
     }, []);
 
     const handleSelectContact = (contactId) => {
-        navigate(`/contacts/${contactId}`);
+        navigate(`/Contact/${contactId}`);
     };
     if (!contacts) {
         return <div className="container mx-auto p-6 mt-20">Loading...</div>;
