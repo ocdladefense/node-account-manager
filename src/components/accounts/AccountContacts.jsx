@@ -8,7 +8,10 @@ export default function AccountContacts() {
     let { client } = useOutletContext();
 
     const navigate = useNavigate();
-    const { accountId } = useParams();
+
+    let params = useParams();
+
+
     const [contacts, setContacts] = useState([]);
 
     useEffect(() => {
@@ -23,6 +26,9 @@ export default function AccountContacts() {
     const handleSelectContact = (contactId) => {
         navigate(`/contact/${contactId}`);
     };
+    if (!contacts) {
+        return <div className="container mx-auto p-6 mt-20">Loading...</div>;
+    }
 
     return (
         <div className="container mx-auto p-6 mt-20">
