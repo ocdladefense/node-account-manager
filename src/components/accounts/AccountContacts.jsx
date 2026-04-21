@@ -31,7 +31,7 @@ export default function AccountContacts() {
     }, []);
 
     const handleSelectContact = (contactId) => {
-        navigate(`/contacts/${contactId}`);
+        navigate(`/contact/${contactId}`);
     };
 
     return (

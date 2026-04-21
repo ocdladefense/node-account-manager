@@ -21,28 +21,27 @@ export default function ContactForm() {
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
     const [salutations, setSalutations] = useState([]);
+    const [publicDefenseSurvey, setPublicDefenseSurvey] = useState([]);
 
 
 
     useEffect(() => {
-        const fetchPicklistValues = async () => {
-            try
-            {
+        const fetchPicklistValues = async (fieldName, stateSetter) => {
+            try {
                 const response = await client.queryObjectMetadata("Contact");
-                console.log("Salutations Values: ", response.fields.find((f) => f.name == "Salutation").picklistValues);
-                const salutationField = response.fields.find(
-                    (f) => f.name === "Salutation"
-                );
-                setSalutations(salutationField.picklistValues);
-            } catch (err)
-            {
+                console.log(`${fieldName}: `, response.fields.find((f) => f.name == fieldName).picklistValues);
+                const valueList = response.fields.find((f) => f.name === fieldName).picklistValues;
+                stateSetter(valueList);
+            } catch (err) {
                 console.error(err);
             }
         };
-        fetchPicklistValues();
+        fetchPicklistValues("Salutation", setSalutations);
+        fetchPicklistValues("Public_Defense_Survey__c", setPublicDefenseSurvey);
     }, []);
 
-
+    console.log("Salutations state: ", salutations);
+    console.log("Public Defense Survey state: ", publicDefenseSurvey);
 
     useEffect(() => {
         const soql = getContactQuery(contactId);
@@ -67,8 +66,7 @@ export default function ContactForm() {
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok)
-        {
+        if (!response.ok) {
             const result = await response.json();
             console.log(result);
             return;
@@ -91,8 +89,7 @@ export default function ContactForm() {
 
 
     console.log("State object: ", contact);
-    if (contact && salutations.length > 0)
-    {
+    if (contact && salutations.length > 0) {
         return (
             <div className="container mx-auto p-6 mt-20">
                 <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
