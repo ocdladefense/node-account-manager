@@ -13,6 +13,8 @@ import Contact from '../components/contacts/Contact.jsx';
 import ContactForm from '../components/contacts/ContactForm.jsx';
 import HomePage from "../components/HomePage.jsx";
 
+import SObject from "../components/contacts/SObject.jsx";
+
 if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
@@ -46,7 +48,7 @@ root.render(
                     <Route path=":accountId" element={<Account />} />
                     <Route path=":accountId/contacts" element={<AccountContacts />} />
                 </Route>
-                <Route path="contact">
+                <Route path="contact" element={<SObject />}>
                     <Route path=":contactId" element={<Contact />} />
                     <Route path=":contactId/edit" element={<ContactForm />} />
                 </Route>

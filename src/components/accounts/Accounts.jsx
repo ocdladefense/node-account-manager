@@ -1,50 +1,35 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useOutletContext } from "react-router-dom";
-
+import { getAccountsQuery } from "./query.js";
 
 
 export default function Accounts() {
     let { client } = useOutletContext();
     const navigate = useNavigate();
 
-    // We might need to switch index.js from path=":accountId" to whatever we assign to params.type
     let params = useParams();
     let type = params.type;
 
     let [accounts, setAccounts] = useState([]);
 
-    useEffect(function() {
-
-        async function fetchAccounts() {
-
-            try {
-                const response = await client.query(`
-                    SELECT Id, Name, 
-                    FROM Account 
-                    WHERE NOT (Name LIKE '%Person%') 
-                `);
-
-                console.log(response.records);
-
-                setAccounts(response.records);
-            } catch (error) {
-                console.error("Error fetching accounts:", error);
-            }
-        }
-
+    useEffect(() => {
+        const soql = getAccountsQuery();
+        const fetchAccounts = async () => {
+            const resp = await client.query(soql);
+            setAccounts(resp.records[0]);
+        };
         fetchAccounts();
     }, []);
 
+
     const handleSelectAccount = (accountId) => {
-        navigate(`/accounts/${accountId}`);
+        navigate(`/account/${accountId}`);
     };
 
     return (
         <div className="container mx-auto p-6 mt-20">
             <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
-
-            <h1 className="text-2xl font-bold mb-4">All Accounts With Multiple Conacts *FOR TESTING* </h1>
 
             {/* removed key={account.} for now until we figure out what to do here*/}
             <div className="space-y-2">

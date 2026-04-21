@@ -35,7 +35,7 @@ export default function Account() {
             <div className="space-y-2">
                 {contacts && contacts.map((contact) => (
                     <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-                        onClick={() => navigate(`/contacts/${contact.Id}`)}>
+                        onClick={() => navigate(`/contact/${contact.Id}`)}>
                         <p>{contact.Name}</p>
                     </div>
                 ))}
