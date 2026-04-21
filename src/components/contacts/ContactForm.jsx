@@ -2,72 +2,58 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
+import { getContactQuery } from "./query.js";
+
+
+
+
+
+
+
+
 
 export default function ContactForm() {
+
+
     const { client } = useOutletContext();
     const navigate = useNavigate();
     const location = useLocation();
     const { contactId } = useParams();
-
-    const [Contact, setContact] = useState(null);
-
+    const [contact, setContact] = useState(null);
     const [salutations, setSalutations] = useState([]);
+
+
 
     useEffect(() => {
         const fetchPicklistValues = async () => {
-            try {
+            try
+            {
                 const response = await client.queryObjectMetadata("Contact");
                 console.log("Salutations Values: ", response.fields.find((f) => f.name == "Salutation").picklistValues);
                 const salutationField = response.fields.find(
                     (f) => f.name === "Salutation"
                 );
                 setSalutations(salutationField.picklistValues);
-            } catch (err) {
+            } catch (err)
+            {
                 console.error(err);
             }
         };
         fetchPicklistValues();
     }, []);
 
+
+
     useEffect(() => {
+        const soql = getContactQuery(contactId);
         const fetchContact = async () => {
-            const response = await client.query(`SELECT 
-            Id,
-            FirstName,
-            LastName,
-            MiddleName,
-            Suffix,
-            Salutation,
-            Ocdla_Organization__c,
-            OrderApi__Work_Phone__c,
-            OrderApi__Work_Email__c,
-            LegislativeAdvocacyOptIn__c,
-            Ocdla_Is_Expert_Witness__c,
-            Ocdla_Address_Line_1__c,
-            Ocdla_Address_Line_2__c,
-            Ocdla_Bar_Number__c,
-            Ocdla_Investigator_License_Number__c,
-            Ocdla_Home_Street__c,
-            Ocdla_Home_City__c,
-            Ocdla_Home_State__c,
-            Ocdla_Home_Zip__c,
-            MailingAddress,
-            Name,
-            Phone,
-            Ocdla_Cell_Phone__c,
-            Fax,
-            Ocdla_Website__c
-            FROM Contact WHERE Id = '${contactId}'`);
-            //console.log(response);
-            if (response.totalSize == 1) {
-                setContact(response.records[0]);
-                console.log("Successfully retrieved contact: ", response.records[0]);
-            } else {
-                console.log(`Error: There was a problem fetching the data. Query returned ${response.totalSize} results.`);
-            }
-        }
+            const resp = await client.query(soql);
+            setContact(resp.records[0]);
+        };
         fetchContact();
     }, []);
+
+
 
     // TODO: Does this need 
     const handleSubmit = async (e) => {
@@ -76,12 +62,13 @@ export default function ContactForm() {
         let formData = new FormData(target);
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
-        contactRecord.Id = Contact.Id;
+        contactRecord.Id = contact.Id;
         console.log(contactRecord);
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok) {
+        if (!response.ok)
+        {
             const result = await response.json();
             console.log(result);
             return;
@@ -91,16 +78,21 @@ export default function ContactForm() {
 
         // Navigate back to contact detail page on success
         navigate(`/contact/${contactId}`);
-
     };
+
+
 
     // Return to previous page
     const handleCancel = () => {
         navigate(`/contact/${contactId}`);
     };
 
-    console.log("State object: ", Contact);
-    if (Contact && salutations.length > 0) {
+
+
+
+    console.log("State object: ", contact);
+    if (contact && salutations.length > 0)
+    {
         return (
             <div className="container mx-auto p-6 mt-20">
                 <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
@@ -113,14 +105,14 @@ export default function ContactForm() {
                             <div>
                                 <label className="block text-sm font-semibold mb-2" htmlFor="FirstName">
                                     First Name
-                                    <input type="text" name="FirstName" defaultValue={Contact.FirstName}
+                                    <input type="text" name="FirstName" defaultValue={contact.FirstName}
                                         className="w-full px-3 py-2 border rounded" />
                                 </label>
                             </div>
                             <div>
                                 <label className="block text-sm font-semibold mb-2" htmlFor="LastName">
                                     Last Name
-                                    <input type="text" name="LastName" defaultValue={Contact.LastName}
+                                    <input type="text" name="LastName" defaultValue={contact.LastName}
                                         className="w-full px-3 py-2 border rounded" />
                                 </label>
                             </div>
@@ -129,7 +121,7 @@ export default function ContactForm() {
                             <div>
                                 <label className="block text-sm font-semibold mb-2" htmlFor="Suffix">
                                     Suffix
-                                    <input type="text" name="Suffix" defaultValue={Contact.Suffix}
+                                    <input type="text" name="Suffix" defaultValue={contact.Suffix}
                                         className="w-full px-3 py-2 border rounded" />
                                 </label>
                             </div>
@@ -138,7 +130,7 @@ export default function ContactForm() {
                                     Salutation
                                     <select
                                         name="Salutation"
-                                        defaultValue={Contact.Salutation}
+                                        defaultValue={contact.Salutation}
                                         className="w-full px-3 py-2 border rounded"
                                     >
                                         {/* <option value="">-- None --</option> */}
@@ -161,7 +153,7 @@ export default function ContactForm() {
                             <input
                                 type="text"
                                 name="Ocdla_Bar_Number__c"
-                                defaultValue={Contact.Ocdla_Bar_Number__c}
+                                defaultValue={contact.Ocdla_Bar_Number__c}
                                 className="w-full px-3 py-2 border rounded"
                             />
                         </div>
@@ -170,7 +162,7 @@ export default function ContactForm() {
                             <input
                                 type="text"
                                 name="Ocdla_Investigator_License_Number__c"
-                                defaultValue={Contact.Ocdla_Investigator_License_Number__c}
+                                defaultValue={contact.Ocdla_Investigator_License_Number__c}
                                 className="w-full px-3 py-2 border rounded"
                             />
                         </div>
@@ -184,7 +176,7 @@ export default function ContactForm() {
                             <input
                                 type="text"
                                 name="MailingStreet"
-                                defaultValue={Contact.MailingAddress.street}
+                                defaultValue={contact.MailingAddress.street}
                                 className="w-full px-3 py-2 border rounded"
                             />
                         </div>
@@ -194,7 +186,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="MailingCity"
-                                    defaultValue={Contact.MailingAddress.city}
+                                    defaultValue={contact.MailingAddress.city}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
@@ -203,7 +195,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="MailingState"
-                                    defaultValue={Contact.MailingAddress.state}
+                                    defaultValue={contact.MailingAddress.state}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
@@ -212,7 +204,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="MailingPostalCode"
-                                    defaultValue={Contact.MailingAddress.postalCode}
+                                    defaultValue={contact.MailingAddress.postalCode}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
@@ -227,7 +219,7 @@ export default function ContactForm() {
                             <input
                                 type="text"
                                 name="Ocdla_Home_Street__c"
-                                defaultValue={Contact.Ocdla_Home_Street__c}
+                                defaultValue={contact.Ocdla_Home_Street__c}
                                 className="w-full px-3 py-2 border rounded"
                             />
                         </div>
@@ -237,7 +229,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="Ocdla_Home_City__c"
-                                    defaultValue={Contact.Ocdla_Home_City__c}
+                                    defaultValue={contact.Ocdla_Home_City__c}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
@@ -246,7 +238,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="Ocdla_Home_State__c"
-                                    defaultValue={Contact.Ocdla_Home_State__c}
+                                    defaultValue={contact.Ocdla_Home_State__c}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
@@ -255,7 +247,7 @@ export default function ContactForm() {
                                 <input
                                     type="text"
                                     name="Ocdla_Home_Zip__c"
-                                    defaultValue={Contact.Ocdla_Home_Zip__c}
+                                    defaultValue={contact.Ocdla_Home_Zip__c}
                                     className="w-full px-3 py-2 border rounded"
                                 />
                             </div>
