@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
+import { getContactQuery } from "./query.js"
 
 export default function Contact() {
     const { client } = useOutletContext();
@@ -14,38 +15,11 @@ export default function Contact() {
 
     useEffect(() => {
         async function fetchContact() {
+            const contactQuery = getContactQuery(contactId);
+
             try {
                 setLoading(true);
-                const response = await client.query(`
-                    SELECT 
-                        Id, 
-                        FirstName, 
-                        LastName, 
-                        MiddleName, 
-                        Suffix, 
-                        Salutation,
-                        Ocdla_Organization__c, 
-                        OrderApi__Work_Phone__c, 
-                        OrderApi__Work_Email__c,
-                        LegislativeAdvocacyOptIn__c, 
-                        Ocdla_Is_Expert_Witness__c, 
-                        Ocdla_Address_Line_1__c, 
-                        Ocdla_Address_Line_2__c, 
-                        Ocdla_Bar_Number__c, 
-                        Ocdla_Investigator_License_Number__c, 
-                        Ocdla_Home_Street__c, 
-                        Ocdla_Home_City__c, 
-                        Ocdla_Home_State__c, 
-                        Ocdla_Home_Zip__c, 
-                        MailingAddress,
-                        Name,
-                        Phone, 
-                        Ocdla_Cell_Phone__c, 
-                        Fax, 
-                        Ocdla_Website__c
-                    FROM Contact 
-                    WHERE Id = '${contactId}'
-                `);
+                const response = await client.query(contactQuery);
                 console.log(response.records)
                 setContact(response.records[0]);
             } catch (err) {
@@ -91,7 +65,7 @@ export default function Contact() {
 
                     {/* Salutation */}
                     <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-6">Salutation: {contact.Salutation}</h2>
+                        <h2 className="text-3xl font-bold mb-6">Salutation: {contact.Salutation || 'None'}</h2>
                     </div>
 
                     {/* Bar Number and License */}
