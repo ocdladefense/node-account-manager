@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
+import { getAccountContactsQuery } from "./query.js";
 
 
 export default function AccountContacts() {
@@ -12,30 +13,18 @@ export default function AccountContacts() {
 
 
     const [contacts, setContacts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        async function fetchContacts() {
-            try {
-                console.log(params.accountId);
-                setLoading(true);
-                // Fetch all contacts from server (limiting to 30 for now)
-                const response = await client.query(`SELECT Id, Name FROM Contact where AccountId = '${params.accountId}'`);
-                setContacts(response.records);
-            } catch (error) {
-                setError(error);
-                console.error("Error fetching contacts:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchContacts();
+        const soql = getAccountContactsQuery(accountId);
+        const fetchAccountContacts = async () => {
+            const resp = await client.query(soql);
+            setContact(resp.records[0]);
+        };
+        getAccountContactsQuery();
     }, []);
 
     const handleSelectContact = (contactId) => {
-        navigate(`/Contact/${contactId}`);
+        navigate(`/contact/${contactId}`);
     };
     if (!contacts) {
         return <div className="container mx-auto p-6 mt-20">Loading...</div>;
