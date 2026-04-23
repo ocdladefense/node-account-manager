@@ -1,36 +1,37 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
-import { getContactQuery } from "./query.js";
+import { getContactQuery, fetchPicklistValues } from "./query.js";
+import PickList from "../ui/PickList.jsx";
 import TextInput from "../ui/TextInput.jsx"
 
 export default function ContactForm() {
-    const { client } = useOutletContext();
+
+
+    const { client, metadata } = useOutletContext();
     const navigate = useNavigate();
-    const location = useLocation();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
-    const [salutations, setSalutations] = useState([]);
-    const [publicDefenseSurvey, setPublicDefenseSurvey] = useState([]);
 
-    useEffect(() => {
-        const fetchPicklistValues = async (fieldName, stateSetter) => {
-            try {
-                const response = await client.queryObjectMetadata("Contact");
-                console.log(`${fieldName}: `, response.fields.find((f) => f.name == fieldName).picklistValues);
-                const valueList = response.fields.find((f) => f.name === fieldName).picklistValues;
-                stateSetter(valueList);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchPicklistValues("Salutation", setSalutations);
-        fetchPicklistValues("Public_Defense_Survey__c", setPublicDefenseSurvey);
-    }, []);
+    let salutations = metadata.fetchPicklistValues('Salutation');
+    let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
+
+    // useEffect(() => {
+    //     const fetchPicklistValues = async (fieldName, stateSetter) => {
+    //         try {
+    //             const response = await client.queryObjectMetadata("Contact");
+    //             console.log(`${fieldName}: `, response.fields.find((f) => f.name == fieldName).picklistValues);
+    //             const valueList = response.fields.find((f) => f.name === fieldName).picklistValues;
+    //             stateSetter(valueList);
+    //         } catch (err) {
+    //             console.error(err);
+    //         }
+    //     };
+    //     fetchPicklistValues("Salutation", setSalutations);
+    //     fetchPicklistValues("Public_Defense_Survey__c", setPublicDefenseSurvey);
+    // }, []);
 
     console.log("Salutations state: ", salutations);
-    console.log("Public Defense Survey state: ", publicDefenseSurvey);
 
     useEffect(() => {
         const soql = getContactQuery(contactId);
@@ -40,7 +41,6 @@ export default function ContactForm() {
         };
         fetchContact();
     }, []);
-
 
 
     // TODO: Does this need 
@@ -76,102 +76,84 @@ export default function ContactForm() {
 
 
     console.log("State object: ", contact);
-    if (contact && salutations.length > 0) {
-        return (
-            <div className="container mx-auto p-6 mt-20">
-                <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
+    return (
+        <div>
+            {contact &&
+                <div className="container mx-auto p-6 mt-20">
+                    <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
-                <form onSubmit={handleSubmit} className="max-w-2xl">
-                    {/* Name */}
-                    <fieldset className="border rounded p-4 mb-6">
-                        <legend className="text-lg font-semibold">Name</legend>
-                        <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
-                            <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
-                            <div>
-                                <label className="block text-sm font-semibold mb-2" htmlFor="Salutation">
-                                    Salutation
-                                    <select
-                                        name="Salutation"
-                                        defaultValue={contact.Salutation}
-                                        className="w-full px-3 py-2 border rounded"
-                                    >
-                                        {/* <option value="">-- None --</option> */}
-
-                                        {salutations.map((item) => (
-                                            <option key={item.value} value={item.value}>
-                                                {item.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </label>
+                    <form onSubmit={handleSubmit} className="max-w-2xl">
+                        { /* Name */}
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Name</legend>
+                            <div className="grid grid-cols-2 gap-4">
+                                <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
+                                <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
                             </div>
-                        </div>
-
+                            <div className="grid grid-cols-2 gap-4">
+                                <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
+                                <div>
+                                    <PickList name="Salutation" label="Salutation" defaultValue={contact.Salutation} values={salutations} />
+                                </div>
+                            </div>
+                        </fieldset>
                         {/* Bar Number and License Number */}
-                    </fieldset>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
-                        <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
-                    </div>
-                    {/* Contact Info */}
-                    <fieldset className="border rounded p-4 mb-6">
-                        <legend className="text-lg font-semibold">Contact Info</legend>
-                        <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
-                            <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
+                            <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
-                            <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />
-                            <TextInput label="Fax" apiName="Fax" currentValue={contact.Fax} />
+                        {/* Contact Info */}
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Contact Info</legend>
+                            <div className="grid grid-cols-2 gap-4">
+                                <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
+                                <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
+                                <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />
+                                <TextInput label="Fax" apiName="Fax" currentValue={contact.Fax} />
+                            </div>
+                        </fieldset>
+                        {/* Mailing Address */}
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Mailing Address</legend>
+                            <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
+                            <div className="grid grid-cols-3 gap-4">
+                                <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
+                                <TextInput label="State" apiName="MailingState" currentValue={contact.MailingAddress.state} />
+                                <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
+                            </div>
+                        </fieldset>
+                        {/* OCDLA Home Address */}
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">OCDLA Home Address</legend>
+                            <TextInput label="Street" apiName="Ocdla_Home_Street__c" currentValue={contact.Ocdla_Home_Street__c} />
+                            <div className="grid grid-cols-3 gap-4">
+                                <TextInput label="City" apiName="Ocdla_Home_City__c" currentValue={contact.Ocdla_Home_City__c} />
+                                <TextInput label="State" apiName="Ocdla_Home_State__c" currentValue={contact.Ocdla_Home_State__c} />
+                                <TextInput label="Zip" apiName="Ocdla_Home_Zip__c" currentValue={contact.Ocdla_Home_Zip__c} />
+                            </div>
+                        </fieldset>
+                        {/* Buttons */}
+                        <div className="flex gap-4">
+                            <button
+                                type="submit"
+                                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Save Changes
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                            >
+                                Cancel
+                            </button>
                         </div>
-
-                    </fieldset>
-                    {/* Mailing Address */}
-                    <fieldset className="border rounded p-4 mb-6">
-                        <legend className="text-lg font-semibold">Mailing Address</legend>
-                        <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
-                        <div className="grid grid-cols-3 gap-4">
-                            <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
-                            <TextInput label="State" apiName="MailingState" currentValue={contact.MailingAddress.state} />
-                            <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
-                        </div>
-                    </fieldset>
-
-                    {/* OCDLA Home Address */}
-                    <fieldset className="border rounded p-4 mb-6">
-                        <legend className="text-lg font-semibold">OCDLA Home Address</legend>
-                        <TextInput label="Street" apiName="Ocdla_Home_Street__c" currentValue={contact.Ocdla_Home_Street__c} />
-                        <div className="grid grid-cols-3 gap-4">
-                            <TextInput label="City" apiName="Ocdla_Home_City__c" currentValue={contact.Ocdla_Home_City__c} />
-                            <TextInput label="State" apiName="Ocdla_Home_State__c" currentValue={contact.Ocdla_Home_State__c} />
-                            <TextInput label="Zip" apiName="Ocdla_Home_Zip__c" currentValue={contact.Ocdla_Home_Zip__c} />
-                        </div>
-                    </fieldset>
-
-                    {/* Buttons */}
-                    <div className="flex gap-4">
-                        <button
-                            type="submit"
-                            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                        >
-                            Save Changes
-                        </button>
-                        <button
-                            type="button"
-                            onClick={handleCancel}
-                            className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        );
-    }
+                    </form>
+                </div>
+            }
+        </div>
+    );
 }
-

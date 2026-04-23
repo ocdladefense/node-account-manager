@@ -1,4 +1,4 @@
-
+// Retrieves all of the contact information (by Salesforce Contact Id)
 export function getContactQuery(contactId) {
 
     return `SELECT 
@@ -26,22 +26,8 @@ export function getContactQuery(contactId) {
             Phone,
             Ocdla_Cell_Phone__c,
             Fax,
-            Ocdla_Website__c
+            Ocdla_Website__c,
+            AccountId
             FROM Contact WHERE Id = '${contactId}'`;
-
-
 }
 
-
-/*
-    //console.log(response);
-    if (response.totalSize == 1)
-            {
-                setContact(response.records[0]);
-                console.log("Successfully retrieved contact: ", response.records[0]);
-            } else
-            {
-                console.log(`Error: There was a problem fetching the data. Query returned ${response.totalSize} results.`);
-            }
-        }
-            */
