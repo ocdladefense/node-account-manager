@@ -9,5 +9,5 @@ export function getAccountsQuery() {
 
 // Accounts.jsx query for account information
 export function getAccountContactsQuery(accountId) {
-    return `SELECT Id, Name FROM Contact WHERE accountId  = '${accountId}'`;
+    return `SELECT Id, Name FROM Contact WHERE AccountId = '${accountId}'`;
 }

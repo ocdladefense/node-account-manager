@@ -9,10 +9,12 @@ export default function AccountContacts() {
 
     const navigate = useNavigate();
 
-    let params = useParams();
+    let { accountId } = useParams();
 
 
     const [contacts, setContacts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const soql = getAccountContactsQuery(params.accountId);
@@ -27,7 +29,6 @@ export default function AccountContacts() {
     const handleSelectContact = (contactId) => {
         navigate(`/contact/${contactId}`);
     };
-
 
     return (
         <div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { getContactQuery, fetchPicklistValues } from "./query.js";
 import PickList from "../ui/PickList.jsx";
+import TextInput from "../ui/TextInput.jsx"
 
 export default function ContactForm() {
 
@@ -12,7 +13,9 @@ export default function ContactForm() {
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
 
-    let salutations = metadata.fetchPicklistValues('Public_Defense_Survey__c');
+    let salutations = metadata.fetchPicklistValues('Salutation');
+    let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
+    console.log(metadata.getField("MailingStateCode"));
 
     console.log("Salutations state: ", salutations);
 
@@ -46,8 +49,6 @@ export default function ContactForm() {
             return;
         }
 
-        return;
-
         // Navigate back to contact detail page on success
         navigate(`/contact/${contactId}`);
     };
@@ -59,9 +60,6 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-
-
-
     console.log("State object: ", contact);
     return (
         <div>
@@ -70,187 +68,60 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        {/* Name */}
+                        { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2" htmlFor="FirstName">
-                                        First Name
-                                        <input type="text" name="FirstName" defaultValue={contact.FirstName}
-                                            className="w-full px-3 py-2 border rounded" />
-                                    </label>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2" htmlFor="LastName">
-                                        Last Name
-                                        <input type="text" name="LastName" defaultValue={contact.LastName}
-                                            className="w-full px-3 py-2 border rounded" />
-                                    </label>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2" htmlFor="MiddleName">
-                                        Middle Name
-                                        <input type="text" name="MiddleName" defaultValue={contact.MiddleName}
-                                            className="w-full px-3 py-2 border rounded" />
-                                    </label>
-                                </div>
+                                <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
+                                <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2" htmlFor="Suffix">
-                                        Suffix
-                                        <input type="text" name="Suffix" defaultValue={contact.Suffix}
-                                            className="w-full px-3 py-2 border rounded" />
-                                    </label>
-                                </div>
+                                <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
                                 <div>
                                     <PickList name="Salutation" label="Salutation" defaultValue={contact.Salutation} values={salutations} />
                                 </div>
                             </div>
-
-                            {/* Bar Number and License Number */}
                         </fieldset>
+                        {/* Bar Number and License Number */}
                         <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label className="block text-sm font-semibold mb-2">Bar Number</label>
-                                <input
-                                    type="text"
-                                    name="Ocdla_Bar_Number__c"
-                                    defaultValue={contact.Ocdla_Bar_Number__c}
-                                    className="w-full px-3 py-2 border rounded"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-semibold mb-2">Investigator License Number</label>
-                                <input
-                                    type="text"
-                                    name="Ocdla_Investigator_License_Number__c"
-                                    defaultValue={contact.Ocdla_Investigator_License_Number__c}
-                                    className="w-full px-3 py-2 border rounded"
-                                />
-                            </div>
+                            <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
+                            <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                         </div>
+                        {/* Contact Info */}
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Contact Info</legend>
+                            <div className="grid grid-cols-2 gap-4">
+                                <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
 
+                                <input type="text" name="Order_Api_Work_Email__c" defaultValue={contact.OrderApi__Work_Email__c} />
+                                <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
+                            </div>
+                            <div className="grid grid-cols-3 gap-4">
+                                <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
+                                <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />
+                                <TextInput label="Fax" apiName="Fax" currentValue={contact.Fax} />
+                            </div>
+                        </fieldset>
                         {/* Mailing Address */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Mailing Address</legend>
-                            <div className="mb-4">
-                                <label htmlFor="MailingStreet" className="block text-sm font-semibold mb-2">Street</label>
-                                <input
-                                    type="text"
-                                    name="MailingStreet"
-                                    defaultValue={contact.MailingAddress.street}
-                                    className="w-full px-3 py-2 border rounded"
-                                />
-                            </div>
+                            <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
                             <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label htmlFor="MailingCity" className="block text-sm font-semibold mb-2">City</label>
-                                    <input
-                                        type="text"
-                                        name="MailingCity"
-                                        defaultValue={contact.MailingAddress.city}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="MailingState" className="block text-sm font-semibold mb-2">State</label>
-                                    <input
-                                        type="text"
-                                        name="MailingState"
-                                        defaultValue={contact.MailingAddress.state}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="MailingZip" className="block text-sm font-semibold mb-2">Zip</label>
-                                    <input
-                                        type="text"
-                                        name="MailingPostalCode"
-                                        defaultValue={contact.MailingAddress.postalCode}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label htmlFor="MailingZip" className="block text-sm font-semibold mb-2">Country</label>
-                                    <input
-                                        type="text"
-                                        name="MailingCountry"
-                                        defaultValue={contact.MailingAddress.countryCode}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
+                                <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
+                                <TextInput label="State" apiName="MailingState" currentValue={contact.MailingAddress.state} />
+                                <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
                             </div>
                         </fieldset>
-                        <fieldset className="border rounded p-4 mb-6">
-                            <legend className="text-lg font-semibold">Opt Ins</legend>
-                            <div className="mb-4">
-                                <label className="form-check-label" htmlFor="Legislation"></label>
-                                Legislation
-                                <input
-                                    type="checkbox"
-                                    name="LegislativeAdvocacyOptIn__c"
-                                    defaultChecked={contact.LegislativeAdvocacyOptIn__c}
-                                />
-                            </div>
-                        </fieldset>
-                        <fieldset className="border rounded p-4 mb-6">
-                            <legend className="text-lg font-semibold">Organization</legend>
-                            <div className="mb-4">
-                                <label className="block text-sm font-semibold mb-2">Organization</label>
-                                <input
-                                    type="text"
-                                    name="Ocdla_Organization__c"
-                                    defaultValue={contact.Ocdla_Organization__c}
-                                    className="w-full px-3 py-2 border rounded"
-                                />
-                            </div>
-                        </fieldset>
-
                         {/* OCDLA Home Address */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">OCDLA Home Address</legend>
-                            <div className="mb-4">
-                                <label className="block text-sm font-semibold mb-2">Street</label>
-                                <input
-                                    type="text"
-                                    name="Ocdla_Home_Street__c"
-                                    defaultValue={contact.Ocdla_Home_Street__c}
-                                    className="w-full px-3 py-2 border rounded"
-                                />
-                            </div>
+                            <TextInput label="Street" apiName="Ocdla_Home_Street__c" currentValue={contact.Ocdla_Home_Street__c} />
                             <div className="grid grid-cols-3 gap-4">
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2">City</label>
-                                    <input
-                                        type="text"
-                                        name="Ocdla_Home_City__c"
-                                        defaultValue={contact.Ocdla_Home_City__c}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2">State</label>
-                                    <input
-                                        type="text"
-                                        name="Ocdla_Home_State__c"
-                                        defaultValue={contact.Ocdla_Home_State__c}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-semibold mb-2">Zip</label>
-                                    <input
-                                        type="text"
-                                        name="Ocdla_Home_Zip__c"
-                                        defaultValue={contact.Ocdla_Home_Zip__c}
-                                        className="w-full px-3 py-2 border rounded"
-                                    />
-                                </div>
+                                <TextInput label="City" apiName="Ocdla_Home_City__c" currentValue={contact.Ocdla_Home_City__c} />
+                                <TextInput label="State" apiName="Ocdla_Home_State__c" currentValue={contact.Ocdla_Home_State__c} />
+                                <TextInput label="Zip" apiName="Ocdla_Home_Zip__c" currentValue={contact.Ocdla_Home_Zip__c} />
                             </div>
                         </fieldset>
-
                         {/* Buttons */}
                         <div className="flex gap-4">
                             <button

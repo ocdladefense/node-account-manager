@@ -10,7 +10,7 @@ export default function Account() {
 
     let params = useParams();
 
-    const [contact, setContact] = useState(null);
+    const [account, setAccount] = useState(null);
 
     useEffect(() => {
         async function fetchAccount() {
@@ -22,7 +22,7 @@ export default function Account() {
 
 
                 console.log(response.records);
-                setContact(response.records);
+                setAccount(response.records);
 
             }
             catch (error) {
@@ -34,18 +34,26 @@ export default function Account() {
         fetchAccount();
     }, []);
 
-    if (!contact) {
+    const handleBack = function() {
+        navigate('/accounts');
+    }
+    if (!account) {
         return <div className="container mx-auto p-6 mt-20">Loading...</div>;
     }
 
     return (
         <div className="container mx-auto p-6 mt-20">
-            <h1 className="text-2xl font-bold mb-4">Info for {contact[0].Name}</h1>
-            <h2 className="text-2xl font-bold mb-4">Account Number: {contact[0].AccountNumber} </h2>
-            <h2 className="text-2xl font-bold mb-4">Website: {contact[0].Site} </h2>
-            <h2 className="text-2xl font-bold mb-4">Employees: {contact[0].NumberOfEmployees} </h2>
-            <h2 className="text-2xl font-bold mb-4">Industry: {contact[0].Industry} </h2>
-            <h2 className="text-2xl font-bold mb-4">Description: {contact[0].Description} </h2>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold mb-4">Info for {account[0].Name}</h1>
+                <button onClick={handleBack} className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                    Back
+                </button>
+            </div>
+            <h2 className="text-2xl font-bold mb-4">Account Number: {account[0].AccountNumber} </h2>
+            <h2 className="text-2xl font-bold mb-4">Website: {account[0].Site} </h2>
+            <h2 className="text-2xl font-bold mb-4">Employees: {account[0].NumberOfEmployees} </h2>
+            <h2 className="text-2xl font-bold mb-4">Industry: {account[0].Industry} </h2>
+            <h2 className="text-2xl font-bold mb-4">Description: {account[0].Description} </h2>
             <AccountContacts></AccountContacts>
         </div>
     );

@@ -26,7 +26,7 @@ export default function Accounts() {
     const handleSelectAccount = (accountId) => {
         navigate(`/account/${accountId}`);
     };
-
+    console.log(accounts);
     return (
         <div>
             {accounts &&
