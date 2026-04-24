@@ -15,21 +15,7 @@ export default function ContactForm() {
 
     let salutations = metadata.fetchPicklistValues('Salutation');
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
-
-    // useEffect(() => {
-    //     const fetchPicklistValues = async (fieldName, stateSetter) => {
-    //         try {
-    //             const response = await client.queryObjectMetadata("Contact");
-    //             console.log(`${fieldName}: `, response.fields.find((f) => f.name == fieldName).picklistValues);
-    //             const valueList = response.fields.find((f) => f.name === fieldName).picklistValues;
-    //             stateSetter(valueList);
-    //         } catch (err) {
-    //             console.error(err);
-    //         }
-    //     };
-    //     fetchPicklistValues("Salutation", setSalutations);
-    //     fetchPicklistValues("Public_Defense_Survey__c", setPublicDefenseSurvey);
-    // }, []);
+    console.log(metadata.getField("MailingStateCode"));
 
     console.log("Salutations state: ", salutations);
 
@@ -72,9 +58,6 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-
-
-
     console.log("State object: ", contact);
     return (
         <div>
@@ -107,6 +90,8 @@ export default function ContactForm() {
                             <legend className="text-lg font-semibold">Contact Info</legend>
                             <div className="grid grid-cols-2 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
+
+                                <input type="text" name="Order_Api_Work_Email__c" defaultValue={contact.OrderApi__Work_Email__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
                             <div className="grid grid-cols-3 gap-4">

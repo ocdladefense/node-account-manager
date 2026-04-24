@@ -15,6 +15,10 @@ class MetaData {
     fetchPicklistValues(fieldname) {
         return this.metadata.fields.find((f) => f.name === fieldname).picklistValues;
     }
+
+    getField(fieldname){
+        return this.metadata.fields.find((f) => f.name === fieldname)
+    }
 }
 
 export default function SObject() {
@@ -28,6 +32,7 @@ export default function SObject() {
             const metadata = await client.queryObjectMetadata("Contact");
             const data = new MetaData(metadata);
             setMetadata(data);
+            console.log(metadata);
         };
 
         fetchMetadata();
