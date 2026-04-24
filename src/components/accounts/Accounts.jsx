@@ -17,7 +17,7 @@ export default function Accounts() {
         const soql = getAccountsQuery();
         const fetchAccounts = async () => {
             const resp = await client.query(soql);
-            setAccounts(resp.records[0]);
+            setAccounts(resp.records);
         };
         fetchAccounts();
     }, []);
@@ -26,7 +26,7 @@ export default function Accounts() {
     const handleSelectAccount = (accountId) => {
         navigate(`/account/${accountId}`);
     };
-
+    console.log(accounts);
     return (
         <div className="container mx-auto p-6 mt-20">
             <h1 className="text-2xl font-bold mb-4">All Accounts</h1>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router";
+import { useNavigate, useOutletContext, useParams } from "react-router";
 import { getAccountContactsQuery } from "./query.js";
 
 
@@ -9,26 +9,34 @@ export default function AccountContacts() {
 
     const navigate = useNavigate();
 
-    let params = useParams();
+    let { accountId } = useParams();
 
 
     const [contacts, setContacts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const soql = getAccountContactsQuery(accountId);
+        console.log("Account Contacts query: ", soql);
         const fetchAccountContacts = async () => {
-            const resp = await client.query(soql);
-            setContact(resp.records[0]);
+            try {
+                setLoading(true);
+                const resp = await client.query(soql);
+                setContacts(resp.records);
+            } catch (e) {
+                setError(e);
+                console.log("Error loading contact: ", e);
+            } finally {
+                setLoading(false);
+            }
         };
-        getAccountContactsQuery();
+        fetchAccountContacts();
     }, []);
 
     const handleSelectContact = (contactId) => {
         navigate(`/contact/${contactId}`);
     };
-    if (!contacts) {
-        return <div className="container mx-auto p-6 mt-20">Loading...</div>;
-    }
 
     return (
         <div className="container mx-auto p-6 mt-20">

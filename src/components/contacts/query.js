@@ -26,7 +26,8 @@ export function getContactQuery(contactId) {
             Phone,
             Ocdla_Cell_Phone__c,
             Fax,
-            Ocdla_Website__c
+            Ocdla_Website__c,
+            AccountId
             FROM Contact WHERE Id = '${contactId}'`;
 }
 

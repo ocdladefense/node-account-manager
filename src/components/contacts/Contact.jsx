@@ -20,7 +20,6 @@ export default function Contact() {
             try {
                 setLoading(true);
                 const response = await client.query(contactQuery);
-                console.log(response.records)
                 setContact(response.records[0]);
             } catch (err) {
                 setError(err);
@@ -41,7 +40,7 @@ export default function Contact() {
     };
 
     const handleBack = () => {
-        navigate("/contacts");
+        navigate(`/account/${contact.AccountId}`);
     };
 
     return (
@@ -55,6 +54,9 @@ export default function Contact() {
                     Back
                 </button>
             </div>
+
+            {loading && <p>Loading...</p>}
+            {error && <p className="text-red-500">Error loading contacts</p>}
 
             {contact && (
                 <div className="border rounded p-6">
