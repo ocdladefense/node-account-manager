@@ -33,6 +33,8 @@ export default function ContactForm() {
         let formData = new FormData(target);
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
+        contactRecord.LegislativeAdvocacyOptIn__c =
+            formData.get("LegislativeAdvocacyOptIn__c") === "on";
         contactRecord.Id = contact.Id;
         console.log(contactRecord);
         // Call Salesforce API to update the contact
@@ -83,6 +85,13 @@ export default function ContactForm() {
                                     <label className="block text-sm font-semibold mb-2" htmlFor="LastName">
                                         Last Name
                                         <input type="text" name="LastName" defaultValue={contact.LastName}
+                                            className="w-full px-3 py-2 border rounded" />
+                                    </label>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold mb-2" htmlFor="MiddleName">
+                                        Middle Name
+                                        <input type="text" name="MiddleName" defaultValue={contact.MiddleName}
                                             className="w-full px-3 py-2 border rounded" />
                                     </label>
                                 </div>
@@ -163,6 +172,39 @@ export default function ContactForm() {
                                         className="w-full px-3 py-2 border rounded"
                                     />
                                 </div>
+                                <div>
+                                    <label htmlFor="MailingZip" className="block text-sm font-semibold mb-2">Country</label>
+                                    <input
+                                        type="text"
+                                        name="MailingCountry"
+                                        defaultValue={contact.MailingAddress.countryCode}
+                                        className="w-full px-3 py-2 border rounded"
+                                    />
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Opt Ins</legend>
+                            <div className="mb-4">
+                                <label className="form-check-label" htmlFor="Legislation"></label>
+                                Legislation
+                                <input
+                                    type="checkbox"
+                                    name="LegislativeAdvocacyOptIn__c"
+                                    defaultChecked={contact.LegislativeAdvocacyOptIn__c}
+                                />
+                            </div>
+                        </fieldset>
+                        <fieldset className="border rounded p-4 mb-6">
+                            <legend className="text-lg font-semibold">Organization</legend>
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold mb-2">Organization</label>
+                                <input
+                                    type="text"
+                                    name="Ocdla_Organization__c"
+                                    defaultValue={contact.Ocdla_Organization__c}
+                                    className="w-full px-3 py-2 border rounded"
+                                />
                             </div>
                         </fieldset>
 

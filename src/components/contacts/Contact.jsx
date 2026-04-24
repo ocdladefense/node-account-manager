@@ -16,11 +16,12 @@ export default function Contact() {
     useEffect(() => {
         async function fetchContact() {
             const contactQuery = getContactQuery(contactId);
+            console.log(contactQuery);
 
             try {
                 setLoading(true);
                 const response = await client.query(contactQuery);
-                console.log(response.records)
+                // console.log(response.records)
                 setContact(response.records[0]);
             } catch (err) {
                 setError(err);
