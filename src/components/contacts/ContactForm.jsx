@@ -36,6 +36,8 @@ export default function ContactForm() {
         let formData = new FormData(target);
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
+        contactRecord.LegislativeAdvocacyOptIn__c =
+            formData.get("LegislativeAdvocacyOptIn__c") === "on";
         contactRecord.Id = contact.Id;
         console.log(contactRecord);
         // Call Salesforce API to update the contact

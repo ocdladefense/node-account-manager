@@ -16,6 +16,7 @@ export default function Contact() {
     useEffect(() => {
         async function fetchContact() {
             const contactQuery = getContactQuery(contactId);
+            console.log(contactQuery);
 
             try {
                 setLoading(true);

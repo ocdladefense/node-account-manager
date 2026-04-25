@@ -28,18 +28,22 @@ export default function Accounts() {
     };
     console.log(accounts);
     return (
-        <div className="container mx-auto p-6 mt-20">
-            <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
+        <div>
+            {accounts &&
+                <div className="container mx-auto p-6 mt-20">
+                    <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
 
-            {/* removed key={account.} for now until we figure out what to do here*/}
-            <div className="space-y-2">
-                {accounts.map((account) => (
-                    <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleSelectAccount(account.Id)}>
-                        <p>{account.Name}</p>
+                    {/* removed key={account.} for now until we figure out what to do here*/}
+                    <div className="space-y-2">
+                        {accounts.map((account) => (
+                            <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSelectAccount(account.Id)}>
+                                <p>{account.Name}</p>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
+                </div>
+            }
         </div>
     );
 };
