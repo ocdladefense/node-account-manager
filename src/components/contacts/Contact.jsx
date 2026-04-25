@@ -120,6 +120,46 @@ export default function Contact() {
                         />
                     </div>
 
+                    {contact?.Ocdla_Is_Expert_Witness__c && (
+                        <div>
+                            {/* Expert Witness Info */}
+                            <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
+                                <p className="text-xl mb-3">Expert Witness Info:</p>
+                                <p>Is State Expert:</p>
+                                <input
+                                    type="checkbox"
+                                    checked={contact.Ocdla_Is_State_Expert__c}
+                                    disabled
+                                />
+                                <p>Is in Witness Directory:</p>
+                                <input
+                                    type="checkbox"
+                                    checked={contact.Include_in_Expert_Witness_Directory__c}
+                                    disabled
+                                />
+                                <p>Witness Update Email Sent</p>
+                                <input
+                                    type="checkbox"
+                                    checked={contact.ExpertWitnessUpdateEmailSent__c}
+                                    disabled
+                                />
+                                <p>Expert Witness Update Date Sent: {contact.ExpertWitnessUpdateDateSent__c}</p>
+                                <p>Other Expert Witness Areas:{contact.Ocdla_Expert_Witness_Other_Areas__c}</p>
+                                <p>Last Updated: {contact.Ocdla_Expert_Witness_Last_Updated__c}</p>
+                                <p>Unavailibilty Start Date: {contact.Ocdla_Expert_Unavailability_Start_Date__c}</p>
+                                <p>Unavailibilty End Date: {contact.Ocdla_Expert_Unavailability_End_Date__c}</p>
+                                <p>Travel Availability: {contact.Ocdla_Expert_Travel_Availability__c}</p>
+                                <p>Minimum Hours: {contact.Ocdla_Expert_Minimum_Hours__c}</p>
+                                <p>Hourly Rate: {contact.Ocdla_Expert_Hourly_Rate__c}</p>
+                                <p>Hourly Rate: {contact.Ocdla_Expert_Comments__c}</p>
+                            </div>
+                        </div>
+                    )
+                    }
+
+
+
+
                     {/* Mailing Address */}
                     <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
                         <p className="text-xl mb-3">Mailing Address:</p>
@@ -132,21 +172,6 @@ export default function Contact() {
                             <li>{contact.MailingAddress?.state}</li>
                             <li className="font-semibold">Zip:</li>
                             <li>{contact.MailingAddress?.postalCode}</li>
-                        </ul>
-                    </div>
-
-                    {/* OCDLA Home Address */}
-                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
-                        <p className="text-xl mb-3">OCDLA Home Address:</p>
-                        <ul className="list-none grid grid-cols-[auto_1fr] gap-2">
-                            <li className="font-semibold">Street:</li>
-                            <li>{contact.Ocdla_Home_Street__c}</li>
-                            <li className="font-semibold">City:</li>
-                            <li>{contact.Ocdla_Home_City__c}</li>
-                            <li className="font-semibold">State:</li>
-                            <li>{contact.Ocdla_Home_State__c}</li>
-                            <li className="font-semibold">Zip:</li>
-                            <li>{contact.Ocdla_Home_Zip__c}</li>
                         </ul>
                     </div>
 

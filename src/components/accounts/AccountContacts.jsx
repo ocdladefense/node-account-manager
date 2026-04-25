@@ -17,7 +17,7 @@ export default function AccountContacts() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const soql = getAccountContactsQuery(params.accountId);
+        const soql = getAccountContactsQuery(accountId);
         console.log(soql);
         const fetchAccountContacts = async () => {
             const resp = await client.query(soql);
