@@ -11,17 +11,23 @@ export default function AccountContacts() {
 
     let { accountId } = useParams();
 
-
     const [contacts, setContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const soql = getAccountContactsQuery(params.accountId);
-        console.log(soql);
+        const soql = getAccountContactsQuery(accountId);
         const fetchAccountContacts = async () => {
-            const resp = await client.query(soql);
-            setContacts(resp.records);
+            try {
+                setLoading(true);
+                const resp = await client.query(soql);
+                setContacts(resp.records);
+            } catch (e) {
+                setError(e);
+                console.log("Error loading contact: ", e);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchAccountContacts();
     }, []);

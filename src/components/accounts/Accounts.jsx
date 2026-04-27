@@ -8,9 +8,6 @@ export default function Accounts() {
     let { client } = useOutletContext();
     const navigate = useNavigate();
 
-    let params = useParams();
-    let type = params.type;
-
     let [accounts, setAccounts] = useState([]);
 
     useEffect(() => {
@@ -22,18 +19,16 @@ export default function Accounts() {
         fetchAccounts();
     }, []);
 
-
     const handleSelectAccount = (accountId) => {
         navigate(`/account/${accountId}`);
     };
-    console.log(accounts);
+
     return (
         <div>
             {accounts &&
                 <div className="container mx-auto p-6 mt-20">
                     <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
 
-                    {/* removed key={account.} for now until we figure out what to do here*/}
                     <div className="space-y-2">
                         {accounts.map((account) => (
                             <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
