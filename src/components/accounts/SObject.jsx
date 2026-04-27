@@ -32,7 +32,6 @@ export default function SObject() {
             const metadata = await client.queryObjectMetadata("Order");
             const data = new MetaData(metadata);
             setMetadata(data);
-            console.log(metadata);
         };
 
         fetchMetadata();

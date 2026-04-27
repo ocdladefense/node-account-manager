@@ -8,14 +8,21 @@ import { useLocation } from 'react-router-dom';
 // Information about a specific order for an account.
 export default function AccountOrder() {
 
-    let { client } = useOutletContext();
-    let { accountId } = useParams();
+    const { client, metadata } = useOutletContext();
+    const { accountId } = useParams();
 
     // TODO: Correct to follow Contact Form structure
     const { state } = useLocation();
     const order = state?.order;
 
-    console.log("order object should be passed through properly", order)
+
+
+    // TODO: Delete after testing metadata object information
+    useEffect(() => {
+        console.log("metadata object:", metadata);
+    }, [metadata]);
+
+
 
     return (
         <div className="container mx-auto p-6 mt-20">
