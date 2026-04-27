@@ -15,3 +15,8 @@ export function getAccountsQuery() {
 export function getAccountContactsQuery(accountId) {
     return `SELECT Id, Name FROM Contact WHERE AccountId = '${accountId}'`;
 }
+
+
+export function getOrderHistory(accountId) {
+    return `SELECT FIELDS(ALL) FROM Order WHERE AccountId = '${accountId}' LIMIT 20`;
+}
