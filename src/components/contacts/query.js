@@ -21,12 +21,14 @@ export function getContactQuery(contactId) {
             Ocdla_Home_City__c,
             Ocdla_Home_State__c,
             Ocdla_Home_Zip__c,
+            Ocdla_Occupation_Field_Type__c,
             MailingAddress,
             Name,
             Phone,
             Ocdla_Cell_Phone__c,
             Fax,
             Ocdla_Website__c,
+            Public_Defense_Survey__c,
             AccountId
             FROM Contact WHERE Id = '${contactId}'`;
 }
