@@ -9,8 +9,8 @@ import Sites from '../components/ui/Sites.jsx';
 import Account from '../components/accounts/Account.jsx';
 import Accounts from '../components/accounts/Accounts.jsx';
 import AccountContacts from '../components/accounts/AccountContacts.jsx';
-import AccountOrder from '../components/accounts/AccountOrder.jsx';
-import AccountOrders from '../components/accounts/AccountOrders.jsx';
+import OrderDetails from '../components/orders/OrderDetails.jsx';
+import OrderHistory from '../components/orders/OrderHistory.jsx';
 import Contact from '../components/contacts/Contact.jsx';
 import ContactForm from '../components/contacts/ContactForm.jsx';
 import HomePage from "../components/HomePage.jsx";
@@ -46,13 +46,13 @@ root.render(
                 <Route path="accounts">
                     <Route index element={<Accounts />} />
                 </Route>
-                <Route path="account" element={<SObject />}>
+                <Route path="account">
                     <Route path=":accountId" element={<Account />} />
                     <Route path=":accountId/contacts" element={<AccountContacts />} />
-                    <Route path=":accountId/orders" element={<AccountOrders />} />
+                    <Route path=":accountId/orders" element={<OrderHistory />} />
                 </Route>
-                <Route path="order">
-                    <Route path=":orderId" element={<AccountOrder />} />
+                <Route path="order" element={<SObject />}>
+                    <Route path=":orderId" element={<OrderDetails />} />
                 </Route>
                 <Route path="contact" element={<SObject />}>
                     <Route path=":contactId" element={<Contact />} />

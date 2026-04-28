@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useOutletContext, useLocation } from "react-router-dom";
 
-
-
 // Information about a specific order for an account.
 export default function AccountOrder() {
 
@@ -23,7 +21,7 @@ export default function AccountOrder() {
                 <div className="border rounded p-6">
                     {/* Order ID */}
                     <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-6">Order {order.Id}</h2>
+                        <h2 className="text-3xl font-bold mb-6">Order {order.Name}</h2>
                     </div>
 
                     {/* Order Status */}
