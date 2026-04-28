@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router-dom";
 import { getContactQuery, fetchPicklistValues } from "./query.js";
 import PickList from "../ui/PickList.jsx";
 import TextInput from "../ui/TextInput.jsx"
+import { Pi } from "lucide-react";
 
 export default function ContactForm() {
 
@@ -15,9 +16,15 @@ export default function ContactForm() {
 
     let salutations = metadata.fetchPicklistValues('Salutation');
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
-    console.log(metadata.getField("MailingStateCode"));
-
-    console.log("Salutations state: ", salutations);
+    let states = metadata.fetchPicklistValues('MailingStateCode').filter(s => s.validFor === "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA");
+    let occupations = metadata.fetchPicklistValues('Ocdla_Occupation_Field_Type__c');
+    let countries = metadata.fetchPicklistValues("MailingCountryCode");
+    console.log("States: ", states);
+    console.log("Countries: ", countries.find(v => v.value == "US"));
+    if (contact) {
+        console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
+    }
+    console.log("Salutations ", salutations);
 
     useEffect(() => {
         const soql = getContactQuery(contactId);
@@ -33,11 +40,23 @@ export default function ContactForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let target = e.target;
+        const checkboxes = {
+            expertWitness: target.querySelector('#isExpertWitness'),
+            legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
+        }
+        const publicDefenseSurveyValues = [];
+        for (let element of target.querySelector('#PublicDefenseSurvey').selectedOptions) {
+            publicDefenseSurveyValues.push(element.value);
+        }
         let formData = new FormData(target);
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
+        contactRecord.Ocdla_Is_Expert_Witness__c = checkboxes.expertWitness.checked;
+        contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
+        contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
         contactRecord.Id = contact.Id;
-        console.log(contactRecord);
+
+        console.log("Object to update: ", contactRecord);
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
@@ -46,7 +65,7 @@ export default function ContactForm() {
             console.log(result);
             return;
         }
-
+        return;
         // Navigate back to contact detail page on success
         navigate(`/contact/${contactId}`);
     };
@@ -69,8 +88,9 @@ export default function ContactForm() {
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
+                                <TextInput label="Middle Name" apiName="MiddleName" currentValue={contact.MiddleName} />
                                 <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
@@ -81,17 +101,25 @@ export default function ContactForm() {
                             </div>
                         </fieldset>
                         {/* Bar Number and License Number */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-3 gap-4 mb-4">
                             <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
                             <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
+                            <TextInput label="Organization" apiName="Ocdla_Organization__c" currentValue={contact.Ocdla_Organization__c} />
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label htmlFor="isExpertWitness" className="block text-sm font-semibold mb-2">Expert Witness?</label>
+                                <input type="checkbox" id="isExpertWitness" name="Ocdla_Is_Expert_Witness__c" defaultChecked={contact.Ocdla_Is_Expert_Witness__c} className="w-full px-3 py-2 border rounded" />
+                            </div>
+                            <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
+
+                            <PickList label="Public Defense Survey" name="Public_Defense_Survey__c" defaultValue={contact.Public_Defense_Survey__c.split(';')} values={publicDefenseSurvey} multiple={true} />
                         </div>
                         {/* Contact Info */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Contact Info</legend>
                             <div className="grid grid-cols-2 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
-
-                                <input type="text" name="Order_Api_Work_Email__c" defaultValue={contact.OrderApi__Work_Email__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
                             <div className="grid grid-cols-3 gap-4">
@@ -106,17 +134,22 @@ export default function ContactForm() {
                             <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
                             <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
-                                <TextInput label="State" apiName="MailingState" currentValue={contact.MailingAddress.state} />
+                                <PickList label="State" name="MailingState" defaultValue={contact.MailingAddress.state} values={states} />
                                 <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
+                                <PickList label="Country" name="MailingCountryCode" defaultValue={contact.MailingAddress.countryCode} values={countries} />
                             </div>
                         </fieldset>
                         {/* OCDLA Home Address */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">OCDLA Home Address</legend>
+                            <div>
+                                <label htmlFor="LegislativeAdvocacyOptIn" className="block text-sm font-semibold mb-2">Legislative Advocacy Opt-In</label>
+                                <input type="checkbox" id="LegislativeAdvocacyOptIn" name="LegislativeAdvocacyOptIn__c" defaultChecked={contact.LegislativeAdvocacyOptIn__c} className="w-full px-3 py-2 border rounded" />
+                            </div>
                             <TextInput label="Street" apiName="Ocdla_Home_Street__c" currentValue={contact.Ocdla_Home_Street__c} />
                             <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="City" apiName="Ocdla_Home_City__c" currentValue={contact.Ocdla_Home_City__c} />
-                                <TextInput label="State" apiName="Ocdla_Home_State__c" currentValue={contact.Ocdla_Home_State__c} />
+                                <PickList label="State" name="Ocdla_Home_State__c" defaultValue={contact.Ocdla_Home_State__c} values={states} />
                                 <TextInput label="Zip" apiName="Ocdla_Home_Zip__c" currentValue={contact.Ocdla_Home_Zip__c} />
                             </div>
                         </fieldset>
