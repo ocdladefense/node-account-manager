@@ -14,14 +14,18 @@ export default function ContactForm() {
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
 
+
+    const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
+
     let salutations = metadata.fetchPicklistValues('Salutation');
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
-    let states = metadata.fetchPicklistValues('MailingStateCode').filter(s => s.validFor === "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA");
+    // let states = metadata.fetchPicklistValues(name).filter(s => s.validFor === US_COUNTRY_CODE_ID);
     let occupations = metadata.fetchPicklistValues('Ocdla_Occupation_Field_Type__c');
     let countries = metadata.fetchPicklistValues("MailingCountryCode");
-    console.log("States: ", states);
+
     console.log("Countries: ", countries.find(v => v.value == "US"));
-    if (contact) {
+    if (contact)
+    {
         console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
     }
     console.log("Salutations ", salutations);
@@ -48,7 +52,8 @@ export default function ContactForm() {
             legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
         }
         const publicDefenseSurveyValues = [];
-        for (let element of target.querySelector('#PublicDefenseSurvey').selectedOptions) {
+        for (let element of target.querySelector('#PublicDefenseSurvey').selectedOptions)
+        {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
@@ -80,7 +85,8 @@ export default function ContactForm() {
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok) {
+        if (!response.ok)
+        {
             const result = await response.json();
             console.log(result);
             return;
@@ -202,7 +208,7 @@ export default function ContactForm() {
                                         <br />
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <PickList name="Ocdla_Expert_Travel_Availability__c" label="Travel Availability" defaultValue={contact.Ocdla_Expert_Travel_Availability__c} values={expertTravel} />
+                                                <PickList defaultValue={contact.Ocdla_Expert_Travel_Availability__c} metadata={metadata.getField("Ocdla_Expert_Travel_Availability__c")} />
                                             </div>
                                         </div>
                                         <br />
@@ -228,7 +234,7 @@ export default function ContactForm() {
                             <div className="grid grid-cols-2 gap-4">
                                 <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
                                 <div>
-                                    <PickList name="Salutation" label="Salutation" defaultValue={contact.Salutation} values={salutations} />
+                                    <PickList defaultValue={contact.Salutation} metadata={metadata.getField("Salutation")} />
                                 </div>
                             </div>
                         </fieldset>
@@ -264,9 +270,9 @@ export default function ContactForm() {
                                 <label htmlFor="isExpertWitness" className="block text-sm font-semibold mb-2">Expert Witness?</label>
                                 <input type="checkbox" id="isExpertWitness" name="Ocdla_Is_Expert_Witness__c" defaultChecked={contact.Ocdla_Is_Expert_Witness__c} className="w-full px-3 py-2 border rounded" />
                             </div>
-                            <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
+                            <PickList defaultValue={contact.Ocdla_Occupation_Field_Type__c} metadata={metadata.getField("Ocdla_Occupation_Field_Type__c")} />
 
-                            <PickList label="Public Defense Survey" name="Public_Defense_Survey__c" defaultValue={contact.Public_Defense_Survey__c.split(';')} values={publicDefenseSurvey} multiple={true} />
+                            <PickList defaultValue={contact.Public_Defense_Survey__c} metadata={metadata.getField("Public_Defense_Survey__c")} />
                         </div>
                         {/* Contact Info */}
                         <fieldset className="border rounded p-4 mb-6">
@@ -287,9 +293,9 @@ export default function ContactForm() {
                             <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
                             <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
-                                <PickList label="State" name="MailingState" defaultValue={contact.MailingAddress.state} values={states} />
+                                <PickList defaultValue={contact.MailingAddress.stateCode} metadata={metadata.getField("MailingStateCode")} />
                                 <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
-                                <PickList label="Country" name="MailingCountryCode" defaultValue={contact.MailingAddress.countryCode} values={countries} />
+                                <PickList defaultValue={contact.MailingAddress.countryCode} metadata={metadata.getField("MailingCountryCode")} />
                             </div>
                         </fieldset>
                         {/* Buttons */}
