@@ -7,17 +7,28 @@ let picklistValues = {
     publicDefenseSurvey: [],
 };
 
+
+
 class MetaData {
     constructor(metadata) {
         this.metadata = metadata;
     }
 
-    fetchPicklistValues(fieldname) {
-        return this.metadata.fields.find((f) => f.name === fieldname).picklistValues;
+    fetchPicklistValues(fieldname, optionalFilter = null) {
+        let gross = this.metadata.fields.find((f) => f.name === fieldname).picklistValues;
+        if (optionalFilter)
+        {
+            return gross.filter(optionalFilter);
+        }
+        return gross;
     }
 
+
+
     getField(fieldname) {
-        return this.metadata.fields.find((f) => f.name === fieldname)
+        let field = this.metadata.fields.find((f) => f.name === fieldname);
+        if (!field) throw new Error(`Field ${fieldname} not found in metadata`);
+        return field;
     }
 }
 
