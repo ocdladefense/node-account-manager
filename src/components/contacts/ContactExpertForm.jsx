@@ -6,6 +6,7 @@ import PickList from "../ui/PickList.jsx";
 import TextInput from "../ui/TextInput.jsx"
 import { Pi } from "lucide-react";
 import CheckBox from "../ui/Checkbox.jsx";
+import DateInput from "../ui/DateInput.jsx";
 
 export default function ContactForm() {
 
@@ -107,38 +108,10 @@ export default function ContactForm() {
                                         <CheckBox label="Update Email Sent" name="ExpertWitnessUpdateEmailSent__c" defaultValue={contact.ExpertWitnessUpdateEmailSent__c} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2" htmlFor="ExpertWitnessEmailUpdate">
-                                            Update Date Sent
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            class="w-full px-3 py-2 border rounded"
-                                            name="ExpertWitnessUpdateDateSent__c"
-                                            defaultValue={
-                                                contact.ExpertWitnessUpdateDateSent__c
-                                                    ? new Date(contact.ExpertWitnessUpdateDateSent__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
+                                        <DateInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2" htmlFor="ExpertWitnessLastUpdated">
-                                            Last Updated
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            class="w-full px-3 py-2 border rounded"
-                                            name="Ocdla_Expert_Witness_Last_Updated__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Witness_Last_Updated__c
-                                                    ? new Date(contact.Ocdla_Expert_Witness_Last_Updated__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
+                                        <DateInput label="Last Updated" name="Ocdla_Expert_Witness_Last_Updated__c" defaultValue={contact.Ocdla_Expert_Witness_Last_Updated__c} />
                                     </div>
                                 </fieldset>
                                 <fieldset className="border rounded p-4 mb-6">
@@ -167,41 +140,11 @@ export default function ContactForm() {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2" htmlFor="ExpertWitnesssUnavailabiltyStart">
-                                            Unavailabilty Start Date
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            class="w-full px-3 py-2 border rounded"
-                                            name="Ocdla_Expert_Unavailability_Start_Date__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Unavailability_Start_Date__c
-                                                    ? new Date(contact.Ocdla_Expert_Unavailability_Start_Date__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
+                                        <DateInput label="Unavailabilty Start Date" name="Ocdla_Expert_Unavailability_Start_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_Start_Date__c} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-2" htmlFor="ExpertWitnesssUnavailabiltyEnd">
-                                            Unavailabilty End Date
-                                        </label>
-                                        <input
-                                            type="datetime-local"
-                                            class="w-full px-3 py-2 border rounded"
-                                            name="Ocdla_Expert_Unavailability_End_Date__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Unavailability_End_Date__c
-                                                    ? new Date(contact.Ocdla_Expert_Unavailability_End_Date__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
-
+                                        <DateInput label="Unavailabilty End Date" name="Ocdla_Expert_Unavailability_End_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_End_Date__c} />
                                     </div>
-
                                 </fieldset>
 
                             </div>
