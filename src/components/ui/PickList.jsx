@@ -4,19 +4,22 @@ const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
 
 
 
-export default function PickList({ label, name, defaultValue = "", values, metadata, multiple = true }) {
+export default function PickList({ defaultValue, metadata }) {
 
 
-    name = metadata.name;
-    label = metadata.label;
+    let name = metadata.name;
+    let label = metadata.label;
+    // metadata.type = "picklist" if regular dropdown; "multipicklist" if multi-select 
+    // multiple = true;//multiple || metadata.isMultiSelectPicklist(name);
+    let multiple = metadata.type === "multipicklist";
     let specialFields = ["MailingStateCode"];
     let filterFunction = specialFields.includes(name) ? s => s.validFor === US_COUNTRY_CODE_ID : null;
 
 
 
-    values = values || (!filterFunction ? metadata.picklistValues : metadata.picklistValues.filter(filterFunction)); // still need to compensate figure out the filter situation here.
-    // multiple = true;//multiple || metadata.isMultiSelectPicklist(name);
-    defaultValue = defaultValue?.split(';') || ""; // Jose doesn't know this!  
+    const values = !filterFunction ? metadata.picklistValues : metadata.picklistValues.filter(filterFunction); // still need to compensate figure out the filter situation here.
+
+    defaultValue = multiple ? defaultValue?.split(';') : defaultValue || ""; // Jose doesn't know this!  
 
     return (
         <div>

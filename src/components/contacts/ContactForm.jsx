@@ -19,9 +19,10 @@ export default function ContactForm() {
 
     let salutations = metadata.fetchPicklistValues('Salutation');
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
-    // let states = metadata.fetchPicklistValues(name).filter(s => s.validFor === US_COUNTRY_CODE_ID);
     let occupations = metadata.fetchPicklistValues('Ocdla_Occupation_Field_Type__c');
     let countries = metadata.fetchPicklistValues("MailingCountryCode");
+    console.log("Mailing State Code: ", metadata.getField("MailingStateCode"));
+    console.log("Public Defense Survey: ", metadata.getField("Public_Defense_Survey__c"));
 
     console.log("Countries: ", countries.find(v => v.value == "US"));
     if (contact) {
@@ -60,7 +61,7 @@ export default function ContactForm() {
         // Merge conflict - This is Rosa's code
         // contactRecord.Ocdla_Is_Expert_Witness__c = checkboxes.expertWitness.checked;
         // contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
-        // contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
+        contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
         // End Rosas code
 
 
