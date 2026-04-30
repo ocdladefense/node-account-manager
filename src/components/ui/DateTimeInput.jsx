@@ -1,11 +1,11 @@
-export default function DateInput({ label, name, defaultValue, values, multiple = false }) {
+export default function DateTimeInput({ label, name, defaultValue, values, multiple = false }) {
     return (
         <div>
             <label className="block text-sm font-semibold mb-2" htmlFor={label}>
                 {label}
             </label>
             <input
-                type="date"
+                type="datetime-local"
                 class="w-full px-3 py-2 border rounded"
                 name={name}
                 defaultValue={

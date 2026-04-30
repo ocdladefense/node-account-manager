@@ -7,6 +7,7 @@ import TextInput from "../ui/TextInput.jsx"
 import { Pi } from "lucide-react";
 import CheckBox from "../ui/Checkbox.jsx";
 import DateInput from "../ui/DateInput.jsx";
+import DateTimeInput from "../ui/DateTimeInput.jsx";
 
 export default function ContactForm() {
 
@@ -108,7 +109,7 @@ export default function ContactForm() {
                                         <CheckBox label="Update Email Sent" name="ExpertWitnessUpdateEmailSent__c" defaultValue={contact.ExpertWitnessUpdateEmailSent__c} />
                                     </div>
                                     <div>
-                                        <DateInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} />
+                                        <DateTimeInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} />
                                     </div>
                                     <div>
                                         <DateInput label="Last Updated" name="Ocdla_Expert_Witness_Last_Updated__c" defaultValue={contact.Ocdla_Expert_Witness_Last_Updated__c} />
