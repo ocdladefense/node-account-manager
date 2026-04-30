@@ -24,8 +24,7 @@ export default function ContactForm() {
     let countries = metadata.fetchPicklistValues("MailingCountryCode");
 
     console.log("Countries: ", countries.find(v => v.value == "US"));
-    if (contact)
-    {
+    if (contact) {
         console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
     }
     console.log("Salutations ", salutations);
@@ -52,8 +51,7 @@ export default function ContactForm() {
             legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
         }
         const publicDefenseSurveyValues = [];
-        for (let element of target.querySelector('#PublicDefenseSurvey').selectedOptions)
-        {
+        for (let element of target.querySelector('#Public_Defense_Survey__c').selectedOptions) {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
@@ -85,8 +83,7 @@ export default function ContactForm() {
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok)
-        {
+        if (!response.ok) {
             const result = await response.json();
             console.log(result);
             return;
@@ -115,10 +112,10 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        {contact?.Ocdla_Is_Expert_Witness__c && (
+                        {/* {contact?.Ocdla_Is_Expert_Witness__c && (
                             <div>
                                 {/* Expert Witness Info */}
-                                <fieldset className="border rounded p-4 mb-6">
+                        {/* <fieldset className="border rounded p-4 mb-6">
                                     <legend className="text-lg font-semibold">Expert Wintess Form</legend>
                                     <div className="mb-4">
                                         <br />
@@ -221,8 +218,7 @@ export default function ContactForm() {
                                 </fieldset>
 
                             </div>
-                        )
-                        }
+                        )} */}
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>

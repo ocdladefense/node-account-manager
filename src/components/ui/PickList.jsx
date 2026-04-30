@@ -32,7 +32,7 @@ export default function PickList({ label, name, defaultValue = "", values, metad
                     <option value="">-- None --</option>
 
                     {values.map((item) => (
-                        <option key={item.value} value={label == "State" ? item.label : item.value}>
+                        <option key={item.value} value={item.value}>
                             {item.label}
                         </option>
                     ))}
