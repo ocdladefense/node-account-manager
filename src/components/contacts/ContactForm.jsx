@@ -57,7 +57,7 @@ export default function ContactForm() {
         // Merge conflict - This is Rosa's code
         // contactRecord.Ocdla_Is_Expert_Witness__c = checkboxes.expertWitness.checked;
         // contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
-        // contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
+        contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
         // End Rosas code
 
 
@@ -236,20 +236,25 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Opt Ins</legend>
                             <div className="mb-4">
-                                <label className="form-check-label" htmlFor="Legislation"></label>
-                                Legislative Opt In
-                                <input
-                                    type="checkbox"
-                                    name="LegislativeAdvocacyOptIn__c"
-                                    defaultChecked={contact.LegislativeAdvocacyOptIn__c}
-                                />
-                                <br />
-                                <label className="form-check-label" htmlFor="Expert Witnes"></label>
-                                Is Expert Witness
+                                <div className="">
+                                    <label className="text-sm font-semibold mb-2" htmlFor="Legislation">
+                                        Legislative Opt In
+                                    </label>
+                                    <input
+                                        type="checkbox"
+                                        name="LegislativeAdvocacyOptIn__c"
+                                        defaultChecked={contact.LegislativeAdvocacyOptIn__c}
+                                        className="ml-3"
+                                    />
+                                </div>
+                                <label className="text-sm font-semibold mb-2" htmlFor="Expert Witnes">
+                                    Is Expert Witness
+                                </label>
                                 <input
                                     type="checkbox"
                                     name="Ocdla_Is_Expert_Witness__c"
                                     defaultChecked={contact.Ocdla_Is_Expert_Witness__c}
+                                    className="ml-3"
                                 />
                             </div>
                         </fieldset>
@@ -259,11 +264,7 @@ export default function ContactForm() {
                             <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                             <TextInput label="Organization" apiName="Ocdla_Organization__c" currentValue={contact.Ocdla_Organization__c} />
                         </div>
-                        <div className="grid grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label htmlFor="isExpertWitness" className="block text-sm font-semibold mb-2">Expert Witness?</label>
-                                <input type="checkbox" id="isExpertWitness" name="Ocdla_Is_Expert_Witness__c" defaultChecked={contact.Ocdla_Is_Expert_Witness__c} className="w-full px-3 py-2 border rounded" />
-                            </div>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
                             <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
 
                             <PickList label="Public Defense Survey" name="Public_Defense_Survey__c" defaultValue={contact.Public_Defense_Survey__c.split(';')} values={publicDefenseSurvey} multiple={true} />
