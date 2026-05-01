@@ -24,11 +24,10 @@ export default function AccountOrders() {
         console.log('order fields', metadata.metadata.fields);
     }, []);
 
-
-    const handleSelectOrder = (orderId) => {
-        navigate(`/order/${orderId}`);
+    const handleSelectOrder = (order) => {
+        // Pass the order.Id as the orderId param in the route
+        navigate(`/order/${order.Id}`, { state: { order } });
     };
-
 
     return (
         <div>
