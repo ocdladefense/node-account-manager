@@ -34,7 +34,7 @@ export default function AccountOrders() {
         <div>
             {orders &&
                 <div className="container mx-auto p-6 mt-20">
-                    <h1 className="text-2xl font-bold mb-4">All Order History of an Account Here</h1>
+                    <h1 className="text-2xl font-bold mb-4">All Order History of an Account Here </h1>
 
                     <div className="space-y-2">
                         {orders.map((order) => (
