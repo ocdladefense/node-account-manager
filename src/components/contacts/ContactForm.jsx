@@ -130,26 +130,8 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Opt Ins</legend>
                             <div className="mb-4">
-                                <div className="">
-                                    <label className="text-sm font-semibold mb-2" htmlFor="Legislation">
-                                        Legislative Opt In
-                                    </label>
-                                    <input
-                                        type="checkbox"
-                                        name="LegislativeAdvocacyOptIn__c"
-                                        defaultChecked={contact.LegislativeAdvocacyOptIn__c}
-                                        className="ml-3"
-                                    />
-                                </div>
-                                <label className="text-sm font-semibold mb-2" htmlFor="Expert Witnes">
-                                    Is Expert Witness
-                                </label>
-                                <input
-                                    type="checkbox"
-                                    name="Ocdla_Is_Expert_Witness__c"
-                                    defaultChecked={contact.Ocdla_Is_Expert_Witness__c}
-                                    className="ml-3"
-                                />
+                                <CheckBox label="Legislative Opt In" name="LegislativeAdvocacyOptIn__c" defaultValue={contact.LegislativeAdvocacyOptIn__c} />
+                                <CheckBox label="Is Expert Witness" name="Ocdla_Is_Expert_Witness__c" defaultValue={contact.Ocdla_Is_Expert_Witness__c} />
                             </div>
                         </fieldset>
                         {/* Bar Number and License Number */}
