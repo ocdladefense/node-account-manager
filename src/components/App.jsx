@@ -61,7 +61,7 @@ export default function App() {
         <div className="mx-auto">
             <Header loggedIn={isLoggedIn()} />
             <div className="flex flex-row">
-                <nav className="flex m-5 mt-25 border-t w-1/4">
+                <nav className="hidden md:flex m-5 mt-25 border-t w-1/4">
                     <ul className="">
                         <li><Link to="/" className="block text-blue-600 underline">Home</Link></li>
                         <li><Link to="/accounts" className="block text-blue-600 underline">Accounts</Link></li>
