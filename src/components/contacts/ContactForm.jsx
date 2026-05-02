@@ -114,12 +114,12 @@ export default function ContactForm() {
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
                                 <TextInput label="Middle Name" apiName="MiddleName" currentValue={contact.MiddleName} />
                                 <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
                                 <div>
                                     <PickList name="Salutation" label="Salutation" defaultValue={contact.Salutation} values={salutations} />
@@ -135,12 +135,12 @@ export default function ContactForm() {
                             </div>
                         </fieldset>
                         {/* Bar Number and License Number */}
-                        <div className="grid grid-cols-1 tablet:grid-cols-3 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
                             <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                             <TextInput label="Organization" apiName="Ocdla_Organization__c" currentValue={contact.Ocdla_Organization__c} />
                         </div>
-                        <div className="grid grid-cols-1 tablet:grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
 
                             <PickList label="Public Defense Survey" name="Public_Defense_Survey__c" defaultValue={contact.Public_Defense_Survey__c.split(';')} values={publicDefenseSurvey} multiple={true} />
@@ -148,11 +148,11 @@ export default function ContactForm() {
                         {/* Contact Info */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Contact Info</legend>
-                            <div className="grid grid-cols-1 tablet:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
-                            <div className="grid grid-cols-1 tablet:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
                                 <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />
                                 <TextInput label="Fax" apiName="Fax" currentValue={contact.Fax} />
@@ -162,7 +162,7 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Mailing Address</legend>
                             <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
                                 <PickList label="State" name="MailingState" defaultValue={contact.MailingAddress.state} values={states} />
                                 <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />
