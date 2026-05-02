@@ -16,7 +16,7 @@ export default function Contact() {
     useEffect(() => {
         async function fetchContact() {
             const contactQuery = getContactQuery(contactId);
-            console.log(contactQuery);
+
 
             try {
                 setLoading(true);
@@ -38,6 +38,9 @@ export default function Contact() {
     // Second argument { state: { contact } } - This passes data along with the navigation
     const handleEdit = () => {
         navigate(`/contact/${contactId}/edit`, { state: { contact } });
+    };
+    const handleEditExpert = () => {
+        navigate(`/contact/${contactId}/expert`, { state: { contact } });
     };
 
     const handleBack = () => {
@@ -121,41 +124,100 @@ export default function Contact() {
                     </div>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
-                        <div>
-                            {/* Expert Witness Info */}
-                            <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
-                                <p className="text-xl mb-3">Expert Witness Info:</p>
-                                <p>Is State Expert:</p>
-                                <input
-                                    type="checkbox"
-                                    checked={contact.Ocdla_Is_State_Expert__c}
-                                    disabled
-                                />
-                                <p>Is in Witness Directory:</p>
-                                <input
-                                    type="checkbox"
-                                    checked={contact.Include_in_Expert_Witness_Directory__c}
-                                    disabled
-                                />
-                                <p>Witness Update Email Sent</p>
-                                <input
-                                    type="checkbox"
-                                    checked={contact.ExpertWitnessUpdateEmailSent__c}
-                                    disabled
-                                />
-                                <p>Expert Witness Update Date Sent: {contact.ExpertWitnessUpdateDateSent__c}</p>
-                                <p>Other Expert Witness Areas:{contact.Ocdla_Expert_Witness_Other_Areas__c}</p>
-                                <p>Last Updated: {contact.Ocdla_Expert_Witness_Last_Updated__c}</p>
-                                <p>Unavailibilty Start Date: {contact.Ocdla_Expert_Unavailability_Start_Date__c}</p>
-                                <p>Unavailibilty End Date: {contact.Ocdla_Expert_Unavailability_End_Date__c}</p>
-                                <p>Travel Availability: {contact.Ocdla_Expert_Travel_Availability__c}</p>
-                                <p>Minimum Hours: {contact.Ocdla_Expert_Minimum_Hours__c}</p>
-                                <p>Hourly Rate: {contact.Ocdla_Expert_Hourly_Rate__c}</p>
-                                <p>Hourly Rate: {contact.Ocdla_Expert_Comments__c}</p>
+                        <div className="mb-6 p-4 rounded bg-blue-50">
+                            <h3 className="text-xl font-semibold mb-4">Expert Witness Info</h3>
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={contact.Ocdla_Is_State_Expert__c}
+                                        disabled
+                                    />
+                                    <span>State Expert</span>
+                                </label>
+                                <label className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={contact.Include_in_Expert_Witness_Directory__c}
+                                        disabled
+                                    />
+                                    <span>In Witness Directory</span>
+                                </label>
+                                <label className="flex items-center gap-2 col-span-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={contact.ExpertWitnessUpdateEmailSent__c}
+                                        disabled
+                                    />
+                                    <span>Update Email Sent</span>
+                                </label>
+                            </div>
+
+
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p className="font-semibold">Update Date</p>
+                                    {/*Added Fill ins for data for if their is no info to pull from as suggest by gpt*/}
+                                    <p>{contact.ExpertWitnessUpdateDateSent__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Primary Area</p>
+                                    <p>{contact.Ocdla_Expert_Witness_Primary__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Other Areas</p>
+                                    <p>{contact.Ocdla_Expert_Witness_Other_Areas__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Last Updated</p>
+                                    <p>{contact.Ocdla_Expert_Witness_Last_Updated__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Unavailable Start</p>
+                                    <p>{contact.Ocdla_Expert_Unavailability_Start_Date__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Unavailable End</p>
+                                    <p>{contact.Ocdla_Expert_Unavailability_End_Date__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Travel Availability</p>
+                                    <p>{contact.Ocdla_Expert_Travel_Availability__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Minimum Hours</p>
+                                    <p>{contact.Ocdla_Expert_Minimum_Hours__c || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="font-semibold">Hourly Rate</p>
+                                    <p>{contact.Ocdla_Expert_Hourly_Rate__c || "N/A"}</p>
+                                </div>
+
+                                <div className="col-span-2">
+                                    <p className="font-semibold">Comments</p>
+                                    <p>{contact.Ocdla_Expert_Comments__c || "N/A"}</p>
+                                </div>
+                            </div>
+
+                            {/* Button */}
+                            <div className="mt-6">
+                                <button
+                                    onClick={handleEditExpert}
+                                    className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                >
+                                    Edit Expert Witness
+                                </button>
                             </div>
                         </div>
-                    )
-                    }
+                    )}
 
 
 
