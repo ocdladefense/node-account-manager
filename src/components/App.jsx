@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
@@ -60,8 +60,16 @@ export default function App() {
     return (
         <div className="mx-auto">
             <Header loggedIn={isLoggedIn()} />
-            <div className="mx-auto">
-                {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+            <div className="flex flex-row">
+                <nav className="flex m-5 mt-25 border-t w-1/4">
+                    <ul className="">
+                        <li><Link to="/" className="block text-blue-600 underline">Home</Link></li>
+                        <li><Link to="/accounts" className="block text-blue-600 underline">Accounts</Link></li>
+                    </ul>
+                </nav>
+                <div className="flex w-3/4">
+                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+                </div>
             </div>
             {/* <Footer /> */}
         </div>
