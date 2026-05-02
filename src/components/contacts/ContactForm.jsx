@@ -165,10 +165,12 @@ export default function ContactForm() {
                         {/* Contact Info */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Contact Info</legend>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
+                                <TextInput label="Work Phone:" apiName="OrderApi__Work_Phone__c" currentValue={contact.OrderApi__Work_Phone__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
+
                             <div className="grid grid-cols-3 gap-4">
                                 <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
                                 <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />

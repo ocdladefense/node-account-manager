@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { getContactQuery } from "./query.js"
+import Info from "../ui/Info.jsx";
+import Phone from "../ui/Phone.jsx";
+import Email from "../ui/Email.jsx";
+import CheckboxStatus from "../ui/CheckboxStatus.jsx";
+import Website from "../ui/Website.jsx";
 
 export default function Contact() {
     const { client } = useOutletContext();
@@ -75,143 +80,88 @@ export default function Contact() {
                     </div>
 
                     {/* Bar Number and License */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Bar Number: {contact.Ocdla_Bar_Number__c}</p>
-                        <p className="text-xl">Investigator License Number: {contact.Ocdla_Investigator_License_Number__c}</p>
+                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <Info label="Bar Number:" value={contact.Ocdla_Bar_Number__c} />
+                        <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
                     </div>
 
                     {/* Organization */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Organization: {contact.Ocdla_Organization__c}</p>
-                    </div>
-
-                    {/* Work Phone / Email */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Work Phone: {contact.OrderApi__Work_Phone__c}</p>
-                        <p className="text-xl">Work Email: {contact.OrderApi__Work_Email__c}</p>
+                    <div className="border grid grid-cols-3 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <Info label="Organization:" value={contact.Ocdla_Organization__c} />
+                        <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
+                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={false} />
                     </div>
 
                     {/* Phone Number / Fax */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Phone: {contact.Phone}</p>
-                        <p className="text-xl">Fax: {contact.Fax}</p>
+                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <Phone label="Phone:" value={contact.Phone} privacy={false} />
+                        <Phone label="Fax:" value={contact.Fax} privacy={false} />
                     </div>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">OCDLA Phone: {contact.Ocdla_Cell_Phone__c}</p>
-                        <p className="text-xl">OCDLA Website: {contact.Ocdla_Website__c}</p>
+                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={false} />
+                        <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
                     </div>
+
+                    {/* Mailing Address */}
+                    <fieldset className="border rounded p-4 mb-6 bg-blue-50">
+                        <legend className="text-lg font-semibold">Mailing Address</legend>
+                        <div className="grid grid-cols-4 mb-6 p-4 rounded bg-blue-50">
+                            <Info label="Street:" value={contact.MailingAddress?.street} />
+                            <Info label="City:" value={contact.MailingAddress?.city} />
+                            <Info label="State:" value={contact.MailingAddress?.state} />
+                            <Info label="Zip:" value={contact.MailingAddress?.postalCode} />
+                        </div>
+                    </fieldset>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Legislative Advocacy Opt in:</p>
-                        <input
-                            type="checkbox"
-                            checked={contact.LegislativeAdvocacyOptIn__c}
-                            disabled
-                        />
-                    </div>
-
-                    {/* Expert Witness Status */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <p className="text-xl">Expert Witness Status:</p>
-                        <input
-                            type="checkbox"
-                            checked={contact.Ocdla_Is_Expert_Witness__c}
-                            disabled
-                        />
+                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                        <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
+                        <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
                     </div>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
-                        <div className="mb-6 p-4 rounded bg-blue-50">
-                            <h3 className="text-xl font-semibold mb-4">Expert Witness Info</h3>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={contact.Ocdla_Is_State_Expert__c}
-                                        disabled
-                                    />
-                                    <span>State Expert</span>
-                                </label>
-                                <label className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={contact.Include_in_Expert_Witness_Directory__c}
-                                        disabled
-                                    />
-                                    <span>In Witness Directory</span>
-                                </label>
-                                <label className="flex items-center gap-2 col-span-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={contact.ExpertWitnessUpdateEmailSent__c}
-                                        disabled
-                                    />
-                                    <span>Update Email Sent</span>
-                                </label>
-                            </div>
 
+                        <div className="border mb-6 p-4 rounded bg-blue-50">
+                            <fieldset className=" rounded p-4 mb-6 bg-blue-50">
 
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                <div>
-                                    <p className="font-semibold">Update Date</p>
-                                    {/*Added Fill ins for data for if their is no info to pull from as suggest by gpt*/}
-                                    <p>{contact.ExpertWitnessUpdateDateSent__c || "N/A"}</p>
+                                <legend className="text-xl font-semibold">Expert Witness Info</legend>
+
+                                <div className="border rounded grid grid-cols-3 gap-4 my-2">
+                                    <CheckboxStatus label="State Expert:" value={contact.Ocdla_Is_State_Expert__c} />
+                                    <CheckboxStatus label="In Witness Directory:" value={contact.Include_in_Expert_Witness_Directory__c} />
+                                    <CheckboxStatus label="Update Email Sent:" value={contact.ExpertWitnessUpdateEmailSent__c} />
                                 </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm"></div>
 
-                                <div>
-                                    <p className="font-semibold">Primary Area</p>
-                                    <p>{contact.Ocdla_Expert_Witness_Primary__c || "N/A"}</p>
+                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                    <Info label="Primary Area:" value={contact.Ocdla_Expert_Witness_Primary__c} />
+                                    <Info label="Other Area:" value={contact.Ocdla_Expert_Witness_Other_Areas__c} />
                                 </div>
-
-                                <div>
-                                    <p className="font-semibold">Other Areas</p>
-                                    <p>{contact.Ocdla_Expert_Witness_Other_Areas__c || "N/A"}</p>
+                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                    <Info label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} />
+                                    <Info label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} />
                                 </div>
-
-                                <div>
-                                    <p className="font-semibold">Last Updated</p>
-                                    <p>{contact.Ocdla_Expert_Witness_Last_Updated__c || "N/A"}</p>
+                                <div className="border rounded grid grid-cols-3 gap-4 my-2 text-sm">
+                                    <Info label="Travel Availability:" value={contact.Ocdla_Expert_Travel_Availability__c} />
+                                    <Info label="Unavailable Start:" value={contact.Ocdla_Expert_Unavailability_Start_Date__c} />
+                                    <Info label="Unavailable End:" value={contact.Ocdla_Expert_Unavailability_End_Date__c} />
                                 </div>
-
-                                <div>
-                                    <p className="font-semibold">Unavailable Start</p>
-                                    <p>{contact.Ocdla_Expert_Unavailability_Start_Date__c || "N/A"}</p>
+                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                    <Info label="Minimum Hours:" value={contact.Ocdla_Expert_Minimum_Hours__c} />
+                                    <Info label="Hourly Rate:" value={contact.Ocdla_Expert_Hourly_Rate__c} />
                                 </div>
-
-                                <div>
-                                    <p className="font-semibold">Unavailable End</p>
-                                    <p>{contact.Ocdla_Expert_Unavailability_End_Date__c || "N/A"}</p>
+                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                    <Info label="Comments:" value={contact.Ocdla_Expert_Comments__c} />
                                 </div>
-
-                                <div>
-                                    <p className="font-semibold">Travel Availability</p>
-                                    <p>{contact.Ocdla_Expert_Travel_Availability__c || "N/A"}</p>
-                                </div>
-
-                                <div>
-                                    <p className="font-semibold">Minimum Hours</p>
-                                    <p>{contact.Ocdla_Expert_Minimum_Hours__c || "N/A"}</p>
-                                </div>
-
-                                <div>
-                                    <p className="font-semibold">Hourly Rate</p>
-                                    <p>{contact.Ocdla_Expert_Hourly_Rate__c || "N/A"}</p>
-                                </div>
-
-                                <div className="col-span-2">
-                                    <p className="font-semibold">Comments</p>
-                                    <p>{contact.Ocdla_Expert_Comments__c || "N/A"}</p>
-                                </div>
-                            </div>
+                            </fieldset>
 
                             {/* Button */}
                             <div className="mt-6">
                                 <button
                                     onClick={handleEditExpert}
-                                    className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                                    className="border px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
                                 >
                                     Edit Expert Witness
                                 </button>
@@ -222,25 +172,7 @@ export default function Contact() {
 
 
 
-                    {/* Mailing Address */}
-                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
-                        <p className="text-xl mb-3">Mailing Address:</p>
-                        <ul className="list-none grid grid-cols-[auto_1fr] gap-2">
-                            <li className="font-semibold">Street:</li>
-                            <li>{contact.MailingAddress?.street}</li>
-                            <li className="font-semibold">City:</li>
-                            <li>{contact.MailingAddress?.city}</li>
-                            <li className="font-semibold">State:</li>
-                            <li>{contact.MailingAddress?.state}</li>
-                            <li className="font-semibold">Zip:</li>
-                            <li>{contact.MailingAddress?.postalCode}</li>
-                        </ul>
-                    </div>
 
-                    {/* Organization */}
-                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
-                        <p className="text-xl mb-3">Organization: {contact.Ocdla_Organization__c}</p>
-                    </div>
 
                     {/* Edit Button */}
                     <button
