@@ -35,6 +35,7 @@ export default function AccountOrders() {
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
+    // What about other order statuses?
     const getStatusColor = (status) => {
         return status === 'Activated' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     };
