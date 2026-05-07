@@ -7,6 +7,8 @@ import Phone from "../ui/Phone.jsx";
 import Email from "../ui/Email.jsx";
 import CheckboxStatus from "../ui/CheckboxStatus.jsx";
 import Website from "../ui/Website.jsx";
+import DateDisplay from "../ui/DateDisplay.jsx";
+
 
 export default function Contact() {
     const { client } = useOutletContext();
@@ -140,13 +142,13 @@ export default function Contact() {
                                     <Info label="Other Area:" value={contact.Ocdla_Expert_Witness_Other_Areas__c} />
                                 </div>
                                 <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
-                                    <Info label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} />
-                                    <Info label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} />
+                                    <DateDisplay label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} type="DateTime" />
+                                    <DateDisplay label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} type="Date" />
                                 </div>
                                 <div className="border rounded grid grid-cols-3 gap-4 my-2 text-sm">
                                     <Info label="Travel Availability:" value={contact.Ocdla_Expert_Travel_Availability__c} />
-                                    <Info label="Unavailable Start:" value={contact.Ocdla_Expert_Unavailability_Start_Date__c} />
-                                    <Info label="Unavailable End:" value={contact.Ocdla_Expert_Unavailability_End_Date__c} />
+                                    <DateDisplay label="Unavailable Start:" value={contact.Ocdla_Expert_Unavailability_Start_Date__c} type="Date" />
+                                    <DateDisplay label="Unavailable End:" value={contact.Ocdla_Expert_Unavailability_End_Date__c} type="Date" />
                                 </div>
                                 <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
                                     <Info label="Minimum Hours:" value={contact.Ocdla_Expert_Minimum_Hours__c} />
