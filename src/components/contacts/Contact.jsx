@@ -8,9 +8,11 @@ import Email from "../ui/Email.jsx";
 import CheckboxStatus from "../ui/CheckboxStatus.jsx";
 import Website from "../ui/Website.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
+import Steps from "../ui/Steps.jsx";
 
 
 export default function Contact() {
+    const [currentStep, setCurrentStep] = useState(1);
     const { client } = useOutletContext();
     const navigate = useNavigate();
 
@@ -71,6 +73,9 @@ export default function Contact() {
 
             {contact && (
                 <div className="border rounded p-6">
+                    <Steps />
+
+
                     {/* Contact Name */}
                     <div className="grid-col-1">
                         <h2 className="text-3xl font-bold mb-6">{contact.Name}</h2>
@@ -91,7 +96,7 @@ export default function Contact() {
                     <div className="border grid grid-cols-3 mb-6 p-4 gap-1 rounded bg-blue-50">
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
-                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={false} />
+                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
                     </div>
 
                     {/* Phone Number / Fax */}
@@ -102,7 +107,7 @@ export default function Contact() {
 
                     {/* OCDLA Phone / Website */}
                     <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
-                        <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={false} />
+                        <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
                     </div>
 
