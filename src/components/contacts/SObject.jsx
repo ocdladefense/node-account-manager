@@ -29,7 +29,7 @@ export default function SObject() {
 
     useEffect(() => {
         const fetchMetadata = async () => {
-            const metadata = await client.queryObjectMetadata("Order");
+            const metadata = await client.queryObjectMetadata("Contact");
             const data = new MetaData(metadata);
             setMetadata(data);
             console.log(metadata);
