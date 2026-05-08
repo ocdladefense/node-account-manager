@@ -46,7 +46,7 @@ root.render(
                 <Route path="accounts">
                     <Route index element={<Accounts />} />
                 </Route>
-                <Route path="account">
+                <Route path="account" element={<SObject />}>
                     <Route path=":accountId" element={<Account />} />
                     <Route path=":accountId/contacts" element={<AccountContacts />} />
                     <Route path=":accountId/orders" element={<OrderHistory />} />
