@@ -225,12 +225,12 @@ export default function ContactForm() {
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="First Name" apiName="FirstName" currentValue={contact.FirstName} />
                                 <TextInput label="Middle Name" apiName="MiddleName" currentValue={contact.MiddleName} />
                                 <TextInput label="Last Name" apiName="LastName" currentValue={contact.LastName} />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <TextInput label="Suffix" apiName="Suffix" currentValue={contact.Suffix} />
                                 <div>
                                     <PickList defaultValue={contact.Salutation} metadata={metadata.getField("Salutation")} />
@@ -241,46 +241,29 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Opt Ins</legend>
                             <div className="mb-4">
-                                <label className="form-check-label" htmlFor="Legislation"></label>
-                                Legislative Opt In
-                                <input
-                                    type="checkbox"
-                                    name="LegislativeAdvocacyOptIn__c"
-                                    defaultChecked={contact.LegislativeAdvocacyOptIn__c}
-                                />
-                                <br />
-                                <label className="form-check-label" htmlFor="Expert Witnes"></label>
-                                Is Expert Witness
-                                <input
-                                    type="checkbox"
-                                    name="Ocdla_Is_Expert_Witness__c"
-                                    defaultChecked={contact.Ocdla_Is_Expert_Witness__c}
-                                />
+                                <CheckBox label="Legislative Opt In" name="LegislativeAdvocacyOptIn__c" defaultValue={contact.LegislativeAdvocacyOptIn__c} />
+                                <CheckBox label="Is Expert Witness" name="Ocdla_Is_Expert_Witness__c" defaultValue={contact.Ocdla_Is_Expert_Witness__c} />
                             </div>
                         </fieldset>
                         {/* Bar Number and License Number */}
-                        <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                             <TextInput label="Bar Number" apiName="Ocdla_Bar_Number__c" currentValue={contact.Ocdla_Bar_Number__c} />
                             <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                             <TextInput label="Organization" apiName="Ocdla_Organization__c" currentValue={contact.Ocdla_Organization__c} />
                         </div>
-                        <div className="grid grid-cols-3 gap-4 mb-4">
-                            <div>
-                                <label htmlFor="isExpertWitness" className="block text-sm font-semibold mb-2">Expert Witness?</label>
-                                <input type="checkbox" id="isExpertWitness" name="Ocdla_Is_Expert_Witness__c" defaultChecked={contact.Ocdla_Is_Expert_Witness__c} className="w-full px-3 py-2 border rounded" />
-                            </div>
-                            <PickList defaultValue={contact.Ocdla_Occupation_Field_Type__c} metadata={metadata.getField("Ocdla_Occupation_Field_Type__c")} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
 
                             <PickList defaultValue={contact.Public_Defense_Survey__c} metadata={metadata.getField("Public_Defense_Survey__c")} />
                         </div>
                         {/* Contact Info */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Contact Info</legend>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="Phone" apiName="Phone" currentValue={contact.Phone} />
                                 <TextInput label="Cell Phone" apiName="Ocdla_Cell_Phone__c" currentValue={contact.Ocdla_Cell_Phone__c} />
                                 <TextInput label="Fax" apiName="Fax" currentValue={contact.Fax} />
@@ -290,7 +273,7 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Mailing Address</legend>
                             <TextInput label="Street" apiName="MailingStreet" currentValue={contact.MailingAddress.street} />
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <TextInput label="City" apiName="MailingCity" currentValue={contact.MailingAddress.city} />
                                 <PickList defaultValue={contact.MailingAddress.stateCode} metadata={metadata.getField("MailingStateCode")} />
                                 <TextInput label="Zipcode" apiName="MailingPostalCode" currentValue={contact.MailingAddress.postalCode} />

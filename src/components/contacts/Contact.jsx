@@ -75,13 +75,13 @@ export default function Contact() {
                     </div>
 
                     {/* Bar Number and License */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Bar Number: {contact.Ocdla_Bar_Number__c}</p>
                         <p className="text-xl">Investigator License Number: {contact.Ocdla_Investigator_License_Number__c}</p>
                     </div>
 
                     {/* Organization */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Organization: {contact.Ocdla_Organization__c}</p>
                         <p className="text-xl">Occupation: {contact.Ocdla_Occupation_Field_Type__c}</p>
                     </div>
@@ -97,25 +97,25 @@ export default function Contact() {
                     }
 
                     {/* Work Phone / Email */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Work Phone: {contact.OrderApi__Work_Phone__c}</p>
                         <p className="text-xl">Work Email: {contact.OrderApi__Work_Email__c}</p>
                     </div>
 
                     {/* Phone Number / Fax */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Phone: {contact.Phone}</p>
                         <p className="text-xl">Fax: {contact.Fax}</p>
                     </div>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">OCDLA Phone: {contact.Ocdla_Cell_Phone__c}</p>
                         <p className="text-xl">OCDLA Website: {contact.Ocdla_Website__c}</p>
                     </div>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Legislative Advocacy Opt in:</p>
                         <input
                             type="checkbox"
@@ -125,7 +125,7 @@ export default function Contact() {
                     </div>
 
                     {/* Expert Witness Status */}
-                    <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 md:grid-cols-2 mb-6 p-4 gap-1 rounded">
                         <p className="text-xl">Expert Witness Status:</p>
                         <input
                             type="checkbox"
@@ -135,9 +135,9 @@ export default function Contact() {
                     </div>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
-                        <div className="mb-6 p-4 rounded bg-blue-50">
+                        <div className="mb-6 p-4 rounded">
                             <h3 className="text-xl font-semibold mb-4">Expert Witness Info</h3>
-                            <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <label className="flex items-center gap-2">
                                     <input
                                         type="checkbox"
@@ -165,7 +165,7 @@ export default function Contact() {
                             </div>
 
 
-                            <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
                                     <p className="font-semibold">Update Date</p>
                                     {/*Added Fill ins for data for if their is no info to pull from as suggest by gpt*/}
@@ -234,7 +234,7 @@ export default function Contact() {
 
 
                     {/* Mailing Address */}
-                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
+                    <div className="grid grid-cols-1 mb-6 p-4 rounded">
                         <p className="text-xl mb-3">Mailing Address:</p>
                         <ul className="list-none grid grid-cols-[auto_1fr] gap-2">
                             <li className="font-semibold">Street:</li>
