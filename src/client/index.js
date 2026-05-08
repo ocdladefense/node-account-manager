@@ -46,12 +46,12 @@ root.render(
                 <Route path="accounts">
                     <Route index element={<Accounts />} />
                 </Route>
-                <Route path="account" element={<SObject />}>
+                <Route path="account">
                     <Route path=":accountId" element={<Account />} />
                     <Route path=":accountId/contacts" element={<AccountContacts />} />
                     <Route path=":accountId/orders" element={<OrderHistory />} />
                 </Route>
-                <Route path="order" element={<SObject />}>
+                <Route path="order">
                     <Route path=":orderId" element={<OrderDetails />} />
                 </Route>
                 <Route path="contact" element={<SObject />}>
