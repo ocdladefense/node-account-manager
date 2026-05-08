@@ -3,7 +3,7 @@ export default function TextInput({ label, apiName, currentValue }) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className="block text-sm font-semibold mb-2">{label}</label>
-            <input type="text" name={apiName} defaultValue={currentValue} id={id} className="w-full px-3 py-2 border rounded" />
+            <input type="text" name={apiName} defaultValue={currentValue} id={id} className="w-full px-3 py-2 border rounded focus:bg-cyan-100" />
         </div>
     )
 }

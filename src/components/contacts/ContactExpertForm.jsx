@@ -109,10 +109,10 @@ export default function ContactForm() {
                                         <CheckBox label="Update Email Sent" name="ExpertWitnessUpdateEmailSent__c" defaultValue={contact.ExpertWitnessUpdateEmailSent__c} />
                                     </div>
                                     <div>
-                                        <DateTimeInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} />
+                                        <DateInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} fieldType="datetime-local" />
                                     </div>
                                     <div>
-                                        <DateInput label="Last Updated" name="Ocdla_Expert_Witness_Last_Updated__c" defaultValue={contact.Ocdla_Expert_Witness_Last_Updated__c} />
+                                        <DateInput label="Last Updated" name="Ocdla_Expert_Witness_Last_Updated__c" defaultValue={contact.Ocdla_Expert_Witness_Last_Updated__c} fieldType="date" />
                                     </div>
                                 </fieldset>
                                 <fieldset className="border rounded p-4 mb-6">
@@ -141,10 +141,10 @@ export default function ContactForm() {
                                         </div>
                                     </div>
                                     <div>
-                                        <DateInput label="Unavailabilty Start Date" name="Ocdla_Expert_Unavailability_Start_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_Start_Date__c} />
+                                        <DateInput label="Unavailabilty Start Date" name="Ocdla_Expert_Unavailability_Start_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_Start_Date__c} fieldType="date" />
                                     </div>
                                     <div>
-                                        <DateInput label="Unavailabilty End Date" name="Ocdla_Expert_Unavailability_End_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_End_Date__c} />
+                                        <DateInput label="Unavailabilty End Date" name="Ocdla_Expert_Unavailability_End_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_End_Date__c} fieldType="date" />
                                     </div>
                                 </fieldset>
 

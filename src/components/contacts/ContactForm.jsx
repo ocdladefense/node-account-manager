@@ -103,10 +103,6 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-    const handleExpert = () => {
-        navigate(``);
-    };
-
     console.log("State object: ", contact);
     return (
         <div>
@@ -115,113 +111,6 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        {/* {contact?.Ocdla_Is_Expert_Witness__c && (
-                            <div>
-                                {/* Expert Witness Info */}
-                        {/* <fieldset className="border rounded p-4 mb-6">
-                                    <legend className="text-lg font-semibold">Expert Wintess Form</legend>
-                                    <div className="mb-4">
-                                        <br />
-                                        <label className="form-check-label" htmlFor="StateExpert"></label>
-                                        OCDLA Is State Expert
-                                        <input
-                                            type="checkbox"
-                                            name="Ocdla_Is_State_Expert__c"
-                                            defaultChecked={contact.Ocdla_Is_State_Expert__c}
-                                        />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnesDirectory"></label>
-                                        Include in Expert Witness Directory
-                                        <input
-                                            type="checkbox"
-                                            name="Include_in_Expert_Witness_Directory__c"
-                                            defaultChecked={contact.Include_in_Expert_Witness_Directory__c}
-                                        />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnessEmail"></label>
-                                        Expert Witness Update Email Sent
-                                        <input
-                                            type="checkbox"
-                                            name="ExpertWitnessUpdateEmailSent__c"
-                                            defaultChecked={contact.ExpertWitnessUpdateEmailSent__c}
-                                        />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnessEmailUpdate"></label>
-                                        Expert Witness Update Date Sent
-                                        <input
-                                            type="datetime-local"
-                                            name="ExpertWitnessUpdateDateSent__c"
-                                            defaultValue={
-                                                contact.ExpertWitnessUpdateDateSent__c
-                                                    ? new Date(contact.ExpertWitnessUpdateDateSent__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
-                                        <br />
-                                        Ocdla_Expert_Witness_Primary__c
-                                        <br />
-                                        <TextInput label="Expert Witness Other Areas" apiName="Ocdla_Expert_Witness_Other_Areas__c" currentValue={contact.Ocdla_Expert_Witness_Other_Areas__c} />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnessLastUpdated"></label>
-                                        Expert Witness Last Updated
-                                        <input
-                                            type="datetime-local"
-                                            name="Ocdla_Expert_Witness_Last_Updated__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Witness_Last_Updated__c
-                                                    ? new Date(contact.Ocdla_Expert_Witness_Last_Updated__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnesssUnavailabiltyStart"></label>
-                                        Expert Witnesss Unavailabilty Start Date
-                                        <input
-                                            type="datetime-local"
-                                            name="Ocdla_Expert_Unavailability_Start_Date__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Unavailability_Start_Date__c
-                                                    ? new Date(contact.Ocdla_Expert_Unavailability_Start_Date__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
-                                        <br />
-                                        <label className="form-check-label" htmlFor="ExpertWitnesssUnavailabiltyEnd"></label>
-                                        Expert Witnesss Unavailabilty End Date
-                                        <input
-                                            type="datetime-local"
-                                            name="Ocdla_Expert_Unavailability_End_Date__c"
-                                            defaultValue={
-                                                contact.Ocdla_Expert_Unavailability_End_Date__c
-                                                    ? new Date(contact.Ocdla_Expert_Unavailability_End_Date__c)
-                                                        .toISOString()
-                                                        .slice(0, 16)
-                                                    : ""
-                                            }
-                                        />
-                                        <br />
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <PickList defaultValue={contact.Ocdla_Expert_Travel_Availability__c} metadata={metadata.getField("Ocdla_Expert_Travel_Availability__c")} />
-                                            </div>
-                                        </div>
-                                        <br />
-                                        <TextInput label="Expert Witness Minimum Hours" apiName="Ocdla_Expert_Minimum_Hours__c" currentValue={contact.Ocdla_Expert_Minimum_Hours__c} />
-                                        <br />
-                                        <TextInput label="Expert Witness Hourly Rate" apiName="Ocdla_Expert_Hourly_Rate__c" currentValue={contact.Ocdla_Expert_Hourly_Rate__c} />
-                                        <br />
-                                        <TextInput label="Expert Witness Comments" apiName="Ocdla_Expert_Comments__c" currentValue={contact.Ocdla_Expert_Comments__c} />
-                                    </div>
-                                </fieldset>
-
-                            </div>
-                        )} */}
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
@@ -251,6 +140,7 @@ export default function ContactForm() {
                             <TextInput label="Investigator License Number" apiName="Ocdla_Investigator_License_Number__c" currentValue={contact.Ocdla_Investigator_License_Number__c} />
                             <TextInput label="Organization" apiName="Ocdla_Organization__c" currentValue={contact.Ocdla_Organization__c} />
                         </div>
+                        {/* Occupation */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
 
@@ -261,6 +151,7 @@ export default function ContactForm() {
                             <legend className="text-lg font-semibold">Contact Info</legend>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
+                                <TextInput label="Work Phone:" apiName="OrderApi__Work_Phone__c" currentValue={contact.OrderApi__Work_Phone__c} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
