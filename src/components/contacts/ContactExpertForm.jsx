@@ -118,7 +118,7 @@ export default function ContactForm() {
                                 <fieldset className="border rounded p-4 mb-6">
                                     <legend className="text-lg font-semibold">Expert Witness Info</legend>
                                     <div>
-                                        <PickList label="Primary" name="Ocdla_Expert_Witness_Primary__c" defaultValue={contact.Ocdla_Expert_Witness_Primary__c.split(';')} values={expertPrimary} multiple={true} />
+                                        <PickList defaultValue={contact.Ocdla_Expert_Witness_Primary__c} metadata={metadata.getField("Ocdla_Expert_Witness_Primary__c")} />
                                     </div>
                                     <div>
                                         <TextInput label="Other Areas" apiName="Ocdla_Expert_Witness_Other_Areas__c" currentValue={contact.Ocdla_Expert_Witness_Other_Areas__c} />
@@ -137,7 +137,7 @@ export default function ContactForm() {
                                     <legend className="text-lg font-semibold">Availability</legend>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <PickList name="Ocdla_Expert_Travel_Availability__c" label="Travel Availability" defaultValue={contact.Ocdla_Expert_Travel_Availability__c} values={expertTravel} />
+                                            <PickList defaultValue={contact.Ocdla_Expert_Travel_Availability__c} metadata={metadata.getField("Ocdla_Expert_Travel_Availability__c")} />
                                         </div>
                                     </div>
                                     <div>

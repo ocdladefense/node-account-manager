@@ -1,8 +1,4 @@
-
 const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
-
-
-
 
 export default function PickList({ defaultValue, metadata }) {
 

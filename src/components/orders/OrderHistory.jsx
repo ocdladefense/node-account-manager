@@ -20,8 +20,6 @@ export default function AccountOrders() {
             console.log("order fields log", resp);
         };
         fetchOrders();
-        console.log('order SObject /details endpoint metadata', metadata);
-        console.log('order fields', metadata.metadata.fields);
     }, []);
 
     const handleSelectOrder = (order) => {

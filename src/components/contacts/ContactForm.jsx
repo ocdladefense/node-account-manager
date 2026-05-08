@@ -142,8 +142,6 @@ export default function ContactForm() {
                         </div>
                         {/* Occupation */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <PickList label="Occupation" name="Ocdla_Occupation_Field_Type__c" defaultValue={contact.Ocdla_Occupation_Field_Type__c} values={occupations} />
-
                             <PickList defaultValue={contact.Public_Defense_Survey__c} metadata={metadata.getField("Public_Defense_Survey__c")} />
                         </div>
                         {/* Contact Info */}
