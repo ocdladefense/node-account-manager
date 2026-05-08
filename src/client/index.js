@@ -14,6 +14,7 @@ import OrderHistory from '../components/orders/OrderHistory.jsx';
 import Contact from '../components/contacts/Contact.jsx';
 import ContactForm from '../components/contacts/ContactForm.jsx';
 import HomePage from "../components/HomePage.jsx";
+import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
 
 import SObject from "../components/contacts/SObject.jsx";
 
@@ -51,12 +52,13 @@ root.render(
                     <Route path=":accountId/contacts" element={<AccountContacts />} />
                     <Route path=":accountId/orders" element={<OrderHistory />} />
                 </Route>
-                <Route path="order" element={<SObject />}>
+                <Route path="order">
                     <Route path=":orderId" element={<OrderDetails />} />
                 </Route>
                 <Route path="contact" element={<SObject />}>
                     <Route path=":contactId" element={<Contact />} />
                     <Route path=":contactId/edit" element={<ContactForm />} />
+                    <Route path=":contactId/expert" element={<ContactExpertForm />} />
                 </Route>
             </Route>
         </Routes>
