@@ -83,7 +83,18 @@ export default function Contact() {
                     {/* Organization */}
                     <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
                         <p className="text-xl">Organization: {contact.Ocdla_Organization__c}</p>
+                        <p className="text-xl">Occupation: {contact.Ocdla_Occupation_Field_Type__c}</p>
                     </div>
+
+                    {/* Public Defense Survey */}
+                    {contact.Public_Defense_Survey__c &&
+                        <div className="grid grid-cols-1 mb-6 p-4 gap-1 rounded bg-blue-50">
+                            <p className="text-xl">Public Defense Survey</p>
+                            {contact.Public_Defense_Survey__c.split(";").map(
+                                p => <p>{p}</p>
+                            ) || ""}
+                        </div>
+                    }
 
                     {/* Work Phone / Email */}
                     <div className="grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
@@ -235,11 +246,6 @@ export default function Contact() {
                             <li className="font-semibold">Zip:</li>
                             <li>{contact.MailingAddress?.postalCode}</li>
                         </ul>
-                    </div>
-
-                    {/* Organization */}
-                    <div className="grid grid-cols-1 mb-6 p-4 rounded bg-blue-50">
-                        <p className="text-xl mb-3">Organization: {contact.Ocdla_Organization__c}</p>
                     </div>
 
                     {/* Edit Button */}
