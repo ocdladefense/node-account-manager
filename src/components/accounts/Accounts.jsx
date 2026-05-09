@@ -31,7 +31,7 @@ export default function Accounts() {
 
                     <div className="space-y-2">
                         {accounts.map((account) => (
-                            <div className="p-4 border rounded cursor-pointer hover:bg-gray-100"
+                            <div key={account.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSelectAccount(account.Id)}>
                                 <p>{account.Name}</p>
                             </div>
