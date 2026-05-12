@@ -187,5 +187,5 @@ export function getOrderItems(orderId) {
         QuoteLineItemId,
         ReturnedItem__c,
         UpdateEmailSent__c
-    FROM OrderItem WHERE OrderId = '801VJ00000dFEKNYA4'`;
+    FROM OrderItem WHERE OrderId = '${orderId}'`;
 }
