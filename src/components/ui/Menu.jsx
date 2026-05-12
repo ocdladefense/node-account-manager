@@ -45,13 +45,13 @@ export default function Menu() {
                     <li><a href="/">Home</a></li>
                     {/* Hardcoding ids for now. Presumably these will ultimately be gotten from the logged-in user's data (authentication process)*/}
                     <li><a href={`/account/${process.env.SF_ACCOUNT_ID}`}>Account</a></li>
-                    <li><a href='/contact/0030a00002HpppSAAR'>Profile</a></li>
-                    <li><a href='/account/001j000000oPGAmAAO/contacts'>Account Directory</a></li>
-                    <li><a href='/account/001j000000oPGAmAAO/orders'>Orders</a></li>
-                    <li><a href='/order/801VJ00000D38XqYAJ'>Order Details </a></li>
+                    <li><a href={`/contact/${process.env.SF_CONTACT_ID}`}>Profile</a></li>
+                    <li><a href={`/account/${process.env.SF_ACCOUNT_ID}/contacts`}>Account Directory</a></li>
+                    <li><a href={`/account/${process.env.SF_ACCOUNT_ID}/orders`}>Orders</a></li>
+                    <li><a href={`/order/${process.env.SF_ORDER_ID}`}>Order Details </a></li>
                     {/* Currently dummy links */}
-                    <li><a href='/account/001j000000oPGAmAAO/payments'>Upcoming Payments</a></li>
-                    <li><a href='/account/001j000000oPGAmAAO/events'>Seminars and Events</a></li>
+                    <li><a href={`/account/${process.env.SF_ACCOUNT_ID}/payments`}>Upcoming Payments</a></li>
+                    <li><a href={`/account/${process.env.SF_ACCOUNT_ID}/events'`}>Seminars and Events</a></li>
                 </ul>
             </div>
         </div>
