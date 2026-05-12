@@ -64,7 +64,7 @@ export default function PagedList({
 
                     {/* Items Container */}
                     <div className={`${renderHeader ? 'mt-6' : 'mt-6'} border-t border-gray-100`}>
-                        <div className="divide-y divide-gray-100">
+                        <div className="space-y-4">
                             {/* Render Paginated Items */}
                             {paginatedItems.map((item, index) => (
                                 <div key={startIndex + index}>
