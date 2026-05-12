@@ -61,8 +61,10 @@ export default function App() {
     return (
         <div className="mx-auto">
             <Header loggedIn={isLoggedIn()} />
-            <Menu />
-            {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+            <div className='flex mt-20'>
+                <Menu />
+                {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+            </div>
         </div>
     );
 }
