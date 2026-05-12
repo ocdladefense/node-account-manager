@@ -1,8 +1,10 @@
+import webpack from 'webpack';
 import path from "path";
 import { fileURLToPath } from 'url';
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import CopyPlugin from "copy-webpack-plugin";
 import InterpolateHtmlPlugin from "interpolate-html-plugin";
+import 'dotenv/config';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -127,6 +129,10 @@ export default env => {
                 chunks: ["map"],
                 inject: "body",
                 filename: "map.html"
+            }),
+            new webpack.DefinePlugin({
+                'process.env.SF_ACCOUNT_ID': JSON.stringify(process.env.SF_ACCOUNT_ID),
+                'process.env.SF_CONTACT_ID': JSON.stringify(process.env.SF_CONTACT_ID),
             }),
             new InterpolateHtmlPlugin({
                 GOOGLE_TAG_ID: env.GOOGLE_TAG_ID
