@@ -13,7 +13,7 @@ export default function Phone({ label, value, privacy }) {
             let cutValue = value.slice(-4);
             return (
                 <div>
-                    <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="gap-1 rounded bg-blue-50">
                         <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                         <p className="text-xl">***-***-{cutValue}</p>
                     </div>
@@ -22,7 +22,7 @@ export default function Phone({ label, value, privacy }) {
         }
         return (
             <div>
-                <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                <div className="gap-1 rounded bg-blue-50">
                     <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                     <p className="text-xl" onClick={() => handleClick(value)}>{value}</p>
                 </div>
