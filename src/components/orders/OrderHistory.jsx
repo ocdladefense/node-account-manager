@@ -39,13 +39,13 @@ export default function AccountOrders() {
     };
 
     return (
-        <div className="container mx-auto p-6 mt-20">
-            <h1 className="text-2xl font-bold mb-6">Order History</h1>
+        <div className="container mx-auto pl-2">
+            <h1 className="text-2xl font-bold text-center mb-6">Order History</h1>
 
             {orders && (
                 <div className="space-y-4">
                     {orders.map((order) => (
-                        <div key={order.Id} className="border rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition">
+                        <div key={order.Id} className="border border-gray-100 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition">
                             {/* Order Header Row */}
                             <div className="grid grid-cols-4 gap-4 items-center mb-4">
                                 <div>
