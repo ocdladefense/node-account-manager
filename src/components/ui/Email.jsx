@@ -1,18 +1,4 @@
-function shouldRemove(char) {
-    return char !== "*" ? true : Math.random() > 0.5;
-}
-
-function doubleAsterisk(char) {
-    return char === "*" && Math.random() > 0.5 ? "**" : char;
-}
-
-function randomAsterisk(char) {
-    return Math.random() > 0.5 ? "*" : char;
-}
-
-function maskAtInterval(interval, char, index) {
-    return index === 0 || (index + 1) % interval === 0 ? char : "*";
-}
+import { shouldRemove, doubleAsterisk, randomAsterisk, maskAtInterval } from "./uiFunctions.jsx"
 
 function maskEmail(email) {
     const parts = email.split("@");

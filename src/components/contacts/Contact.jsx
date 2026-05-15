@@ -85,32 +85,32 @@ export default function Contact() {
                     </div>
 
                     {/* Bar Number and License */}
-                    <div className="border border-gray/50 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
                         <Info label="Bar Number:" value={contact.Ocdla_Bar_Number__c} />
                         <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
                     </div>
 
                     {/* Organization */}
-                    <div className="border border-gray/50 grid grid-cols-3 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-3 mb-4 p-4 gap-1 rounded bg-blue-50">
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
                         <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
                     </div>
 
                     {/* Phone Number / Fax */}
-                    <div className="border border-gray/50 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
                         <Phone label="Phone:" value={contact.Phone} privacy={false} />
                         <Phone label="Fax:" value={contact.Fax} privacy={false} />
                     </div>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="border border-gray/50 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
                         <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
                     </div>
 
                     {/* Mailing Address */}
-                    <fieldset className="border border-gray/50 rounded p-4 pt-0 mb-4 bg-blue-50">
+                    <fieldset className="border border-black/25 rounded p-4 pt-0 mb-4 bg-blue-50">
                         <legend className="text-lg font-semibold">Mailing Address</legend>
                         <div className="grid grid-cols-4 rounded bg-blue-50">
                             <Info label="Street:" value={contact.MailingAddress?.street} />
@@ -121,43 +121,43 @@ export default function Contact() {
                     </fieldset>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="border border-gray/50 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
                         <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
                         <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
                     </div>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
 
-                        <div className="border border-gray/50 mb-4 p-4 rounded bg-blue-50">
+                        <div className="border border-black/25 mb-4 p-4 rounded bg-blue-50">
                             <fieldset className=" rounded p-4 mb-4 bg-blue-50">
 
                                 <legend className="text-xl font-semibold">Expert Witness Info</legend>
 
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-3 gap-4 mb-2">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-3 gap-4 mb-2">
                                     <CheckboxStatus label="State Expert:" value={contact.Ocdla_Is_State_Expert__c} />
                                     <CheckboxStatus label="In Witness Directory:" value={contact.Include_in_Expert_Witness_Directory__c} />
                                     <CheckboxStatus label="Update Email Sent:" value={contact.ExpertWitnessUpdateEmailSent__c} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-sm"></div>
 
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Primary Area:" value={contact.Ocdla_Expert_Witness_Primary__c} />
                                     <Info label="Other Area:" value={contact.Ocdla_Expert_Witness_Other_Areas__c} />
                                 </div>
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <DateDisplay label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} type="DateTime" />
                                     <DateDisplay label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} type="Date" />
                                 </div>
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-3 gap-4 mb-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-3 gap-4 mb-2 text-sm">
                                     <Info label="Travel Availability:" value={contact.Ocdla_Expert_Travel_Availability__c} />
                                     <DateDisplay label="Unavailable Start:" value={contact.Ocdla_Expert_Unavailability_Start_Date__c} type="Date" />
                                     <DateDisplay label="Unavailable End:" value={contact.Ocdla_Expert_Unavailability_End_Date__c} type="Date" />
                                 </div>
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Minimum Hours:" value={contact.Ocdla_Expert_Minimum_Hours__c} />
                                     <Info label="Hourly Rate:" value={contact.Ocdla_Expert_Hourly_Rate__c} />
                                 </div>
-                                <div className="border border-gray/50 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Comments:" value={contact.Ocdla_Expert_Comments__c} />
                                 </div>
                             </fieldset>
