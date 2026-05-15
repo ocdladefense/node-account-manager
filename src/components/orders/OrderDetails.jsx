@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext } from "react-router-dom";
 import { getOrderItems } from './query.js';
+import OrderItem from '../ui/OrderItem.jsx';
+import OrderHeader from '../ui/OrderHeader.jsx';
 
 // Information about a specific order for an account.
 export default function OrderDetails() {
@@ -35,7 +37,9 @@ export default function OrderDetails() {
                 </div>
             ) : (
                 <div className="container mx-auto pl-2">
-                    <div className="mb-6 border border-gray-100 rounded-lg p-6 bg-white shadow-sm">
+
+                    <OrderHeader data={orderItems[0]} />
+                    {/* <div className="mb-6 border border-gray-100 rounded-lg p-6 bg-white shadow-sm">
                         <h1 className="text-2xl font-bold text-center mb-6">Order Summary</h1>
                         <div className="grid grid-cols-4 gap-4 items-center">
                             <div>
@@ -56,65 +60,10 @@ export default function OrderDetails() {
                                 </span>
                             </div>
                         </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        {orderItems.map((item) => (
-                            <div key={item.Id} className="border border-gray-100 rounded-lg bg-white shadow-sm hover:shadow-md transition p-[15px]">
-                                {/* ROW 1: Product Summary */}
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-2 border-b border-gray-200" style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr" }}>
-                                    {/* Product Name */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Product</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Product2?.Name}</div>
-                                    </div>
-
-                                    {/* Quantity */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Quantity</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Quantity}</div>
-                                    </div>
-
-                                    {/* Unit Price */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Unit Price</div>
-                                        <div className="text-sm/6 text-gray-700">${item.UnitPrice}</div>
-                                    </div>
-
-                                    {/* Total Price */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Total Price</div>
-                                        <div className="text-sm/6 text-gray-700">${item.TotalPrice}</div>
-                                    </div>
-                                </div>
-
-                                {/* ROW 2: Additional Details */}
-                                <div className="grid grid-cols-1 md:grid-cols-4 pt-2 gap-4" style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr" }}>
-                                    {/* Item Category */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Item Category</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Product2?.Ocdla_Item_Category__c}</div>
-                                    </div>
-
-                                    {/* Proration Type */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Proration Type</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Product2?.ProrationType__c}</div>
-                                    </div>
-
-                                    {/* OCDLA Status Grant */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">OCDLA Status Grant</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Product2?.OcdlaMembershipStatusGrant__c}</div>
-                                    </div>
-
-                                    {/* Contact */}
-                                    <div>
-                                        <div className="text-sm/6 font-medium text-gray-900">Contact</div>
-                                        <div className="text-sm/6 text-gray-700">{item.Contact__r?.Name}</div>
-                                    </div>
-                                </div>
-                            </div>
+                    </div> */}
+                    <div className="space-y-8">
+                        {orderItems.map((item, index) => (
+                            <OrderItem data={item} index={index} />
                         ))}
                     </div>
                 </div>

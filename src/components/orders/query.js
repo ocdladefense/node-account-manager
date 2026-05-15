@@ -9,7 +9,6 @@ export function getOrderHistory(accountId) {
     FROM Order WHERE AccountId = '${accountId}'`;
 }
 
-// OrderId is 
 export function getOrderItems(orderId) {
     return `SELECT 
         Id,
