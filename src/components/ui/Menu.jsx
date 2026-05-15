@@ -20,8 +20,6 @@ export default function Menu() {
 
     let active = "bg-gray-300 hover:bg-gray-400";
 
-    console.log("Current route: ", currentPath);
-
     return (
         <div className="drawer md:drawer-open" style={{ width: "auto" }}>
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -71,13 +69,13 @@ export default function Menu() {
                     </li>
                     {/* Currently dummy links */}
                     <li>
-                        <a href={`/account/${process.env.SF_ACCOUNT_ID}/payments`} className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
+                        <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/payments`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
                             <MdPayment />
                             Upcoming Payments
                         </a>
                     </li>
                     <li>
-                        <a href={`/account/${process.env.SF_ACCOUNT_ID}/events'`} className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
+                        <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/events'`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
                             <VscSymbolEvent />
                             Seminars and Events
                         </a>
