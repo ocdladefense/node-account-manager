@@ -36,7 +36,7 @@ export default function OrderDetails() {
                     </div>
                 </div>
             ) : (
-                <div className="container mx-auto pl-2">
+                <div className="container mx-auto px-2">
                     <OrderHeader data={orderItems[0]} />
                     <div className="space-y-8">
                         {orderItems.map((item, index) => (
