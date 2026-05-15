@@ -37,30 +37,7 @@ export default function OrderDetails() {
                 </div>
             ) : (
                 <div className="container mx-auto pl-2">
-
                     <OrderHeader data={orderItems[0]} />
-                    {/* <div className="mb-6 border border-gray-100 rounded-lg p-6 bg-white shadow-sm">
-                        <h1 className="text-2xl font-bold text-center mb-6">Order Summary</h1>
-                        <div className="grid grid-cols-4 gap-4 items-center">
-                            <div>
-                                <p className="text-sm text-gray-500">Order number</p>
-                                <p className="text-lg font-semibold">{orderItems[0].Order.OrderNumber}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Date placed</p>
-                                <p className="text-lg font-semibold">{new Date(orderItems[0].Order.EffectiveDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500">Total amount</p>
-                                <p className="text-lg font-semibold">${orderItems[0].Order.TotalAmount}</p>
-                            </div>
-                            <div>
-                                <span className={`px-3 py-2 rounded-full font-medium text-sm ${getStatusColor(orderItems[0].Order.Status)}`}>
-                                    {orderItems[0].Order.Status}
-                                </span>
-                            </div>
-                        </div>
-                    </div> */}
                     <div className="space-y-8">
                         {orderItems.map((item, index) => (
                             <OrderItem data={item} index={index} />
