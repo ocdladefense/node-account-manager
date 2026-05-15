@@ -51,8 +51,7 @@ export default function OrderDetails() {
                                 <p className="text-lg font-semibold">${orderItems[0].Order.TotalAmount}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-gray-500">Status</p>
-                                <span className={`px-3 py-1 rounded-full font-medium text-sm ${getStatusColor(orderItems[0].Order.Status)}`}>
+                                <span className={`px-3 py-2 rounded-full font-medium text-sm ${getStatusColor(orderItems[0].Order.Status)}`}>
                                     {orderItems[0].Order.Status}
                                 </span>
                             </div>
