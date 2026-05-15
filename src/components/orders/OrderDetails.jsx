@@ -26,7 +26,7 @@ export default function OrderDetails() {
     };
 
     return (
-        <div>
+        <div className="w-full">
             {!orderItems || orderItems.length === 0 ? (
                 <div className="container mx-auto pl-2">
                     <div className="text-center py-12">
