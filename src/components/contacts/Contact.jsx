@@ -8,7 +8,8 @@ import Email from "../ui/Email.jsx";
 import CheckboxStatus from "../ui/CheckboxStatus.jsx";
 import Website from "../ui/Website.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
-import Steps from "../ui/Steps.jsx";
+import Button from "../ui/Button.jsx";
+import Actions from "../ui/Actions.jsx";
 
 
 export default function Contact() {
@@ -56,6 +57,13 @@ export default function Contact() {
         navigate(`/account/${contact.AccountId}`);
     };
 
+    const myActions = {
+        Save: { value: handleEdit, buttonType: "button" },
+        Delete: { value: handleEditExpert, buttonType: "button" },
+        Cancel: { value: handleBack, buttonType: "button" }
+    }
+
+
     return (
         <div className="container mx-auto p-6 mt-20">
             <div className="flex justify-between items-center mb-6">
@@ -67,12 +75,12 @@ export default function Contact() {
                     Back
                 </button>
             </div>
-
+            <Actions foobar={myActions} />
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error loading contacts</p>}
 
             {contact && (
-                <div className="border rounded p-6">
+                <div className="">
 
                     {/* Contact Name */}
                     <div className="grid-col-1">
@@ -85,32 +93,32 @@ export default function Contact() {
                     </div>
 
                     {/* Bar Number and License */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
                         <Info label="Bar Number:" value={contact.Ocdla_Bar_Number__c} />
                         <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
                     </div>
 
                     {/* Organization */}
-                    <div className="border border-black/25 grid grid-cols-3 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-3 mb-4 p-4 gap-1 rounded bg-blue-50 section">
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
                         <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
                     </div>
 
                     {/* Phone Number / Fax */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
                         <Phone label="Phone:" value={contact.Phone} privacy={false} />
                         <Phone label="Fax:" value={contact.Fax} privacy={false} />
                     </div>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
                         <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
                     </div>
 
                     {/* Mailing Address */}
-                    <fieldset className="border border-black/25 rounded p-4 pt-0 mb-4 bg-blue-50">
+                    <fieldset className="border border-black/25 rounded p-4 pt-0 mb-4 bg-blue-50 section">
                         <legend className="text-lg font-semibold">Mailing Address</legend>
                         <div className="grid grid-cols-4 rounded bg-blue-50">
                             <Info label="Street:" value={contact.MailingAddress?.street} />
@@ -121,14 +129,14 @@ export default function Contact() {
                     </fieldset>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50">
+                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
                         <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
                         <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
                     </div>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
 
-                        <div className="border border-black/25 mb-4 p-4 rounded bg-blue-50">
+                        <div className="border border-black/25 mb-4 p-4 rounded bg-blue-50 section">
                             <fieldset className=" rounded p-4 mb-4 bg-blue-50">
 
                                 <legend className="text-xl font-semibold">Expert Witness Info</legend>
@@ -175,12 +183,7 @@ export default function Contact() {
                     )}
 
                     {/* Edit Button */}
-                    <button
-                        onClick={handleEdit}
-                        className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    >
-                        Edit Contact
-                    </button>
+                    <Button action={handleEdit} label="Edit Contact" />
                 </div>
             )}
         </div>
