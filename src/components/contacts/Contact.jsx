@@ -59,9 +59,12 @@ export default function Contact() {
 
     const myActions = {
         Save: { value: handleEdit, buttonType: "button" },
-        Delete: { value: handleEditExpert, buttonType: "button" },
         Cancel: { value: handleBack, buttonType: "button" }
     }
+    const conditionalActions = {
+        Delete: { value: handleEditExpert, buttonType: "button" }
+    }
+
 
 
     return (
@@ -75,12 +78,15 @@ export default function Contact() {
                     Back
                 </button>
             </div>
-            <Actions foobar={myActions} />
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error loading contacts</p>}
 
             {contact && (
                 <div className="">
+                    <Actions foobar={myActions} />
+                    {contact?.Ocdla_Is_Expert_Witness__c && (
+                        <Actions foobar={conditionalActions} />
+                    )}
 
                     {/* Contact Name */}
                     <div className="grid-col-1">
@@ -171,14 +177,7 @@ export default function Contact() {
                             </fieldset>
 
                             {/* Button */}
-                            <div className="mt-6">
-                                <button
-                                    onClick={handleEditExpert}
-                                    className="border px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                >
-                                    Edit Expert Witness
-                                </button>
-                            </div>
+                            <Button action={handleEditExpert} label="Edit Expert Witness" />
                         </div>
                     )}
 
