@@ -8,8 +8,10 @@ import TextInput from "../ui/form/TextInput.jsx"
 import CheckBox from "../ui/form/Checkbox.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import DateTimeInput from "../ui/form/DateTimeInput.jsx";
+import Button from "../ui/Button.jsx";
+import Actions from "../ui/Actions.jsx";
 
-export default function ContactForm() {
+export default function ContactExpertForm() {
 
 
     const { client, metadata } = useOutletContext();
@@ -39,7 +41,10 @@ export default function ContactForm() {
             legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
         }
         const expertPrimary = [];
-        for (let element of target.querySelector('#Primary').selectedOptions) {
+        const primarySelect = target.querySelector(
+            '#Ocdla_Expert_Witness_Primary__c'
+        );
+        for (let element of primarySelect.selectedOptions) {
             expertPrimary.push(element.value);
         }
         let formData = new FormData(target);
@@ -50,6 +55,22 @@ export default function ContactForm() {
         // contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
         // contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
         // End Rosas code
+        const nullDetect = value =>
+            value === "" ? null : value;
+
+        contactRecord.Ocdla_Expert_Witness_Last_Updated__c =
+            nullDetect(contactRecord.Ocdla_Expert_Witness_Last_Updated__c);
+        contactRecord.Ocdla_Expert_Unavailability_Start_Date__c =
+            nullDetect(contactRecord.Ocdla_Expert_Unavailability_Start_Date__c);
+        contactRecord.Ocdla_Expert_Unavailability_End_Date__c =
+            nullDetect(contactRecord.Ocdla_Expert_Unavailability_End_Date__c);
+
+        console.log("Expert Witness Update Date Sent:" + contactRecord.ExpertWitnessUpdateDateSent__c)
+        console.log("Expert Witness Last Updated:" + contactRecord.Ocdla_Expert_Witness_Last_Updated__c)
+        console.log("Expert Witness Unavaial statt:" + contactRecord.Ocdla_Expert_Unavailability_Start_Date__c)
+        console.log("Expert Witness unabae end:" + contactRecord.Ocdla_Expert_Unavailability_End_Date__c)
+
+
 
 
         // Merge conflict - This is Jordans Code
@@ -60,6 +81,9 @@ export default function ContactForm() {
         contactRecord.Id = contact.Id;
         contactRecord.Ocdla_Is_State_Expert__c =
             formData.get("Ocdla_Is_State_Expert__c") === "on";
+
+
+
 
 
         // Call Salesforce API to update the contact
@@ -86,6 +110,11 @@ export default function ContactForm() {
         navigate(``);
     };
 
+    const normalActions = {
+        "Save Changes": { value: null, buttonType: "submit" },
+        "Cancel": { value: handleCancel, buttonType: "button" }
+    }
+
 
     return (
         <div>
@@ -93,20 +122,24 @@ export default function ContactForm() {
                 <div className="container mx-auto p-6 mt-20">
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
+
                         {contact?.Ocdla_Is_Expert_Witness__c && (
                             <div className="container mx-auto p-6 mt-20">
                                 <h1 className="text-2xl font-bold mb-6">Expert Witness Form</h1>
+                                <Actions foobar={normalActions} />
                                 {/* Expert Witness Info */}
                                 <fieldset className="border rounded p-4 mb-6">
                                     <legend className="text-lg font-semibold">Expert Witness Status</legend>
-                                    <div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <CheckBox label="State Witness" name="Ocdla_Is_State_Expert__c" defaultValue={contact.Ocdla_Is_State_Expert__c} />
-                                    </div>
-                                    <div>
                                         <CheckBox label="Included in Expert Witness Directory" name="Include_in_Expert_Witness_Directory__c" defaultValue={contact.Include_in_Expert_Witness_Directory__c} />
+                                        <CheckBox label="Update Email Sent" name="ExpertWitnessUpdateEmailSent__c" defaultValue={contact.ExpertWitnessUpdateEmailSent__c} />
                                     </div>
                                     <div>
-                                        <CheckBox label="Update Email Sent" name="ExpertWitnessUpdateEmailSent__c" defaultValue={contact.ExpertWitnessUpdateEmailSent__c} />
+
+                                    </div>
+                                    <div>
+
                                     </div>
                                     <div>
                                         <DateInput label="Update Date Sent" name="ExpertWitnessUpdateDateSent__c" defaultValue={contact.ExpertWitnessUpdateDateSent__c} fieldType="datetime-local" />
@@ -120,13 +153,9 @@ export default function ContactForm() {
                                     <div>
                                         <PickList defaultValue={contact.Ocdla_Expert_Witness_Primary__c} metadata={metadata.getField("Ocdla_Expert_Witness_Primary__c")} />
                                     </div>
-                                    <div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <TextInput label="Other Areas" apiName="Ocdla_Expert_Witness_Other_Areas__c" currentValue={contact.Ocdla_Expert_Witness_Other_Areas__c} />
-                                    </div>
-                                    <div>
                                         <TextInput label="Minimum Hours" apiName="Ocdla_Expert_Minimum_Hours__c" currentValue={contact.Ocdla_Expert_Minimum_Hours__c} />
-                                    </div>
-                                    <div>
                                         <TextInput label="Hourly Rate" apiName="Ocdla_Expert_Hourly_Rate__c" currentValue={contact.Ocdla_Expert_Hourly_Rate__c} />
                                     </div>
                                     <div>
@@ -140,10 +169,8 @@ export default function ContactForm() {
                                             <PickList defaultValue={contact.Ocdla_Expert_Travel_Availability__c} metadata={metadata.getField("Ocdla_Expert_Travel_Availability__c")} />
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <DateInput label="Unavailabilty Start Date" name="Ocdla_Expert_Unavailability_Start_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_Start_Date__c} fieldType="date" />
-                                    </div>
-                                    <div>
                                         <DateInput label="Unavailabilty End Date" name="Ocdla_Expert_Unavailability_End_Date__c" defaultValue={contact.Ocdla_Expert_Unavailability_End_Date__c} fieldType="date" />
                                     </div>
                                 </fieldset>
@@ -158,20 +185,9 @@ export default function ContactForm() {
                         )
                         }
                         {/* Buttons */}
-                        <div className="flex gap-4">
-                            <button
-                                type="submit"
-                                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Save Changes
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleCancel}
-                                className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                            >
-                                Cancel
-                            </button>
+                        <div className="flex">
+                            <Button label="Save Changes" buttonType="submit" />
+                            <Button action={handleCancel} label="Cancel" />
                         </div>
                     </form >
                 </div >

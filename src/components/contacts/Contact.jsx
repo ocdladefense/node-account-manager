@@ -10,6 +10,7 @@ import Website from "../ui/Website.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
+import Section from "../ui/Section.jsx";
 
 
 export default function Contact() {
@@ -57,12 +58,12 @@ export default function Contact() {
         navigate(`/account/${contact.AccountId}`);
     };
 
-    const myActions = {
-        Save: { value: handleEdit, buttonType: "button" },
-        Cancel: { value: handleBack, buttonType: "button" }
+    const normalActions = {
+        "Edit Contact": { value: handleEdit, buttonType: "button" },
+        "Back": { value: handleBack, buttonType: "button" }
     }
     const conditionalActions = {
-        Delete: { value: handleEditExpert, buttonType: "button" }
+        "Edit Expert Witness": { value: handleEditExpert, buttonType: "button" }
     }
 
 
@@ -83,62 +84,58 @@ export default function Contact() {
 
             {contact && (
                 <div className="">
-                    <Actions foobar={myActions} />
+                    <Actions foobar={normalActions} />
                     {contact?.Ocdla_Is_Expert_Witness__c && (
                         <Actions foobar={conditionalActions} />
                     )}
 
-                    {/* Contact Name */}
-                    <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-4">{contact.Name}</h2>
+                    {/* Contact Name  & Saluitation*/}
+                    <div>
+                        <h2 className="text-3xl font-bold mb-4">{contact.Salutation || 'None'} {contact.Name}</h2>
                     </div>
 
-                    {/* Salutation */}
-                    <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-4">Salutation: {contact.Salutation || 'None'}</h2>
-                    </div>
 
                     {/* Bar Number and License */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
+                    <Section cols={2}>
                         <Info label="Bar Number:" value={contact.Ocdla_Bar_Number__c} />
                         <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
-                    </div>
+                    </Section>
 
                     {/* Organization */}
-                    <div className="border border-black/25 grid grid-cols-3 mb-4 p-4 gap-1 rounded bg-blue-50 section">
+                    <Section cols={3}>
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
                         <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
-                    </div>
+                    </Section>
 
                     {/* Phone Number / Fax */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
+                    <Section cols={2}>
                         <Phone label="Phone:" value={contact.Phone} privacy={false} />
                         <Phone label="Fax:" value={contact.Fax} privacy={false} />
-                    </div>
+                    </Section>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
+                    <Section cols={2}>
                         <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
-                    </div>
+                    </Section>
 
                     {/* Mailing Address */}
-                    <fieldset className="border border-black/25 rounded p-4 pt-0 mb-4 bg-blue-50 section">
+                    <fieldset className="section section-grid-4">
                         <legend className="text-lg font-semibold">Mailing Address</legend>
-                        <div className="grid grid-cols-4 rounded bg-blue-50">
+                        <Section cols={4}>
                             <Info label="Street:" value={contact.MailingAddress?.street} />
                             <Info label="City:" value={contact.MailingAddress?.city} />
                             <Info label="State:" value={contact.MailingAddress?.state} />
                             <Info label="Zip:" value={contact.MailingAddress?.postalCode} />
-                        </div>
+                        </Section>
                     </fieldset>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="border border-black/25 grid grid-cols-2 mb-4 p-4 gap-1 rounded bg-blue-50 section">
+                    <Section cols={2}>
                         <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
                         <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
-                    </div>
+                    </Section>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
 
@@ -158,6 +155,7 @@ export default function Contact() {
                                     <Info label="Primary Area:" value={contact.Ocdla_Expert_Witness_Primary__c} />
                                     <Info label="Other Area:" value={contact.Ocdla_Expert_Witness_Other_Areas__c} />
                                 </div>
+                                {/*Timezones are acting werid with this*/}
                                 <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <DateDisplay label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} type="DateTime" />
                                     <DateDisplay label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} type="Date" />
