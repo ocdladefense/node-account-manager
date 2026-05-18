@@ -36,7 +36,6 @@ export default function Menu() {
                             Home
                         </a>
                     </li>
-                    {/* Hardcoding ids for now. Presumably these will ultimately be gotten from the logged-in user's data (authentication process)*/}
                     <li>
                         <a href={`/account/${process.env.SF_ACCOUNT_ID}`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.account) ? active : ""}`}>
                             <MdAccountBalance />
