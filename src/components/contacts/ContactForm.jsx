@@ -6,6 +6,8 @@ import { Pi } from "lucide-react";
 import PickList from "../ui/form/PickList.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
+import Button from "../ui/Button.jsx";
+import Actions from "../ui/Actions.jsx";
 
 
 export default function ContactForm() {
@@ -103,7 +105,12 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-    console.log("State object: ", contact);
+    const normalActions = {
+        "Save Changes": { value: null, buttonType: "submit" },
+        "Cancel": { value: handleCancel, buttonType: "button" }
+    }
+
+
     return (
         <div>
             {contact && (
@@ -111,6 +118,7 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
+                        <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Name</legend>
@@ -170,20 +178,9 @@ export default function ContactForm() {
                             </div>
                         </fieldset>
                         {/* Buttons */}
-                        <div className="flex gap-4">
-                            <button
-                                type="submit"
-                                className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            >
-                                Save Changes
-                            </button>
-                            <button
-                                type="button"
-                                onClick={handleCancel}
-                                className="px-6 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                            >
-                                Cancel
-                            </button>
+                        <div className="flex">
+                            <Button label="Save Changes" buttonType="submit" />
+                            <Button action={handleCancel} label="Cancel" />
                         </div>
                     </form >
                 </div >

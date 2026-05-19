@@ -8,7 +8,9 @@ import Email from "../ui/Email.jsx";
 import CheckboxStatus from "../ui/CheckboxStatus.jsx";
 import Website from "../ui/Website.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
-import Steps from "../ui/Steps.jsx";
+import Button from "../ui/Button.jsx";
+import Actions from "../ui/Actions.jsx";
+import Section from "../ui/Section.jsx";
 
 
 export default function Contact() {
@@ -56,6 +58,16 @@ export default function Contact() {
         navigate(`/account/${contact.AccountId}`);
     };
 
+    const normalActions = {
+        "edit": { action: handleEdit, buttonType: "button", label: "Edit Contact" },
+        "back": { action: handleBack, buttonType: "button", label: "Back" }
+    };
+    const conditionalActions = {
+        "edit-expert": { action: handleEditExpert, buttonType: "button", label: "Edit Expert Witness" }
+    };
+
+
+
     return (
         <div className="container mx-auto p-6 mt-20">
             <div className="flex justify-between items-center mb-6">
@@ -67,120 +79,108 @@ export default function Contact() {
                     Back
                 </button>
             </div>
-
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error loading contacts</p>}
 
             {contact && (
-                <div className="border rounded p-6">
+                <div className="">
+                    <Actions buttons={normalActions} />
+                    {contact?.Ocdla_Is_Expert_Witness__c && (
+                        <Actions buttons={conditionalActions} />
+                    )}
 
-                    {/* Contact Name */}
-                    <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-6">{contact.Name}</h2>
+                    {/* Contact Name  & Saluitation*/}
+                    <div>
+                        <h2 className="text-3xl font-bold mb-4">{contact.Salutation || 'None'} {contact.Name}</h2>
                     </div>
 
-                    {/* Salutation */}
-                    <div className="grid-col-1">
-                        <h2 className="text-3xl font-bold mb-6">Salutation: {contact.Salutation || 'None'}</h2>
-                    </div>
 
                     {/* Bar Number and License */}
-                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <Section cols={2}>
                         <Info label="Bar Number:" value={contact.Ocdla_Bar_Number__c} />
                         <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
-                    </div>
+                    </Section>
 
                     {/* Organization */}
-                    <div className="border grid grid-cols-3 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <Section cols={3}>
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
                         <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
-                    </div>
+                    </Section>
 
                     {/* Phone Number / Fax */}
-                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <Section cols={2}>
                         <Phone label="Phone:" value={contact.Phone} privacy={false} />
                         <Phone label="Fax:" value={contact.Fax} privacy={false} />
-                    </div>
+                    </Section>
 
                     {/* OCDLA Phone / Website */}
-                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <Section cols={2}>
                         <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
-                    </div>
+                    </Section>
 
                     {/* Mailing Address */}
-                    <fieldset className="border rounded p-4 mb-6 bg-blue-50">
+                    <fieldset className="section section-grid-4">
                         <legend className="text-lg font-semibold">Mailing Address</legend>
-                        <div className="grid grid-cols-4 mb-6 p-4 rounded bg-blue-50">
+                        <Section cols={4}>
                             <Info label="Street:" value={contact.MailingAddress?.street} />
                             <Info label="City:" value={contact.MailingAddress?.city} />
                             <Info label="State:" value={contact.MailingAddress?.state} />
                             <Info label="Zip:" value={contact.MailingAddress?.postalCode} />
-                        </div>
+                        </Section>
                     </fieldset>
 
                     {/* Legislative Advocacy Opt In*/}
-                    <div className="border grid grid-cols-2 mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <Section cols={2}>
                         <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
                         <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
-                    </div>
+                    </Section>
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
 
-                        <div className="border mb-6 p-4 rounded bg-blue-50">
-                            <fieldset className=" rounded p-4 mb-6 bg-blue-50">
+                        <div className="border border-black/25 mb-4 p-4 rounded bg-blue-50 section">
+                            <fieldset className=" rounded p-4 mb-4 bg-blue-50">
 
                                 <legend className="text-xl font-semibold">Expert Witness Info</legend>
 
-                                <div className="border rounded grid grid-cols-3 gap-4 my-2">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-3 gap-4 mb-2">
                                     <CheckboxStatus label="State Expert:" value={contact.Ocdla_Is_State_Expert__c} />
                                     <CheckboxStatus label="In Witness Directory:" value={contact.Include_in_Expert_Witness_Directory__c} />
                                     <CheckboxStatus label="Update Email Sent:" value={contact.ExpertWitnessUpdateEmailSent__c} />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4 text-sm"></div>
 
-                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Primary Area:" value={contact.Ocdla_Expert_Witness_Primary__c} />
                                     <Info label="Other Area:" value={contact.Ocdla_Expert_Witness_Other_Areas__c} />
                                 </div>
-                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                {/*Timezones are acting werid with this*/}
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <DateDisplay label="Update Date:" value={contact.ExpertWitnessUpdateDateSent__c} type="DateTime" />
                                     <DateDisplay label="Last Updated:" value={contact.Ocdla_Expert_Witness_Last_Updated__c} type="Date" />
                                 </div>
-                                <div className="border rounded grid grid-cols-3 gap-4 my-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-3 gap-4 mb-2 text-sm">
                                     <Info label="Travel Availability:" value={contact.Ocdla_Expert_Travel_Availability__c} />
                                     <DateDisplay label="Unavailable Start:" value={contact.Ocdla_Expert_Unavailability_Start_Date__c} type="Date" />
                                     <DateDisplay label="Unavailable End:" value={contact.Ocdla_Expert_Unavailability_End_Date__c} type="Date" />
                                 </div>
-                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Minimum Hours:" value={contact.Ocdla_Expert_Minimum_Hours__c} />
                                     <Info label="Hourly Rate:" value={contact.Ocdla_Expert_Hourly_Rate__c} />
                                 </div>
-                                <div className="border rounded grid grid-cols-2 gap-4 my-2 text-sm">
+                                <div className="border border-black/25 p-4 rounded grid grid-cols-2 gap-4 mb-2 text-sm">
                                     <Info label="Comments:" value={contact.Ocdla_Expert_Comments__c} />
                                 </div>
                             </fieldset>
 
                             {/* Button */}
-                            <div className="mt-6">
-                                <button
-                                    onClick={handleEditExpert}
-                                    className="border px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                                >
-                                    Edit Expert Witness
-                                </button>
-                            </div>
+                            <Button action={handleEditExpert} label="Edit Expert Witness" />
                         </div>
                     )}
 
                     {/* Edit Button */}
-                    <button
-                        onClick={handleEdit}
-                        className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-                    >
-                        Edit Contact
-                    </button>
+                    <Button action={handleEdit} label="Edit Contact" />
                 </div>
             )}
         </div>

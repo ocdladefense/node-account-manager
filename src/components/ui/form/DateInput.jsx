@@ -1,20 +1,31 @@
-export default function DateInput({ label, name, defaultValue, values, fieldType }) {
+export default function DateInput({ label, name, defaultValue, fieldType }) {
+    const formatValue = (value) => {
+        if (!value) return "";
+
+        const d = new Date(value);
+
+        if (fieldType === "date") {
+            return d.toISOString().split("T")[0]; // YYYY-MM-DD
+        }
+
+        if (fieldType === "datetime-local") {
+            return d.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+        }
+
+        return value;
+    };
+
     return (
         <div>
-            <label className="block text-sm font-semibold mb-2" htmlFor={label}>
+            <label className="block text-sm font-semibold mb-2" htmlFor={name}>
                 {label}
             </label>
+
             <input
                 type={fieldType}
-                class="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded"
                 name={name}
-                defaultValue={
-                    defaultValue
-                        ? new Date(defaultValue)
-                            .toISOString()
-                            .slice(0, 16)
-                        : ""
-                }
+                defaultValue={formatValue(defaultValue)}
             />
         </div>
     );

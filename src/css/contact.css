@@ -1,0 +1,14 @@
+.buttonStyle {
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 8px;
+    padding-top:8px;
+    margin-right:10px;
+    background-color: rgba(87,120,230,1);
+    color:rgba(255,255,255,1);
+    border-radius: 10px;
+}
+.buttonStyle:hover{
+    background-color:rgba(35, 75, 207,1) ;
+}
+

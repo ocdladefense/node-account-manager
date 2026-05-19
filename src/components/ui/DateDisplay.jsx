@@ -30,7 +30,7 @@ export default function DateDisplay({ label, value, type }) {
             formattedData = formatDate(value);
             return (
                 <div>
-                    <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="gap-1 rounded bg-blue-50">
                         <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                         <p className="text-xl">{formattedData}</p>
                     </div>
@@ -41,7 +41,7 @@ export default function DateDisplay({ label, value, type }) {
             formattedData = formatDateOnly(value);
             return (
                 <div>
-                    <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="gap-1 rounded bg-blue-50">
                         <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                         <p className="text-xl">{formattedData}</p>
                     </div>
@@ -54,7 +54,7 @@ export default function DateDisplay({ label, value, type }) {
     else
         return (
             <div>
-                <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                <div className="gap-1 rounded bg-blue-50">
                     <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                     <p className="text-xl">Empty</p>
                 </div>

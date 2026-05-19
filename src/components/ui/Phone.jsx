@@ -1,3 +1,4 @@
+import { unmaskAtIndex } from "./uiFunctions.jsx"
 
 export default function Phone({ label, value, privacy }) {
 
@@ -10,19 +11,20 @@ export default function Phone({ label, value, privacy }) {
 
     if (value != null) {
         if (privacy) {
-            let cutValue = value.slice(-4);
+
+            let cutValue = unmaskAtIndex(value, 4)
             return (
                 <div>
-                    <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                    <div className="gap-1 rounded bg-blue-50">
                         <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                        <p className="text-xl">***-***-{cutValue}</p>
+                        <p className="text-xl">{cutValue}</p>
                     </div>
                 </div>
             );
         }
         return (
             <div>
-                <div className="mb-6 p-4 gap-1 rounded bg-blue-50">
+                <div className="gap-1 rounded bg-blue-50">
                     <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
                     <p className="text-xl" onClick={() => handleClick(value)}>{value}</p>
                 </div>

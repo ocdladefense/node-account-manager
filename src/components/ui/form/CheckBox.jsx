@@ -8,7 +8,6 @@ export default function CheckBox({ label, name, defaultValue }) {
                     class="checkbox ml-3"
                     name={name}
                     defaultChecked={defaultValue}
-                    className="ml-3"
                 />
             </label>
         </div>
