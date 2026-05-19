@@ -26,7 +26,7 @@ export default function Account() {
 
 
     return (
-        <div className="container mx-auto p-6 mt-20">
+        <div className="container mx-auto px-2 mt-[28px]">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold mb-4">Info for {account && account[0] && account[0].Name || 'Not Available'}</h1>
             </div>

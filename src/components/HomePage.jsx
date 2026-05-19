@@ -31,7 +31,7 @@ export default function HomePage() {
 
 
     return (
-        <div className="container mx-auto p-6 mt-20">
+        <div className="container mx-auto px-2 mt-[28px]">
             <h1 className="text-3xl font-bold mb-4">Home Page</h1>
             <p className="my-6 text-lg font-semibold text-gray-700">Our Law Student Member List</p>
             <ul className="space-y-2">

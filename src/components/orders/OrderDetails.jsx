@@ -30,13 +30,13 @@ export default function OrderDetails() {
     return (
         <div className="w-full">
             {!orderItems || orderItems.length === 0 ? (
-                <div className="container mx-auto pl-2">
+                <div className="container mx-auto px-2 mt-[28px]">
                     <div className="text-center py-12">
                         <div className="text-lg font-medium text-gray-900">No products found</div>
                     </div>
                 </div>
             ) : (
-                <div className="container mx-auto px-2">
+                <div className="container mx-auto px-2 mt-[28px]">
                     <OrderHeader data={orderItems[0]} />
                     <div className="space-y-8">
                         {orderItems.map((item, index) => (

@@ -26,7 +26,7 @@ export default function Accounts() {
     return (
         <div>
             {accounts &&
-                <div className="container mx-auto p-6 mt-20">
+                <div className="container mx-auto px-2">
                     <h1 className="text-2xl font-bold mb-4">All Accounts</h1>
 
                     <div className="space-y-2">

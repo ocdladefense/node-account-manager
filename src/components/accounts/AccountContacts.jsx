@@ -29,7 +29,7 @@ export default function AccountContacts() {
     return (
         <div className="w-full">
             {contacts &&
-                <div className="container mx-auto p-6 mt-20">
+                <div className="container mx-auto px-2 mt-[28px]">
                     <h1 className="text-2xl font-bold mb-4">All Contacts</h1>
 
                     <div className="space-y-2">
