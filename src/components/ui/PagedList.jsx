@@ -45,7 +45,7 @@ export default function PagedList({
     const paginatedItems = items?.slice(startIndex, endIndex) || [];
 
     return (
-        <div className="container mx-auto p-6 mt-20">
+        <div className="container mx-auto p-6 pt-0">
             {items && items.length > 0 && (
                 <div>
                     {/* Title Section */}
@@ -55,16 +55,9 @@ export default function PagedList({
                         </div>
                     )}
 
-                    {/* Optional Header */}
-                    {renderHeader && (
-                        <div className="mt-6">
-                            {renderHeader()}
-                        </div>
-                    )}
-
                     {/* Items Container */}
-                    <div className={`${renderHeader ? 'mt-6' : 'mt-6'} border-t border-gray-100`}>
-                        <div className="divide-y divide-gray-100">
+                    <div className={`border-t border-gray-100`}>
+                        <div className="space-y-4">
                             {/* Render Paginated Items */}
                             {paginatedItems.map((item, index) => (
                                 <div key={startIndex + index}>
