@@ -59,12 +59,12 @@ export default function Contact() {
     };
 
     const normalActions = {
-        "Edit Contact": { value: handleEdit, buttonType: "button" },
-        "Back": { value: handleBack, buttonType: "button" }
-    }
+        "edit": { action: handleEdit, buttonType: "button", label: "Edit Contact" },
+        "back": { action: handleBack, buttonType: "button", label: "Back" }
+    };
     const conditionalActions = {
-        "Edit Expert Witness": { value: handleEditExpert, buttonType: "button" }
-    }
+        "edit-expert": { action: handleEditExpert, buttonType: "button", label: "Edit Expert Witness" }
+    };
 
 
 
@@ -84,9 +84,9 @@ export default function Contact() {
 
             {contact && (
                 <div className="">
-                    <Actions foobar={normalActions} />
+                    <Actions buttons={normalActions} />
                     {contact?.Ocdla_Is_Expert_Witness__c && (
-                        <Actions foobar={conditionalActions} />
+                        <Actions buttons={conditionalActions} />
                     )}
 
                     {/* Contact Name  & Saluitation*/}
