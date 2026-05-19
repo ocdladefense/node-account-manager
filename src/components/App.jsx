@@ -4,6 +4,7 @@ import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
+import Menu from './ui/Menu.jsx';
 
 
 let client;
@@ -60,18 +61,10 @@ export default function App() {
     return (
         <div className="mx-auto">
             <Header loggedIn={isLoggedIn()} />
-            <div className="flex flex-row">
-                <nav className="hidden md:flex m-5 mt-25 border-t w-1/4">
-                    <ul className="">
-                        <li><Link to="/" className="block text-blue-600 underline">Home</Link></li>
-                        <li><Link to="/accounts" className="block text-blue-600 underline">Accounts</Link></li>
-                    </ul>
-                </nav>
-                <div className="flex w-3/4">
-                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
-                </div>
+            <div className='flex mt-20'>
+                <Menu />
+                {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
             </div>
-            {/* <Footer /> */}
         </div>
     );
 }
