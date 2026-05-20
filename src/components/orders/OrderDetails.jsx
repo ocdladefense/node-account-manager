@@ -1,26 +1,31 @@
 import { useState, useEffect } from "react";
 import { useParams, useOutletContext } from "react-router-dom";
-import { getOrderItems } from './query.js';
-import OrderItem from '../ui/OrderItem.jsx';
-import OrderHeader from '../ui/OrderHeader.jsx';
+import { getOrderHeader, getOrderItems } from './query.js';
+import OrderItem from './OrderItem.jsx';
+import OrderHeader from './OrderHeader.jsx';
 
 // Information about a specific order for an account.
 export default function OrderDetails() {
     const { client } = useOutletContext();
     const { orderId } = useParams();
     const [orderItems, setOrderItems] = useState(null);
+    const [orderHeader, setOrderHeader] = useState(null);
 
     useEffect(() => {
-        console.log("orderId from params:", orderId);
-        const soql = getOrderItems(orderId);
-        console.log("Generated SOQL:", soql);
-
+        const soqlItems = getOrderItems(orderId);
         const fetchOrders = async () => {
-            const resp = await client.query(soql);
+            const resp = await client.query(soqlItems);
             setOrderItems(resp.records);
-            console.log("orderId query response", resp);
         };
         fetchOrders();
+
+        const soqlHeader = getOrderHeader(orderId);
+        const fetchHeader = async () => {
+            const resp = await client.query(soqlHeader);
+            setOrderHeader(resp.records[0]);
+        }
+        fetchHeader();
+
     }, []);
 
     const getStatusColor = (status) => {
@@ -29,24 +34,19 @@ export default function OrderDetails() {
 
     return (
         <div className="w-full">
-            {!orderItems || orderItems.length === 0 ? (
-                <div className="container mx-auto px-2 mt-[28px]">
-                    <div className="text-center py-12">
-                        <div className="text-lg font-medium text-gray-900">No products found</div>
-                    </div>
-                </div>
-            ) : (
-                <div className="container mx-auto px-2 mt-[28px]">
-                    <OrderHeader data={orderItems[0]} />
-                    <div className="space-y-8">
-                        {orderItems.map((item, index) => (
-                            <OrderItem data={item} index={index} />
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
+            <div className="container mx-auto px-2 mt-[28px]">
+                {orderHeader && (
+                    <>
+                        <OrderHeader orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={orderHeader.Status} />
+
+                        <div className="space-y-8">
+                            {orderItems && orderItems.length > 0 ? orderItems.map((item, index) => (
+                                <OrderItem data={item} index={index} />
+                            )) : 'No products found'}
+                        </div>
+                    </>
+                )}
+            </div>
+        </div >
     );
 }
-
-

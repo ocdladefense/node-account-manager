@@ -133,6 +133,7 @@ export default env => {
             new webpack.DefinePlugin({
                 'process.env.SF_ACCOUNT_ID': JSON.stringify(process.env.SF_ACCOUNT_ID),
                 'process.env.SF_CONTACT_ID': JSON.stringify(process.env.SF_CONTACT_ID),
+                'process.env.SF_NO_DATA_ENTERED': JSON.stringify(process.env.SF_NO_DATA_ENTERED)
             }),
             new InterpolateHtmlPlugin({
                 GOOGLE_TAG_ID: env.GOOGLE_TAG_ID

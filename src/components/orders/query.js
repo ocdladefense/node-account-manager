@@ -9,6 +9,16 @@ export function getOrderHistory(accountId) {
     FROM Order WHERE AccountId = '${accountId}'`;
 }
 
+export function getOrderHeader(orderId) {
+    return `SELECT 
+        Id,
+        OrderNumber,
+        TotalAmount,
+        Status,
+        EffectiveDate
+    FROM Order WHERE Id = '${orderId}'`;
+}
+
 export function getOrderItems(orderId) {
     return `SELECT 
         Id,
@@ -18,7 +28,6 @@ export function getOrderItems(orderId) {
         Order.Status,
         Order.EffectiveDate,
         Product2.Name,
-        Product2.Ocdla_Image__c,
         Product2.Ocdla_Item_Category__c,
         Product2.ProrationType__c,
         Product2.OcdlaMembershipStatusGrant__c,

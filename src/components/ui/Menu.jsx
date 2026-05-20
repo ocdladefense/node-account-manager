@@ -49,12 +49,6 @@ export default function Menu() {
                         </a>
                     </li>
                     <li>
-                        <a href={`/account/${process.env.SF_ACCOUNT_ID}/contacts`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.contacts) ? active : ""}`}>
-                            <RiContactsBook2Line />
-                            Account Directory
-                        </a>
-                    </li>
-                    <li>
                         <a href={`/account/${process.env.SF_ACCOUNT_ID}/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
                             <TbPackages />
                             Orders

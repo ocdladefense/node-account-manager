@@ -1,6 +1,20 @@
 // Account.jsx uses query for getting information about the specific account by using it's unique Id.
 export function getAccountQuery(accountId) {
-    return `SELECT Id, Name, Description, AccountNumber, Site, NumberOfEmployees, Industry FROM Account WHERE Id = '${accountId}'`;
+    return `SELECT
+        Id,
+        Name,
+        Description,
+        AccountNumber,
+        Site,
+        Website,
+        NumberOfEmployees,
+        OrderApi__Outstanding_Credits__c,
+        OrderApi__Account_Email__c,
+        Industry,
+        Phone,
+        Fax,
+        BillingAddress
+    FROM Account WHERE Id = '${accountId}'`;
 }
 
 // Accounts.jsx uses query for getting a list of all accounts.

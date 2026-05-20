@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router";
 import { useOutletContext } from "react-router-dom";
 import { getAccountQuery } from "./query.js";
 import AccountContacts from "./AccountContacts";
-
+import AccountHeader from "./AccountHeader.jsx";
+import { ZapIcon } from "lucide-react";
 
 export default function Account() {
 
@@ -12,31 +13,32 @@ export default function Account() {
 
     let { accountId } = useParams();
 
-    const [account, setAccount] = useState([]);
+    const [account, setAccount] = useState(null);
 
     // TODO: Currently need to add accountId to dependency array because the properties below are not loading on first render. Is there a better way to fix this?
     useEffect(() => {
         const soql = getAccountQuery(accountId);
         const fetchAccount = async () => {
             const resp = await client.query(soql);
-            setAccount(resp.records);
+            setAccount(resp.records[0]);
+            console.log('account object log', resp.records[0])
         };
         fetchAccount();
     }, [accountId]);
 
+    function formatAddress(address) {
+        if (!address.street) return 'No Address'
+        return `${address.street} ${address.city} ${address.state} ${address.postalCode}`;
+    }
 
     return (
         <div className="container mx-auto px-2 mt-[28px]">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold mb-4">Info for {account && account[0] && account[0].Name || 'Not Available'}</h1>
-            </div>
-            {/* account && account[0] && checks if array exists and has at least one record before accessing properties, falls back to 'Not Available' */}
-            <h2 className="text-2xl font-bold mb-4">Account Number: {account && account[0] && account[0].AccountNumber || 'Not Available'} </h2>
-            <h2 className="text-2xl font-bold mb-4">Website: {account && account[0] && account[0].Site || 'Not Available'} </h2>
-            <h2 className="text-2xl font-bold mb-4">Employees: {account && account[0] && account[0].NumberOfEmployees || 'Not Available'} </h2>
-            <h2 className="text-2xl font-bold mb-4">Industry: {account && account[0] && account[0].Industry || 'Not Available'} </h2>
-            <h2 className="text-2xl font-bold mb-4">Description: {account && account[0] && account[0].Description || 'Not Available'} </h2>
-            <AccountContacts></AccountContacts>
+            {account && (
+                <>
+                    <AccountHeader name={account.Name} email={account.OrderApi__Account_Email__c} website={account.Website} phoneNumber={account.Phone} fax={account.Fax} address={formatAddress(account.BillingAddress)} />
+                    <AccountContacts></AccountContacts>
+                </>
+            )};
         </div>
     );
 }

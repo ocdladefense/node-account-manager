@@ -1,4 +1,4 @@
-import Label from "./Label.jsx"
+import Label from "../ui/Label.jsx"
 
 export default function OrderItem({ index, data }) {
     return (
