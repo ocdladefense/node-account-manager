@@ -33,13 +33,25 @@ const storage = multer.diskStorage({
         cb(null, dir);
     },
 
-    //Profile Picture Name
+
+
     filename: (req, file, cb) => {
         const contactId = req.params.contactId;
         const ext = path.extname(file.originalname);
-        const fileName = `PF${contactId}${ext}`;
-        cb(null, Date.now() + "-" + fileName);
+        let fileName;
+        if (file.fieldname === 'image') {
+            fileName = `PF${contactId}${ext}`;
+        }
+        if (file.fieldname === 'document') {
+            fileName = `Doc.${Date.Now()}${contactId}${ext}`;
+        }
+
+        cb(null, fileName);
     }
+
+
+    //Profile Picture Name
+
 });
 
 const upload = multer({

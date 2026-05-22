@@ -8,6 +8,7 @@ import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
+import FileUpload from "../ui/form/FileUpload.jsx";
 
 
 export default function ContactForm() {
@@ -17,7 +18,8 @@ export default function ContactForm() {
     const navigate = useNavigate();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
-    const [image, setImage] = useState(null);
+    const [uploadFile, setUploadFile] = useState(null);
+
 
 
     const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
@@ -48,19 +50,22 @@ export default function ContactForm() {
     }, []);
 
 
-    const uploadImage = async () => {
-        if (!image) return null;
+    const uploadFileToServer = async () => {
+        if (!uploadFile) return null;
 
-        const imgData = new FormData();
-        imgData.append("image", image);
+        const formData = new FormData();
 
-        const res = await fetch(`http://localhost:3000/uploads/${contactId}`, {
-            method: "POST",
-            body: imgData
-        });
+        formData.append("image", uploadFile);
 
-        const data = await res.json();
-        return data.filename;
+        const res = await fetch(
+            `http://localhost:3000/uploads/${contactId}`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        return await res.json();
     };
 
 
@@ -68,7 +73,7 @@ export default function ContactForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const uploadedFilename = await uploadImage();
+        const uploadedFile = await uploadFileToServer();
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
@@ -126,13 +131,13 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-    const handleImageChange = (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setImage(file);
 
+        if (!file) return;
 
-        }
+        setUploadFile(file);
+
     }
 
 
@@ -149,13 +154,7 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        <input
-                            type="file"
-                            name="image"
-                            accept="image/*"
-                            className="file-input file-input-bordered w-full"
-                            onChange={handleImageChange}
-                        />
+                        <FileUpload label="Profile Picture" uploadType="image" accepting="image/*" onChange={handleFileChange} />
                         <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
