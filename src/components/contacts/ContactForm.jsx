@@ -17,6 +17,7 @@ export default function ContactForm() {
     const navigate = useNavigate();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
+    const [image, setImage] = useState(null);
 
 
     const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
@@ -25,14 +26,14 @@ export default function ContactForm() {
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
     let occupations = metadata.fetchPicklistValues('Ocdla_Occupation_Field_Type__c');
     let countries = metadata.fetchPicklistValues("MailingCountryCode");
-    console.log("Mailing State Code: ", metadata.getField("MailingStateCode"));
-    console.log("Public Defense Survey: ", metadata.getField("Public_Defense_Survey__c"));
+    // console.log("Mailing State Code: ", metadata.getField("MailingStateCode"));
+    // console.log("Public Defense Survey: ", metadata.getField("Public_Defense_Survey__c"));
 
-    console.log("Countries: ", countries.find(v => v.value == "US"));
+    // console.log("Countries: ", countries.find(v => v.value == "US"));
     if (contact) {
-        console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
+        // console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
     }
-    console.log("Salutations ", salutations);
+    // console.log("Salutations ", salutations);
 
     // Note the is from Jordans branch - Accpeted both
     let expertTravel = metadata.fetchPicklistValues('Ocdla_Expert_Travel_Availability__c');
@@ -47,9 +48,27 @@ export default function ContactForm() {
     }, []);
 
 
+    const uploadImage = async () => {
+        if (!image) return null;
+
+        const imgData = new FormData();
+        imgData.append("image", image);
+
+        const res = await fetch(`http://localhost:3000/uploads/${contactId}`, {
+            method: "POST",
+            body: imgData
+        });
+
+        const data = await res.json();
+        return data.filename;
+    };
+
+
     // TODO: Does this need 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const uploadedFilename = await uploadImage();
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
@@ -60,6 +79,8 @@ export default function ContactForm() {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
+        formData.delete("image"); // IMPORTANT
+
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
         // Merge conflict - This is Rosa's code
@@ -84,13 +105,13 @@ export default function ContactForm() {
         contactRecord.Id = contact.Id;
 
         // End Jordans code
-        console.log("Object to update: ", contactRecord);
+        // console.log("Object to update: ", contactRecord);
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
         if (!response.ok) {
             const result = await response.json();
-            console.log(result);
+            // console.log(result);
             return;
         }
         return;
@@ -105,6 +126,16 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImage(file);
+
+
+        }
+    }
+
+
     const normalActions = {
         "Save Changes": { value: null, buttonType: "submit" },
         "Cancel": { value: handleCancel, buttonType: "button" }
@@ -118,6 +149,13 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
+                        <input
+                            type="file"
+                            name="image"
+                            accept="image/*"
+                            className="file-input file-input-bordered w-full"
+                            onChange={handleImageChange}
+                        />
                         <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
