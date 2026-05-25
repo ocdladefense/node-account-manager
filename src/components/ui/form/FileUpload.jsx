@@ -1,14 +1,27 @@
-export default function FileUpload({ label, uploadType = "file", accepting = "*/*", onChange }) {
-    return (<>
-        <label className="text-lg font-semibold">{label}</label>
-        <input
-            type="file"
-            name={uploadType}
-            accept={accepting}
-            className="file-input file-input-bordered w-full"
-            onChange={onChange}
-        />
-    </>)
+export default function FileUpload({ label, accepting, fileCategory, onChange }) {
+    const handleChange = (e) => {
+        const file = e.target.files[0];
 
+        if (!file) return;
+
+        onChange(file, {
+            category: fileCategory
+        });
+    };
+
+    return (
+        <div>
+            <label className="text-lg font-semibold">{label}</label>
+
+            <input
+                type="file"
+                accept={accepting}
+                onChange={handleChange}
+                className="file-input file-input-bordered w-full"
+            />
+        </div>
+    );
 }
+
+
 

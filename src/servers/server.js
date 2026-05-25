@@ -38,12 +38,22 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         const contactId = req.params.contactId;
         const ext = path.extname(file.originalname);
+
+        let category = req.query.category;
+
+
+        console.log("CATEGORY:", category);
+
         let fileName;
-        if (file.fieldname === 'image') {
+
+        if (category === "profile-picture") {
             fileName = `PF${contactId}${ext}`;
         }
-        if (file.fieldname === 'document') {
-            fileName = `Doc.${Date.Now()}${contactId}${ext}`;
+        if (category === "expert-document") {
+            fileName = `ExpertDoc.${contactId}${ext}`;
+        }
+        else {
+            return cb(new Error("Invalid or missing category"));
         }
 
         cb(null, fileName);
@@ -64,7 +74,7 @@ const upload = multer({
 
 
 function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|pdf/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
 
@@ -73,9 +83,10 @@ function checkFileType(file, cb) {
     } else {
         cb('Error: Images only! (jpeg, jpg, png, gif)');
     }
+
 }
 
-app.post("/uploads/:contactId", upload.single("image"), (req, res) => {
+app.post("/uploads/:contactId", upload.single("file"), (req, res) => {
 
     if (!req.file) {
         return res.status(400).json({
