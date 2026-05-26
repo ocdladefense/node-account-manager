@@ -60,7 +60,7 @@ export default function ContactForm() {
         formData.append("category", uploadFile.category);
 
         const res = await fetch(
-            `http://localhost:3000/uploads/${contactId}?category=${uploadFile.category}`,
+            `http://localhost/uploads/${contactId}?category=${uploadFile.category}`,
             {
                 method: "POST",
                 body: formData

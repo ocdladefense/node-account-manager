@@ -1,8 +1,14 @@
+import { useState, useEffect } from "react";
 export default function FileUpload({ label, accepting, fileCategory, onChange }) {
+    const [preview, setPreview] = useState(null);
+
     const handleChange = (e) => {
         const file = e.target.files[0];
 
         if (!file) return;
+        const imgUrl = URL.createObjectURL(file);
+
+        setPreview(imgUrl);
 
         onChange(file, {
             category: fileCategory
@@ -19,7 +25,12 @@ export default function FileUpload({ label, accepting, fileCategory, onChange })
                 onChange={handleChange}
                 className="file-input file-input-bordered w-full"
             />
+            {preview &&
+                <img src={preview} />}
+
+
         </div>
+
     );
 }
 

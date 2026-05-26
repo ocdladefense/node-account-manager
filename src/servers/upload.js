@@ -2,17 +2,10 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import cors from "cors";
 
 
-const app = express();
+const router = express.Router();
 
-
-
-app.use(cors({
-    origin: true,
-    credentials: true
-}));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -40,9 +33,6 @@ const storage = multer.diskStorage({
         const ext = path.extname(file.originalname);
 
         let category = req.query.category;
-
-
-        console.log("CATEGORY:", category);
 
         let fileName;
 
@@ -86,7 +76,7 @@ function checkFileType(file, cb) {
 
 }
 
-app.post("/uploads/:contactId", upload.single("file"), (req, res) => {
+router.post("/uploads/:contactId", upload.single("file"), (req, res) => {
 
     if (!req.file) {
         return res.status(400).json({
@@ -102,6 +92,5 @@ app.post("/uploads/:contactId", upload.single("file"), (req, res) => {
     });
 });
 
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
-});
+export default router;
+
