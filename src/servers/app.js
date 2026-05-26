@@ -15,6 +15,7 @@ import geocodeRoutes from './geocode.js';
 import authRoutes from './auth.js';
 import districtRoutes from './district.js';
 import legislatorsRoutes from './legislators.js';
+import uploadRouter from './upload.js';
 
 
 const app = express();
@@ -32,8 +33,10 @@ app.use('/', geocodeRoutes);
 app.use('/', authRoutes);
 app.use('/', districtRoutes);
 app.use('/', legislatorsRoutes);
+app.use('/', uploadRouter);
 app.use(cors());
 app.use(express.static('dist'));
+app.use('/uploads', express.static('uploads'));
 app.use(cookieParser());
 app.use(express.json());
 
