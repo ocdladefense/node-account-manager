@@ -3,50 +3,77 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
+const Registered_Applications = {
+    abcd123: {
+        name: "ProfilePicture",
+        destination: (req, file, cb) => {
+
+            const contactId = req.params.contactId;
+
+            if (!contactId) {
+                return cb(new Error("Missing contactId"));
+            }
+
+            const dir = path.join("uploads", contactId);
+
+            // create folder if it doesn't exist
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+            const contactId = req.params.contactId;
+            const ext = path.extname(file.originalname);
+
+            // ? category = ${ uploadFile.category }
+            let category = "profile-picture";
+
+            let fileName;
+
+            if (category === "profile-picture") {
+                fileName = `PF${contactId}${ext}`;
+            }
+            else if (category === "expert-document") {
+                fileName = `ExpertDoc.${contactId}${ext}`;
+            }
+            else {
+                return cb(new Error("Invalid or missing category"));
+            }
+
+            cb(null, fileName);
+        }
+
+    }
+};
+
+
 
 const router = express.Router();
 
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        console.log(req.headers);
+        let appId = req.headers["x-applicationid"];
+        console.log("App Id:" + appId);
+        let app = Registered_Applications[appId];
+        console.log("App:" + app);
+        let destination = app.destination;
 
-        const contactId = req.params.contactId;
-
-        if (!contactId) {
-            return cb(new Error("Missing contactId"));
-        }
-
-        const dir = path.join("uploads", contactId);
-
-        // create folder if it doesn't exist
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-
-        cb(null, dir);
+        destination(req, file, cb);
+        // cb(null, dir);
     },
 
 
 
     filename: (req, file, cb) => {
-        const contactId = req.params.contactId;
-        const ext = path.extname(file.originalname);
-
-        let category = req.query.category;
-
-        let fileName;
-
-        if (category === "profile-picture") {
-            fileName = `PF${contactId}${ext}`;
-        }
-        if (category === "expert-document") {
-            fileName = `ExpertDoc.${contactId}${ext}`;
-        }
-        else {
-            return cb(new Error("Invalid or missing category"));
-        }
-
-        cb(null, fileName);
+        let appId = req.headers["x-applicationid"];
+        let app = Registered_Applications[appId];
+        let filename = app.filename;
+        filename(req, file, cb);
+        // cb(null, fileName);
     }
 
 

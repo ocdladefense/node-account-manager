@@ -8,7 +8,7 @@ import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
-import FileUpload from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer, handleFileChange } from "../ui/form/FileUpload.jsx";
 
 
 export default function ContactForm() {
@@ -49,33 +49,14 @@ export default function ContactForm() {
         fetchContact();
     }, []);
 
-
-    const uploadFileToServer = async () => {
-        if (!uploadFile) return null;
-
-        const formData = new FormData();
-
-        formData.append("file", uploadFile.file);
-
-        formData.append("category", uploadFile.category);
-
-        const res = await fetch(
-            `http://localhost/uploads/${contactId}?category=${uploadFile.category}`,
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-        return await res.json();
-    };
-
-
-    // TODO: Does this need 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const uploadedFile = await uploadFileToServer();
+        // onChange(file, {
+        //     category: fileCategory
+        // });
+
+        const uploadedFile = await uploadFileToServer(contactId, "picture");
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
@@ -86,18 +67,17 @@ export default function ContactForm() {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
-        formData.delete("image");
 
-        // get the actual values out of the formData object
+        formData.delete("picture");
+
+
         const contactRecord = Object.fromEntries(formData.entries());
-        // Merge conflict - This is Rosa's code
-        // contactRecord.Ocdla_Is_Expert_Witness__c = checkboxes.expertWitness.checked;
-        // contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
+
         contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
-        // End Rosas code
 
 
-        // Merge conflict - This is Jordans Code
+
+
         contactRecord.LegislativeAdvocacyOptIn__c =
             formData.get("LegislativeAdvocacyOptIn__c") === "on";
         contactRecord.Ocdla_Is_Expert_Witness__c =
@@ -111,18 +91,16 @@ export default function ContactForm() {
             formData.get("ExpertWitnessUpdateEmailSent__c") === "on";
         contactRecord.Id = contact.Id;
 
-        // End Jordans code
-        // console.log("Object to update: ", contactRecord);
-        // Call Salesforce API to update the contact
+
         const response = await client.update('Contact', contactRecord);
 
         if (!response.ok) {
             const result = await response.json();
-            // console.log(result);
+
             return;
         }
         return;
-        // Navigate back to contact detail page on success
+
         navigate(`/contact/${contactId}`);
     };
 
@@ -133,12 +111,7 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-    const handleFileChange = (file, options) => {
-        setUploadFile({
-            file,
-            category: options.category
-        });
-    };
+
 
 
     const normalActions = {
@@ -154,7 +127,7 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        <FileUpload label="Expert witness Info" accepting=".pdf" fileCategory="expert-document" onChange={handleFileChange} />
+                        <FileUpload name="picture" label="Expert witness Info" accepting=".pdf" fileCategory="expert-document" preview={true} />
                         <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
