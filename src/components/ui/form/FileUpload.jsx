@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 
 const uploadFileToServer = async (id, applicationId) => {
-
     const formData = new FormData();
-
     let input = document.getElementById(id);
-
     const files = input.files;
-
     for (let file of files) {
+        saveFileData(file);
         formData.append('files', file);
     }
 
@@ -20,9 +18,24 @@ const uploadFileToServer = async (id, applicationId) => {
             body: formData
         }
     );
-
     return await res.json();
 };
+
+async function saveFileData(file, client, contactId) {
+    const fileData = {
+        Filename__c: file.name,
+        FileSize__c: file.size,
+        FileType__c: file.type,
+        ContactId__c: contactId
+    };
+    console.log("Metadata to send: ", fileData);
+    const response = await client.create("FileData__c", fileData);
+    console.log(response);
+    if (!response.ok) {
+        let message = await response.json();
+        console.log("An error occurred: ", message);
+    }
+}
 
 const handleFileChange = (file, options) => {
     setUploadFile({
@@ -31,8 +44,12 @@ const handleFileChange = (file, options) => {
     });
 };
 
+<<<<<<< Updated upstream
 
 function FileUpload({ label, accepting, name, fileCategory, preview = false, multiple = false }) {
+=======
+function FileUpload({ label, accepting, name, fileCategory, preview = false }) {
+>>>>>>> Stashed changes
     const [filePreview, setFilePreview] = useState(null);
 
     const defaultPreview = (e) => {
