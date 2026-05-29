@@ -4,11 +4,10 @@ import path from "path";
 import fs from "fs";
 
 const Registered_Applications = {
-    abcd123: {
-        name: "ProfilePicture",
+    2: {
+        name: "documents",
         destination: (req, file, cb) => {
-
-            const contactId = req.params.contactId;
+            const contactId = process.env.SF_CONTACT_ID;
 
             if (!contactId) {
                 return cb(new Error("Missing contactId"));
@@ -24,34 +23,13 @@ const Registered_Applications = {
             cb(null, dir);
         },
         filename: (req, file, cb) => {
-            const contactId = req.params.contactId;
-            const ext = path.extname(file.originalname);
-
-            // ? category = ${ uploadFile.category }
-            let category = "profile-picture";
-
-            let fileName;
-
-            if (category === "profile-picture") {
-                fileName = `PF${contactId}${ext}`;
-            }
-            else if (category === "expert-document") {
-                fileName = `ExpertDoc.${contactId}${ext}`;
-            }
-            else {
-                return cb(new Error("Invalid or missing category"));
-            }
-
-            cb(null, fileName);
+            const contactId = process.env.SF_CONTACT_ID;
+            cb(null, file.originalname);
         }
-
     }
 };
 
-
-
 const router = express.Router();
-
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -66,8 +44,6 @@ const storage = multer.diskStorage({
         // cb(null, dir);
     },
 
-
-
     filename: (req, file, cb) => {
         let appId = req.headers["x-applicationid"];
         let app = Registered_Applications[appId];
@@ -76,19 +52,15 @@ const storage = multer.diskStorage({
         // cb(null, fileName);
     }
 
-
-    //Profile Picture Name
-
 });
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1000000 },
+    limits: { fileSize: 10000000000 },
     fileFilter: function(req, file, cb) {
         checkFileType(file, cb);
     }
 });
-
 
 function checkFileType(file, cb) {
     const filetypes = /jpeg|jpg|png|gif|pdf/;
@@ -103,21 +75,12 @@ function checkFileType(file, cb) {
 
 }
 
-router.post("/uploads/:contactId", upload.single("file"), (req, res) => {
-
-    if (!req.file) {
-        return res.status(400).json({
-            success: false,
-            error: "No file received"
-        });
-    }
-
+router.post("/upload", upload.array("foobar", 1), (req, res) => {
+    // req.files gets populated when using upload.arrray
+    // req.flle gets populated when using upload.single
     res.json({
-        success: true,
-        filename: req.file.filename,
-        path: req.file.path
+        success: true
     });
 });
 
 export default router;
-

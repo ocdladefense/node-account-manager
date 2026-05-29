@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
 
-const uploadFileToServer = async (contactId, id) => {
+const uploadFileToServer = async (id, applicationId) => {
     // if (!uploadFile) return null;
 
     const formData = new FormData();
 
     let input = document.getElementById(id);
 
-    formData.append("file", input.files[0]);
+    const files = input.files;
+
+    for (let file of files) {
+        formData.append('foobar', file);
+    }
 
     const res = await fetch(
-        `http://localhost/uploads/${contactId}`,
+        `http://localhost/upload`,
         {
-            headers: { "x-applicationid": "abcd123" },
+            headers: { "x-applicationid": applicationId },
             method: "POST",
             body: formData
         }
@@ -27,6 +31,7 @@ const handleFileChange = (file, options) => {
         category: options.category
     });
 };
+
 
 function FileUpload({ label, accepting, name, fileCategory, preview = false }) {
     const [filePreview, setFilePreview] = useState(null);
