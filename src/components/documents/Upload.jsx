@@ -15,7 +15,7 @@ export default function Upload() {
         <div className="w-full">
             <div className="container mx-auto px-2 mt-[28px]">
                 <form onSubmit={handleSubmit}>
-                    <FileUpload name="uploadDocuments" />
+                    <FileUpload name="uploadDocuments" multiple={false} />
                     <div className="flex mt-5">
                         <Button
                             label="Submit"

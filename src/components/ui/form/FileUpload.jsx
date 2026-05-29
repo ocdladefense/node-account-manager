@@ -32,7 +32,7 @@ const handleFileChange = (file, options) => {
 };
 
 
-function FileUpload({ label, accepting, name, fileCategory, preview = false }) {
+function FileUpload({ label, accepting, name, fileCategory, preview = false, multiple = false }) {
     const [filePreview, setFilePreview] = useState(null);
 
     const defaultPreview = (e) => {
@@ -56,6 +56,7 @@ function FileUpload({ label, accepting, name, fileCategory, preview = false }) {
                     accept={accepting}
                     onChange={defaultPreview}
                     className="file-input file-input-bordered w-full"
+                    multiple={multiple}
                 />
                 {filePreview && preview === true &&
                     <img src={filePreview} className="w-50 h-75 rounded-sm" />}
