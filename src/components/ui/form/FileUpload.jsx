@@ -44,12 +44,8 @@ const handleFileChange = (file, options) => {
     });
 };
 
-<<<<<<< Updated upstream
 
 function FileUpload({ label, accepting, name, fileCategory, preview = false, multiple = false }) {
-=======
-function FileUpload({ label, accepting, name, fileCategory, preview = false }) {
->>>>>>> Stashed changes
     const [filePreview, setFilePreview] = useState(null);
 
     const defaultPreview = (e) => {
