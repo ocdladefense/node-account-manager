@@ -8,19 +8,12 @@ import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
-import { FileUpload, uploadFileToServer, handleFileChange } from "../ui/form/FileUpload.jsx";
-
 
 export default function ContactForm() {
-
-
     const { client, metadata } = useOutletContext();
     const navigate = useNavigate();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
-    const [uploadFile, setUploadFile] = useState(null);
-
-
 
     const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
 
@@ -28,16 +21,6 @@ export default function ContactForm() {
     let publicDefenseSurvey = metadata.fetchPicklistValues('Public_Defense_Survey__c');
     let occupations = metadata.fetchPicklistValues('Ocdla_Occupation_Field_Type__c');
     let countries = metadata.fetchPicklistValues("MailingCountryCode");
-    // console.log("Mailing State Code: ", metadata.getField("MailingStateCode"));
-    // console.log("Public Defense Survey: ", metadata.getField("Public_Defense_Survey__c"));
-
-    // console.log("Countries: ", countries.find(v => v.value == "US"));
-    if (contact) {
-        // console.log("Rachel's Country: ", contact.MailingAddress.countryCode);
-    }
-    // console.log("Salutations ", salutations);
-
-    // Note the is from Jordans branch - Accpeted both
     let expertTravel = metadata.fetchPicklistValues('Ocdla_Expert_Travel_Availability__c');
 
     useEffect(() => {
@@ -52,11 +35,6 @@ export default function ContactForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // onChange(file, {
-        //     category: fileCategory
-        // });
-
-        const uploadedFile = await uploadFileToServer(contactId, "picture");
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
@@ -68,15 +46,9 @@ export default function ContactForm() {
         }
         let formData = new FormData(target);
 
-        formData.delete("picture");
-
-
         const contactRecord = Object.fromEntries(formData.entries());
 
         contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
-
-
-
 
         contactRecord.LegislativeAdvocacyOptIn__c =
             formData.get("LegislativeAdvocacyOptIn__c") === "on";
@@ -91,7 +63,6 @@ export default function ContactForm() {
             formData.get("ExpertWitnessUpdateEmailSent__c") === "on";
         contactRecord.Id = contact.Id;
 
-
         const response = await client.update('Contact', contactRecord);
 
         if (!response.ok) {
@@ -104,21 +75,14 @@ export default function ContactForm() {
         navigate(`/contact/${contactId}`);
     };
 
-
-
-    // Return to previous page
     const handleCancel = () => {
         navigate(`/contact/${contactId}`);
     };
-
-
-
 
     const normalActions = {
         "Save Changes": { value: null, buttonType: "submit" },
         "Cancel": { value: handleCancel, buttonType: "button" }
     }
-
 
     return (
         <div>
@@ -194,9 +158,7 @@ export default function ContactForm() {
                         </div>
                     </form >
                 </div >
-            )
-
-            }
+            )}
         </div >
     );
 }

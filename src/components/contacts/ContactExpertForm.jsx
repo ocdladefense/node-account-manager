@@ -12,8 +12,6 @@ import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
 
 export default function ContactExpertForm() {
-
-
     const { client, metadata } = useOutletContext();
     const navigate = useNavigate();
     const { contactId } = useParams();
@@ -32,7 +30,6 @@ export default function ContactExpertForm() {
     }, []);
 
 
-    // TODO: Does this need 
     const handleSubmit = async (e) => {
         e.preventDefault();
         let target = e.target;
@@ -48,13 +45,10 @@ export default function ContactExpertForm() {
             expertPrimary.push(element.value);
         }
         let formData = new FormData(target);
+
         // get the actual values out of the formData object
         const contactRecord = Object.fromEntries(formData.entries());
-        // Merge conflict - This is Rosa's code
-        // contactRecord.Ocdla_Is_Expert_Witness__c = checkboxes.expertWitness.checked;
-        // contactRecord.LegislativeAdvocacyOptIn__c = checkboxes.legislativeAdvocacy.checked;
-        // contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
-        // End Rosas code
+
         const nullDetect = value =>
             value === "" ? null : value;
 
@@ -70,10 +64,6 @@ export default function ContactExpertForm() {
         console.log("Expert Witness Unavaial statt:" + contactRecord.Ocdla_Expert_Unavailability_Start_Date__c)
         console.log("Expert Witness unabae end:" + contactRecord.Ocdla_Expert_Unavailability_End_Date__c)
 
-
-
-
-        // Merge conflict - This is Jordans Code
         contactRecord.Include_in_Expert_Witness_Directory__c =
             formData.get("Include_in_Expert_Witness_Directory__c") === "on";
         contactRecord.ExpertWitnessUpdateEmailSent__c =
@@ -81,10 +71,6 @@ export default function ContactExpertForm() {
         contactRecord.Id = contact.Id;
         contactRecord.Ocdla_Is_State_Expert__c =
             formData.get("Ocdla_Is_State_Expert__c") === "on";
-
-
-
-
 
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
@@ -94,12 +80,9 @@ export default function ContactExpertForm() {
 
             return;
         }
-        // return;
         // Navigate back to contact detail page on success
         navigate(`/contact/${contactId}`);
     };
-
-
 
     // Return to previous page
     const handleCancel = () => {
@@ -115,14 +98,11 @@ export default function ContactExpertForm() {
         "Cancel": { value: handleCancel, buttonType: "button" }
     }
 
-
     return (
         <div>
             {contact && (
                 <div className="container mx-auto p-6 mt-20">
-
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-
                         {contact?.Ocdla_Is_Expert_Witness__c && (
                             <div className="container mx-auto p-6 mt-20">
                                 <h1 className="text-2xl font-bold mb-6">Expert Witness Form</h1>
@@ -176,14 +156,7 @@ export default function ContactExpertForm() {
                                 </fieldset>
 
                             </div>
-
-
-
-
-
-
-                        )
-                        }
+                        )}
                         {/* Buttons */}
                         <div className="flex">
                             <Button label="Save Changes" buttonType="submit" />
@@ -191,9 +164,7 @@ export default function ContactExpertForm() {
                         </div>
                     </form >
                 </div >
-            )
-
-            }
+            )}
         </div >
     );
 }
