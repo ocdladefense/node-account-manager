@@ -15,6 +15,8 @@ import Contact from '../components/contacts/Contact.jsx';
 import ContactForm from '../components/contacts/ContactForm.jsx';
 import HomePage from "../components/HomePage.jsx";
 import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
+import Documents from '../components/documents/Documents.jsx';
+import Upload from '../components/documents/Upload.jsx';
 
 import SObject from "../components/contacts/SObject.jsx";
 
@@ -59,6 +61,12 @@ root.render(
                     <Route path=":contactId" element={<Contact />} />
                     <Route path=":contactId/edit" element={<ContactForm />} />
                     <Route path=":contactId/expert" element={<ContactExpertForm />} />
+                </Route>
+                <Route path="documents">
+                    <Route index element={<Documents />} />
+                </Route>
+                <Route path="upload">
+                    <Route index element={<Upload />} />
                 </Route>
             </Route>
         </Routes>

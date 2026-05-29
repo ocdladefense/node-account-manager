@@ -1,4 +1,3 @@
-
 import { useLocation } from 'react-router-dom';
 import { IoHomeOutline } from "react-icons/io5";
 import { MdAccountBalance, MdPayment } from "react-icons/md";
@@ -6,6 +5,7 @@ import { VscAccount, VscSymbolEvent } from "react-icons/vsc";
 import { RiContactsBook2Line } from "react-icons/ri";
 import { LuPackageOpen } from "react-icons/lu";
 import { TbPackages } from "react-icons/tb";
+import { MdDescription, MdCloudUpload } from "react-icons/md";
 
 export default function Menu() {
     const location = useLocation();
@@ -15,7 +15,9 @@ export default function Menu() {
         contacts: /\/account\/[0-9A-Za-z]+\/contacts/,
         orders: /\/account\/[0-9A-Za-z]+\/orders/,
         contact: /\/contact\/[0-9A-Za-z]+$/,
-        order: /\/order\/[0 - 9A-Za - z]+$/
+        order: /\/order\/[0 - 9A-Za - z]+$/,
+        documents: /\/documents$/,
+        upload: /\/upload$/
     };
 
     let active = "bg-gray-300 hover:bg-gray-400";
@@ -60,7 +62,18 @@ export default function Menu() {
                             Order Details
                         </a>
                     </li>
-                    {/* Currently dummy links */}
+                    <li>
+                        <a href="/documents" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.documents) ? active : ''}`}>
+                            <MdDescription />
+                            Documents
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/upload" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.upload) ? active : ''}`}>
+                            <MdCloudUpload />
+                            Upload
+                        </a>
+                    </li>
                     <li>
                         <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/payments`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
                             <MdPayment />
