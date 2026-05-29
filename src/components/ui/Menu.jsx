@@ -15,7 +15,7 @@ export default function Menu() {
         contacts: /\/account\/[0-9A-Za-z]+\/contacts/,
         orders: /\/account\/[0-9A-Za-z]+\/orders/,
         contact: /\/contact\/[0-9A-Za-z]+$/,
-        order: /\/order\/[0 - 9A-Za - z]+$/,
+        order: /\/order\/[0-9A-Za-z]+$/,
         documents: /\/documents$/,
         upload: /\/upload$/
     };

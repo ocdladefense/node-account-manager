@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useParams, useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
 
 export default function Upload() {
-    const { contactId } = useParams();
     const { client } = useOutletContext();
-    const navigate = useNavigate();
     const [uploading, setUploading] = useState(false);
+
+    const contactId = process.env.SF_CONTACT_ID;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setUploading(true);
-
         try {
             const uploadedFile = await uploadFileToServer(contactId, "picture");
             console.log("File uploaded:", uploadedFile);
@@ -22,10 +21,6 @@ export default function Upload() {
             console.error("Upload error:", err);
             setUploading(false);
         }
-    };
-
-    const handleCancel = () => {
-        navigate(`/contact/${contactId}`);
     };
 
     return (
