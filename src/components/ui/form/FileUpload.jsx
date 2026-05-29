@@ -80,6 +80,6 @@ function FileUpload({ label, accepting, name, fileCategory, preview = false, mul
     );
 }
 
-export { FileUpload, uploadFileToServer, handleFileChange };
+export { FileUpload, uploadFileToServer, handleFileChange, saveFileData };
 
 
