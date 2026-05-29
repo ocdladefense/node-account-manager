@@ -75,7 +75,7 @@ function checkFileType(file, cb) {
 
 }
 
-router.post("/upload", upload.array("foobar", 1), (req, res) => {
+router.post("/upload", upload.array("files", 1), (req, res) => {
     // req.files gets populated when using upload.arrray
     // req.flle gets populated when using upload.single
     res.json({

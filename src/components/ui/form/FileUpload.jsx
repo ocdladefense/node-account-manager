@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 const uploadFileToServer = async (id, applicationId) => {
-    // if (!uploadFile) return null;
 
     const formData = new FormData();
 
@@ -10,7 +9,7 @@ const uploadFileToServer = async (id, applicationId) => {
     const files = input.files;
 
     for (let file of files) {
-        formData.append('foobar', file);
+        formData.append('files', file);
     }
 
     const res = await fetch(
