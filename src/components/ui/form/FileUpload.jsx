@@ -1,24 +1,59 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 
-const uploadFileToServer = async (id, applicationId) => {
-    const formData = new FormData();
-    let input = document.getElementById(id);
-    const files = input.files;
-    for (let file of files) {
-        saveFileData(file);
-        formData.append('files', file);
-    }
+const uploadFileToServer = async (id, applicationId, setUploaded, client, contactId) => {
 
-    const res = await fetch(
-        `http://localhost/upload`,
-        {
-            headers: { "x-applicationid": applicationId },
-            method: "POST",
-            body: formData
+
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+
+        const input = document.getElementById(id);
+
+        const files = input.files;
+        for (let file of files) {
+            saveFileData(file, client, contactId);
+            formData.append('files', file);
         }
-    );
-    return await res.json();
+
+        //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
+        const xhr = new XMLHttpRequest();
+
+        //This opens a POST request
+        xhr.open(
+            "POST",
+            `http://localhost/upload`
+        );
+        //This sets the headers for the application
+        xhr.setRequestHeader(
+            "x-applicationid",
+            applicationId
+        );
+        //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
+        xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+                const percent = Math.round(
+                    (event.loaded * 100) / event.total
+                );
+                setUploaded(percent);
+            }
+        };
+        //this checks then the upload is done, whether that is bad or good
+        xhr.onload = () => {
+            console.log("Response:", xhr.response);
+            if (xhr.status >= 200 && xhr.status < 300) {
+                resolve(JSON.parse(xhr.response));
+            }
+            else {
+                reject(xhr.statusText);
+            }
+        };
+        //Checks for errors unrelated to status
+        xhr.onerror = () => {
+            reject("Upload failed");
+        };
+        //this is the part where the data is actually sent
+        xhr.send(formData);
+    });
 };
 
 async function saveFileData(file, client, contactId) {
@@ -35,6 +70,8 @@ async function saveFileData(file, client, contactId) {
         let message = await response.json();
         console.log("An error occurred: ", message);
     }
+
+
 }
 
 const handleFileChange = (file, options) => {
@@ -45,8 +82,10 @@ const handleFileChange = (file, options) => {
 };
 
 
-function FileUpload({ label, accepting, name, fileCategory, preview = false, multiple = false }) {
+function FileUpload({ label, accepting, name, fileCategory, preview = false, multiple = false, uploaded,
+    setUploaded }) {
     const [filePreview, setFilePreview] = useState(null);
+    const { client, contactId } = useOutletContext();
 
     const defaultPreview = (e) => {
         const file = e.target.files[0];
@@ -57,6 +96,19 @@ function FileUpload({ label, accepting, name, fileCategory, preview = false, mul
         setFilePreview(imgUrl);
 
     };
+
+    const startUpload = async () => {
+        const result = await uploadFileToServer(
+            name,
+            setUploaded,
+            applicationId,
+            client,
+            contactId
+        );
+        console.log(result);
+    }
+
+
 
     return (
         <div >

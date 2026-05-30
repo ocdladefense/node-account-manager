@@ -4,6 +4,29 @@ import path from "path";
 import fs from "fs";
 
 const Registered_Applications = {
+    1: {
+        name: "picture",
+        destination: (req, file, cb) => {
+            const contactId = process.env.SF_CONTACT_ID;
+
+            if (!contactId) {
+                return cb(new Error("Missing contactId"));
+            }
+
+            const dir = path.join("uploads", contactId);
+
+            // create folder if it doesn't exist
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+            const contactId = process.env.SF_CONTACT_ID;
+            cb(null, file.originalname);
+        }
+    },
     2: {
         name: "documents",
         destination: (req, file, cb) => {

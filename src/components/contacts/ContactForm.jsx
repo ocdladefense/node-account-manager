@@ -8,12 +8,14 @@ import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
+import { FileUpload, uploadFileToServer, handleFileChange, saveFileData } from "../ui/form/FileUpload.jsx";
 
 export default function ContactForm() {
     const { client, metadata } = useOutletContext();
     const navigate = useNavigate();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
+    const [uploaded, setUploaded] = useState(0);
 
     const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
 
@@ -35,6 +37,15 @@ export default function ContactForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        //Need to figure this out
+        const result = await uploadFileToServer("picture", "1", setUploaded, client, contactId);
+
+
+        const input = document.getElementById("picture");
+        for (let file of input.files) {
+            await saveFileData(file, client, contactId);
+        }
+
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
@@ -45,6 +56,8 @@ export default function ContactForm() {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
+
+        formData.delete("picture");
 
         const contactRecord = Object.fromEntries(formData.entries());
 
@@ -91,7 +104,17 @@ export default function ContactForm() {
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
 
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        <FileUpload name="picture" label="Expert witness Info" accepting=".pdf" fileCategory="expert-document" preview={true} />
+                        <FileUpload name="picture" label="Profile Picture" accepting="images/*" preview={true} uploaded={uploaded}
+                            setUploaded={setUploaded} />
+                        <div className="mt-4">
+                            <progress
+                                className="progress progress-primary w-full"
+                                value={uploaded}
+                                max="100"
+                            />
+
+                            <p>{uploaded}%</p>
+                        </div>
                         <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">
