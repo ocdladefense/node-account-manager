@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
 
 const uploadFileToServer = async (id, applicationId) => {
     const formData = new FormData();
     let input = document.getElementById(id);
     const files = input.files;
     for (let file of files) {
-        saveFileData(file);
+        // saveFileData(file);
         formData.append('files', file);
     }
 
@@ -22,6 +21,7 @@ const uploadFileToServer = async (id, applicationId) => {
 };
 
 async function saveFileData(file, client, contactId) {
+    console.log("saveFileData inputs: ", file, client, contactId);
     const fileData = {
         Filename__c: file.name,
         FileSize__c: file.size,
@@ -29,6 +29,7 @@ async function saveFileData(file, client, contactId) {
         ContactId__c: contactId
     };
     console.log("Metadata to send: ", fileData);
+    console.log("Testing client in metadata function: ", client);
     const response = await client.create("FileData__c", fileData);
     console.log(response);
     if (!response.ok) {
