@@ -11,6 +11,9 @@
 ## Uploads Folder ###
 /uploads/*/
 
+## File metadata folder ##
+/src/sfdx/main/default/files/*/
+
 ### macOS ###
 *.DS_Store
 .AppleDouble

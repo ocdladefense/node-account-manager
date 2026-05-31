@@ -75,9 +75,28 @@ function checkFileType(file, cb) {
 
 }
 
+function saveMetadata(file) {
+    const contactId = process.env.SF_CONTACT_ID;
+    const metadata = {
+        filename: file.originalname,
+        fileSize: file.size,
+        fileType: file.mimetype
+    };
+    const metadataDir = path.join("src", "sfdx", "main", "default", "files", contactId);
+    if (!fs.existsSync(metadataDir)) {
+        fs.mkdirSync(metadataDir);
+    }
+    const filepath = path.join(metadataDir, `${metadata.filename}-metadata.txt`);
+    fs.writeFileSync(filepath, JSON.stringify(metadata));
+}
+
 router.post("/upload", upload.array("files", 10), (req, res) => {
-    // req.files gets populated when using upload.arrray
+    // req.files gets populated when using upload.array
     // req.flle gets populated when using upload.single
+    console.log("Server received files: ", req.files);
+    for (let file of req.files) {
+        saveMetadata(file);
+    }
     res.json({
         success: true
     });
