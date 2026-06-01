@@ -86,7 +86,9 @@ function saveMetadata(file) {
     if (!fs.existsSync(metadataDir)) {
         fs.mkdirSync(metadataDir);
     }
-    const filepath = path.join(metadataDir, `${metadata.filename}-metadata.txt`);
+    let timestamp = Date.now();
+    const originalName = path.parse(metadata.filename).name;
+    const filepath = path.join(metadataDir, `${originalName}-metadata-${timestamp}.txt`);
     fs.writeFileSync(filepath, JSON.stringify(metadata));
 }
 
