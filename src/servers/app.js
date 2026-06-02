@@ -16,7 +16,7 @@ import authRoutes from './auth.js';
 import districtRoutes from './district.js';
 import legislatorsRoutes from './legislators.js';
 import uploadRouter from './upload.js';
-
+import downloadRouter from './download.js';
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -34,6 +34,7 @@ app.use('/', authRoutes);
 app.use('/', districtRoutes);
 app.use('/', legislatorsRoutes);
 app.use('/', uploadRouter);
+app.use('/', downloadRouter);
 app.use(cors());
 app.use(express.static('dist'));
 app.use('/uploads', express.static('uploads'));

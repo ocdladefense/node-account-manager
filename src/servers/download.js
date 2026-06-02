@@ -1,85 +1,22 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
-import fs from "fs";
-
-const Registered_Applications = {
-    2: {
-        name: "documents",
-        destination: (req, file, cb) => {
-            const contactId = process.env.SF_CONTACT_ID;
-
-            if (!contactId) {
-                return cb(new Error("Missing contactId"));
-            }
-
-            const dir = path.join("uploads", contactId);
-
-            // create folder if it doesn't exist
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-            }
-
-            cb(null, dir);
-        },
-        filename: (req, file, cb) => {
-            const contactId = process.env.SF_CONTACT_ID;
-            cb(null, file.originalname);
-        }
-    }
-};
+import mime from 'mime';
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        console.log(req.headers);
-        let appId = req.headers["x-applicationid"];
-        console.log("App Id:" + appId);
-        let app = Registered_Applications[appId];
-        console.log("App:" + app);
-        let destination = app.destination;
+router.get("/download/:contactId/:filename", (req, res) => {
+    const { contactId, filename } = req.params;
+    const { type } = req.query;
+    const filePath = path.join("uploads", contactId, filename);
 
-        destination(req, file, cb);
-        // cb(null, dir);
-    },
+    // Use MIME type from Salesforce, fallback to MIMI type using npm package detection,
+    // then finally fall back to better safe than sorry method: octet-stream (unknown binary file)
+    const contentType = type || mime.getType(filename) || 'application/octet-stream';
 
-    filename: (req, file, cb) => {
-        let appId = req.headers["x-applicationid"];
-        let app = Registered_Applications[appId];
-        let filename = app.filename;
-        filename(req, file, cb);
-        // cb(null, fileName);
-    }
-
-});
-
-const upload = multer({
-    storage: storage,
-    limits: { fileSize: 10000000000 },
-    fileFilter: function(req, file, cb) {
-        checkFileType(file, cb);
-    }
-});
-
-function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif|pdf/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-        return cb(null, true);
-    } else {
-        cb('Error: Images only! (jpeg, jpg, png, gif)');
-    }
-
-}
-
-router.post("/upload", upload.array("files", 10), (req, res) => {
-    // req.files gets populated when using upload.arrray
-    // req.flle gets populated when using upload.single
-    res.json({
-        success: true
+    res.setHeader('Content-Type', contentType);
+    res.download(filePath, filename, (err) => {
+        if (err) console.error("Download error:", err);
     });
 });
 

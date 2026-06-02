@@ -66,7 +66,13 @@ export default function Documents() {
 
                                         {/* Download Link */}
                                         <div className="ml-auto">
-                                            <button disabled className="text-gray-400 cursor-not-allowed text-sm font-medium">Download</button>
+                                            <a
+                                                href={`/download/${contactId}/${file.Filename__c}?type=${encodeURIComponent(file.FileType__c)}`}
+                                                download
+                                                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                            >
+                                                Download
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

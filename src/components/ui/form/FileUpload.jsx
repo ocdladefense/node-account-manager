@@ -6,7 +6,6 @@ const uploadFileToServer = async (id, applicationId) => {
     let input = document.getElementById(id);
     const files = input.files;
     for (let file of files) {
-        saveFileData(file);
         formData.append('files', file);
     }
 
@@ -50,12 +49,9 @@ function FileUpload({ label, accepting, name, fileCategory, preview = false, mul
 
     const defaultPreview = (e) => {
         const file = e.target.files[0];
-
         if (!file) return;
         const imgUrl = URL.createObjectURL(file);
-
         setFilePreview(imgUrl);
-
     };
 
     return (
