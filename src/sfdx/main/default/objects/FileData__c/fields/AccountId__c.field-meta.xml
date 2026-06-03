@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AccountId__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Lookup relationship to the Account object. Allows for filtering by Account Id.</description>
+    <inlineHelpText>Lookup relationship to the Account object. Allows for filtering by Account Id.</inlineHelpText>
+    <label>Account</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>FileData</relationshipLabel>
+    <relationshipName>FileData</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>
