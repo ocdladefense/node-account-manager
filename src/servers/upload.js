@@ -58,6 +58,9 @@ const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         console.log(req.headers);
         let appId = req.headers["x-applicationid"];
+        if (!appId) {
+            throw new Error("No application Id provided.")
+        }
         console.log("App Id:" + appId);
         let app = Registered_Applications[appId];
         console.log("App:" + app);

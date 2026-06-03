@@ -8,14 +8,14 @@ import TextInput from "../ui/form/TextInput.jsx";
 import CheckBox from "../ui/form/Checkbox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
-import { FileUpload, uploadFileToServer, handleFileChange, saveFileData } from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
 
 export default function ContactForm() {
     const { client, metadata } = useOutletContext();
     const navigate = useNavigate();
     const { contactId } = useParams();
     const [contact, setContact] = useState(null);
-    const [uploaded, setUploaded] = useState(0);
+
 
     const US_COUNTRY_CODE_ID = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAA";
 
@@ -34,17 +34,40 @@ export default function ContactForm() {
         fetchContact();
     }, []);
 
+    async function saveFileData(id) {
+        const input = document.getElementById(id);
+
+        const files = input.files;
+        for (let file of files) {
+            const fileData = {
+                Filename__c: file.name,
+                FileSize__c: file.size,
+                FileType__c: file.type,
+                ContactId__c: contactId
+            };
+            console.log("Metadata to send: ", fileData);
+            const response = await client.create("FileData__c", fileData);
+            console.log(response);
+            if (!response.ok) {
+                let message = await response.json();
+                console.log("An error occurred: ", message);
+            }
+        }
+
+
+
+
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         //Need to figure this out
-        const result = await uploadFileToServer("picture", "1", setUploaded, client, contactId);
+        // const result = await uploadFileToServer("picture", "1");
 
 
         const input = document.getElementById("picture");
-        for (let file of input.files) {
-            await saveFileData(file, client, contactId);
-        }
+
 
         let target = e.target;
         const checkboxes = {
@@ -102,19 +125,8 @@ export default function ContactForm() {
             {contact && (
                 <div className="container mx-auto px-2">
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
-
+                    <FileUpload name="picture" label="Profile Picture" accepting="images/*" preview={false} afterUpload={saveFileData} />
                     <form onSubmit={handleSubmit} className="max-w-2xl">
-                        <FileUpload name="picture" label="Profile Picture" accepting="images/*" preview={true} uploaded={uploaded}
-                            setUploaded={setUploaded} />
-                        <div className="mt-4">
-                            <progress
-                                className="progress progress-primary w-full"
-                                value={uploaded}
-                                max="100"
-                            />
-
-                            <p>{uploaded}%</p>
-                        </div>
                         <Actions foobar={normalActions} />
                         { /* Name */}
                         <fieldset className="border rounded p-4 mb-6">

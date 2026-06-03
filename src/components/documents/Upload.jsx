@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { FileUpload, uploadFileToServer, saveFileData } from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
 import Button from "../ui/Button.jsx";
 
 
 export default function Upload() {
-    const [uploaded, setUploaded] = useState(0);
     const contactId = process.env.SF_CONTACT_ID;
     const { client } = useOutletContext();
     // In handleSubmit:
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const result = await uploadFileToServer("uploadDocuments", "2", setUploaded, client, contactId);
+        const result = await uploadFileToServer("uploadDocuments", "2");
         console.log("Server response:", result);
 
         // Call saveFileData (metadata to salesforce) for each file
