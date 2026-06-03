@@ -79,15 +79,20 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
     const startUpload = async (e) => {
         e.preventDefault();
         e.stopPropagation();
+
         uploadFileToServer(
             name,
             applicationId,
             setUploaded
         )
-            .then(() => afterUpload(name))
+            .then(() => afterUpload?.(name))
             .catch((e) =>
                 window.alert(e)
             );
+
+
+
+
     }
 
 

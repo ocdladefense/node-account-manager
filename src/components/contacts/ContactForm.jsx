@@ -125,7 +125,7 @@ export default function ContactForm() {
             {contact && (
                 <div className="container mx-auto px-2">
                     <h1 className="text-2xl font-bold mb-6">Edit Contact</h1>
-                    <FileUpload name="picture" label="Profile Picture" accepting="images/*" preview={false} afterUpload={saveFileData} />
+                    <FileUpload name="picture" label="Profile Picture" accepting="images/*" applicationId={1} preview={false} afterUpload={saveFileData} />
                     <form onSubmit={handleSubmit} className="max-w-2xl">
                         <Actions foobar={normalActions} />
                         { /* Name */}
