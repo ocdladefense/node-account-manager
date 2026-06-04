@@ -1,5 +1,7 @@
+import { Network } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
+import { useToast } from "../notifications/ToastService.jsx";
 
 const SERVER_ENDPOINT = "http://localhost/upload";
 
@@ -18,6 +20,8 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
 
         //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
         const xhr = new XMLHttpRequest();
+
+        xhr.timeout = 120000;
 
         //This opens a POST request
         xhr.open(
@@ -48,7 +52,12 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
                 resolve(JSON.parse(xhr.response));
             }
             else {
-                reject(xhr.statusText);
+
+                reject({
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    message: response?.message || response || "Unknown server error"
+                });
             }
         };
 
@@ -56,8 +65,18 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
 
         //Checks for errors unrelated to status
         xhr.onerror = () => {
-            reject("Upload failed");
+            reject({
+                type: "Network",
+                message: "Network Error on connection or server."
+            });
         };
+
+        xhr.ontimeout = () => {
+            reject({
+                type: "Timeout",
+                message: "Upload timed out. Try again."
+            });
+        }
         //this is the part where the data is actually sent
         xhr.send(formData);
     });
@@ -68,6 +87,7 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
 function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
     const [filePreview, setFilePreview] = useState(null);
     const [uploaded, setUploaded] = useState(0);
+    const { CreateToast } = useToast();
 
     const defaultPreview = (e) => {
         const file = e.target.files[0];
@@ -85,9 +105,31 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
             applicationId,
             setUploaded
         )
-            .then(() => afterUpload?.(name))
-            .catch((e) =>
-                window.alert(e)
+            .then(() => {
+                CreateToast(
+                    <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                        File uploaded successfully.
+                    </div>
+                );
+                afterUpload?.(name)
+            })
+            .catch((e) => {
+                console.log("Error Message:", e);
+
+                const message =
+                    e?.message ||
+                    e?.statusText ||
+                    "Something went wrong."
+
+                CreateToast(
+                    <div className="bg-red-500 text-white px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+
+                        {message}
+                    </div>
+                );
+
+            }
+
             );
 
 
