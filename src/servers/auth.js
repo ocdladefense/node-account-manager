@@ -69,9 +69,14 @@ router.get("/oauth/api/request", async (req, res) => {
 
     console.log(req.query);
 
+    // Query parameter from the request (sent by OAuth provider after user authorization)
     const { code } = req.query;
 
-
+    // creates object with:
+    //     code - the authorization code from step 1
+    //     client_id, client_secret - Salesforce app credentials
+    //     redirect_uri - must match what was registered with Salesforce
+    //     grant_type: "authorization_code" - tells Salesforce this is an auth code exchange
     const data = new URLSearchParams({
         code,
         client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
