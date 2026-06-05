@@ -38,7 +38,7 @@ export default function Account() {
                     <AccountHeader name={account.Name} email={account.OrderApi__Account_Email__c} website={account.Website} phoneNumber={account.Phone} fax={account.Fax} address={formatAddress(account.BillingAddress)} />
                     <AccountContacts></AccountContacts>
                 </>
-            )};
+            )}
         </div>
     );
 }
