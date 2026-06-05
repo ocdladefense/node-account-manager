@@ -5,18 +5,13 @@ import { useToast } from "../notifications/ToastService.jsx";
 
 const SERVER_ENDPOINT = "http://localhost/upload";
 
-const uploadFileToServer = async (id, applicationId, setUploaded) => {
+const uploadFileToServer = async (file, applicationId, setUploaded) => {
 
 
     return new Promise((resolve, reject) => {
         const formData = new FormData();
 
-        const input = document.getElementById(id);
-
-        const files = input.files;
-        for (let file of files) {
-            formData.append('files', file);
-        }
+        formData.append('files', file);
 
         //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
         const xhr = new XMLHttpRequest();
@@ -38,11 +33,12 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
 
         //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
         xhr.upload.onprogress = (event) => {
+            console.log(event);
             if (event.lengthComputable) {
                 const percent = Math.round(
                     (event.loaded * 100) / event.total
                 );
-                setUploaded(percent);
+                setUploaded(percent, file);
             }
         };
         //this checks then the upload is done, whether that is bad or good
@@ -87,7 +83,7 @@ const uploadFileToServer = async (id, applicationId, setUploaded) => {
 function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
     const [filePreview, setFilePreview] = useState(null);
     const [uploaded, setUploaded] = useState(0);
-    const { CreateToast } = useToast();
+    const { CreateToast, UpdateToast } = useToast();
 
     const defaultPreview = (e) => {
         const file = e.target.files[0];
@@ -96,23 +92,45 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
         setFilePreview(imgUrl);
     };
 
-    const startUpload = async (e) => {
+    const startUploads = async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        uploadFileToServer(
-            name,
-            applicationId,
-            setUploaded
-        )
-            .then(() => {
-                CreateToast(
-                    <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                        File uploaded successfully.
+
+        // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+        //     File uploaded successfully.
+        // </div>);
+        const input = document.getElementById(name);
+
+        const files = [...input.files];
+
+        let toastIds = files.map((file) => CreateToast(
+            <div className="bg-yellow-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                {file.name} upload started.
+            </div>
+        ));
+        console.log(toastIds);
+        let updaterFunctions = toastIds.map((id) => {
+            let fn = function(percentage, file) {
+                UpdateToast(id,
+                    <div className="bg-yellow-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                        {file.name} {percentage}% uploaded successfully.
                     </div>
                 );
-                afterUpload?.(name)
-            })
+            };
+            return fn;
+        });
+        console.log(updaterFunctions);
+
+
+        files.map((file, index) => uploadFileToServer(file, applicationId, updaterFunctions[index]).then(() => {
+            UpdateToast(toastIds[index],
+                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    {file.name} uploaded successfully.
+                </div>
+            );
+            afterUpload?.(name)
+        })
             .catch((e) => {
                 console.log("Error Message:", e);
 
@@ -121,16 +139,18 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
                     e?.statusText ||
                     "Something went wrong."
 
-                CreateToast(
+                UpdateToast(toastIds[index],
                     <div className="bg-red-500 text-white px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
 
-                        {message}
+                        Error uploading: {file.name}
+                        Error: {message}
                     </div>
                 );
 
             }
 
-            );
+            )
+        );
 
 
 
@@ -141,7 +161,7 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
 
     return (
         <div >
-            <form onSubmit={startUpload}>
+            <form onSubmit={startUploads}>
                 <label className="text-lg font-semibold">{label}</label>
                 <div className="grid grid-cols-1 md:grid-cols-2">
                     <input
@@ -163,7 +183,7 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
 
                     {filePreview && preview === true &&
                         <img src={filePreview} className="w-50 h-75 rounded-sm" />}
-                    {multiple === false &&
+                    {multiple === true &&
                         <>
                             <div className="mt-4">
                                 <progress

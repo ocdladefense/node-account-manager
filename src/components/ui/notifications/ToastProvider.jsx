@@ -8,17 +8,27 @@ export default function ToastProvider({ children }) {
     const [toasts, setToasts] = useState([]);
 
     const CreateToast = (component, timeout = TIMEOUT_TIMER) => {
-        const id = Date.now();
-        setToasts(toasts => [...toasts, { id, component }])
+        const random = Math.random(0, 100);
+        const date = Date.now();
+        const id = date + "-" + random;
+        setToasts(toasts => [...toasts, { id, component }]);
 
-        setTimeout(() => CloseToast(id), timeout)
+        // setTimeout(() => CloseToast(id), timeout);
+
+        return id;
 
     }
+    const UpdateToast = (id, component) => {
+        let filtered = toasts.filter(toast => toast.id != id);
+        filtered.push({ id, component });
+        console.log("Filtered:", filtered);
+        setToasts(filtered);
+    };
 
     const CloseToast = (id) => setToasts(toasts => toasts.filter(toast => toast.id != id))
 
     return (
-        <ToastContext.Provider value={{ CreateToast, CloseToast }}>
+        <ToastContext.Provider value={{ CreateToast, CloseToast, UpdateToast }}>
             {children}
             <div className="space-y-2 absolute bottom-4 right-4">
                 {toasts.map(({ id, component }) => (
