@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { getFileDataByContact } from './query.js';
+import SortableHeader from '../ui/SortableHeader.jsx';
 
 const contactId = process.env.SF_CONTACT_ID;
 
 // Helper function to format bytes to human readable size
 function formatFileSize(bytes) {
-    if (!bytes) return '0 B';
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = bytes;
-    let i = 0;
-    while (size >= 1024 && i < units.length - 1) {
-        size /= 1024;
-        i++;
-    }
-    return (Math.round(size * 100) / 100) + ' ' + units[i];
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    // Calculate which unit to use (0=B, 1=KB, 2=MB, 3=GB)
+    // Using logarithm to find the appropriate index (i)
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    // Divide bytes by the appropriate power of 1024 and round to 2 decimals
+    // Then append the unit label
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
 // Helper function to format date (remove timestamp)
@@ -46,48 +47,51 @@ export default function Documents() {
         fetchFiles();
     }, []);
 
+    // Handle column header clicks to sort 
     const handleColumnClick = (column) => {
         if (sortColumn === column) {
+            // If same column clicked, toggle sort direction
             setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
         } else {
+            // If new column clicked, reset to ascending
             setSortColumn(column);
             setSortDirection('asc');
         }
     };
 
+    // Sort files array based on current sort settings. Using spread operator (creates new array by default) to sort through a copy of returned files and leaves original files unchanged
     const sortedFiles = files ? [...files].sort((a, b) => {
+        // Extract values from both items based on the current sort column
         let aVal = a[sortColumn];
         let bVal = b[sortColumn];
 
         // Handle different data types
         if (sortColumn === 'FileSize__c') {
+            // For numbers: convert to actual numbers
             aVal = Number(aVal);
             bVal = Number(bVal);
         } else if (sortColumn === 'CreatedDate') {
+            // For dates: convert to timestamps (milliseconds) so they compare numerically
             aVal = new Date(aVal).getTime();
             bVal = new Date(bVal).getTime();
         } else {
+            // For text: convert to lowercase strings for case-insensitive sorting
             aVal = String(aVal).toLowerCase();
             bVal = String(bVal).toLowerCase();
         }
 
+        // Compare the values and return sort order
         if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
         if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-        return 0;
-    }) : [];
 
+        // If they're equal, return 0 (no change in order). Edge case for duplicate file uploads.
+        return 0;
+    }) : []; // otherwise return empty array so that first react render doesnt errror out if null
+
+    // Navigate to download endpoint when row is clicked (instead of download button)
     const handleRowClick = (file) => {
         window.location.href = `/download/${contactId}/${file.Filename__c}?type=${encodeURIComponent(file.FileType__c)}`;
     };
-
-    const SortableHeader = ({ column, label }) => (
-        <div
-            onClick={() => handleColumnClick(column)}
-            className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600"
-        >
-            {label} {sortColumn === column && (sortDirection === 'asc' ? '↑' : '↓')}
-        </div>
-    );
 
     return (
         <div className="w-full">
