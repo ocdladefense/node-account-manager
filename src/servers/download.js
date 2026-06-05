@@ -21,3 +21,29 @@ router.get("/download/:contactId/:filename", (req, res) => {
 });
 
 export default router;
+
+
+// fs.readdirSync() is a Node.js file system method that synchronously reads the contents of a directory and returns an array of filenames/entries.
+
+// Potential changes for fetching files from server instead of Salesforce
+// const resp = await fetch(`/files/${contactId}`);
+// const files = await resp.json();
+// setFiles(files);
+
+// try {
+//     if (!fs.existsSync(dirPath)) {
+//         return res.json([]);
+//     }
+
+//     const files = fs.readdirSync(dirPath).map(filename => ({
+//         filename,
+//         path: `/download/${contactId}/${filename}`,
+//         // Optional: add server file metadata
+//         size: fs.statSync(path.join(dirPath, filename)).size,
+//         lastModified: fs.statSync(path.join(dirPath, filename)).mtime
+//     }));
+
+//     res.json(files);
+// } catch (error) {
+//     res.status(500).json({ error: error.message });
+// }
