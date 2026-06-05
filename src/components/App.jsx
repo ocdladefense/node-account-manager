@@ -5,6 +5,7 @@ import Footer from "./layout/Footer";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
 import Menu from './ui/Menu.jsx';
+import ToastProvider from "./ui/notifications/ToastProvider";
 
 
 let client;
@@ -59,13 +60,15 @@ export default function App() {
 
 
     return (
-        <div className="mx-auto">
-            <Header loggedIn={isLoggedIn()} />
-            <div className='flex mt-20'>
-                <Menu />
-                {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+        <ToastProvider>
+            <div className="mx-auto">
+                <Header loggedIn={isLoggedIn()} />
+                <div className='flex mt-20'>
+                    <Menu />
+                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+                </div>
             </div>
-        </div>
+        </ToastProvider>
     );
 }
 
