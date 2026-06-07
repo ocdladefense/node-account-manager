@@ -5,7 +5,7 @@ import { getContactQuery } from "./query.js";
 import { Pi } from "lucide-react";
 import PickList from "../ui/form/PickList.jsx";
 import TextInput from "../ui/form/TextInput.jsx"
-import CheckBox from "../ui/form/Checkbox.jsx";
+import CheckBox from "../ui/form/CheckBox.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import DateTimeInput from "../ui/form/DateTimeInput.jsx";
 import Button from "../ui/Button.jsx";
@@ -41,7 +41,8 @@ export default function ContactExpertForm() {
         const primarySelect = target.querySelector(
             '#Ocdla_Expert_Witness_Primary__c'
         );
-        for (let element of primarySelect.selectedOptions) {
+        for (let element of primarySelect.selectedOptions)
+        {
             expertPrimary.push(element.value);
         }
         let formData = new FormData(target);
@@ -75,7 +76,8 @@ export default function ContactExpertForm() {
         // Call Salesforce API to update the contact
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok) {
+        if (!response.ok)
+        {
             const result = await response.json();
 
             return;

@@ -5,7 +5,7 @@ import { getContactQuery } from "./query.js";
 import { Pi } from "lucide-react";
 import PickList from "../ui/form/PickList.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
-import CheckBox from "../ui/form/Checkbox.jsx";
+import CheckBox from "../ui/form/CheckBox.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
@@ -38,7 +38,8 @@ export default function ContactForm() {
         const input = document.getElementById(id);
 
         const files = input.files;
-        for (let file of files) {
+        for (let file of files)
+        {
             const fileData = {
                 Filename__c: file.name,
                 FileSize__c: file.size,
@@ -48,7 +49,8 @@ export default function ContactForm() {
             console.log("Metadata to send: ", fileData);
             const response = await client.create("FileData__c", fileData);
             console.log(response);
-            if (!response.ok) {
+            if (!response.ok)
+            {
                 let message = await response.json();
                 console.log("An error occurred: ", message);
             }
@@ -75,7 +77,8 @@ export default function ContactForm() {
             legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
         }
         const publicDefenseSurveyValues = [];
-        for (let element of target.querySelector('#Public_Defense_Survey__c').selectedOptions) {
+        for (let element of target.querySelector('#Public_Defense_Survey__c').selectedOptions)
+        {
             publicDefenseSurveyValues.push(element.value);
         }
         let formData = new FormData(target);
@@ -101,7 +104,8 @@ export default function ContactForm() {
 
         const response = await client.update('Contact', contactRecord);
 
-        if (!response.ok) {
+        if (!response.ok)
+        {
             const result = await response.json();
 
             return;
