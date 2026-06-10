@@ -28,6 +28,8 @@ console.log(process.cwd());
 
 
 // Serve static files from the 'dist' directory
+app.use(cookieParser());
+app.use(express.json());
 app.use('/', cacheRoutes);
 app.use('/', geocodeRoutes);
 app.use('/', authRoutes);
@@ -38,8 +40,7 @@ app.use('/', downloadRouter);
 app.use(cors());
 app.use(express.static('dist'));
 app.use('/uploads', express.static('uploads'));
-app.use(cookieParser());
-app.use(express.json());
+
 
 
 

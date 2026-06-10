@@ -9,35 +9,55 @@ const __dirname = path.dirname(__filename);
 
 
 
-
-
-
-
+function parseUserId(url) {
+    return "005cY00000Jlv9wQAB";
+    return "https://test.salesforce.com/id/00DcY000007EEn3UAG/005cY00000Jlv9wQAB";
+}
 
 // Todo, turn this into a POST endpoint.
 router.get("/introspect", async (req, res) => {
 
-    const data = new URLSearchParams({
-        token: SF_ACCESS_TOKEN,
-        client_id: SF_OAUTH_SESSION_CLIENT_ID,
-        client_secret: SF_OAUTH_SESSION_CLIENT_SECRET,
+    const accessToken = req.cookies.accessToken;
+    const instanceUrl = req.cookies.instanceUrl;
+
+    const body = new URLSearchParams({
+        token: accessToken,
+        client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
+        client_secret: process.env.SF_OAUTH_SESSION_CLIENT_SECRET,
         token_type_hint: "access_token"
     });
 
-    console.log(data);
+    console.log(body);
 
     // Exchange authorization code for access token & id_token.
-    const resp = await fetch(SF_OAUTH_SESSION_INSTANCE_URL + "/services/oauth2/introspect", {
+    const resp = await fetch(instanceUrl + "/services/oauth2/introspect", {
         method: "POST",
-        body: data,
+        body: body,
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
 
-    const access_token_data = await resp.json();
-    console.log(access_token_data);
+    const data = await resp.json();
+    console.log(data);
+
+    const userId = parseUserId(data.sub);
+
+    const query = `SELECT ContactId FROM User WHERE Id = '${userId}'`;
+
+    const userResponse = await fetch(instanceUrl + "/services/data/v56.0/query?q=" + encodeURIComponent(query), {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Accept': 'application/json'
+        }
+    });
+
+    const userData = await userResponse.json();
+    console.log(userData);
+
+    res.json(userData);
 });
 
 
@@ -69,14 +89,9 @@ router.get("/oauth/api/request", async (req, res) => {
 
     console.log(req.query);
 
-    // Query parameter from the request (sent by OAuth provider after user authorization)
     const { code } = req.query;
 
-    // creates object with:
-    //     code - the authorization code from step 1
-    //     client_id, client_secret - Salesforce app credentials
-    //     redirect_uri - must match what was registered with Salesforce
-    //     grant_type: "authorization_code" - tells Salesforce this is an auth code exchange
+
     const data = new URLSearchParams({
         code,
         client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
