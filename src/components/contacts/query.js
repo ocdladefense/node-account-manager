@@ -11,7 +11,7 @@ export function getContactQuery(contactId) {
             Ocdla_Organization__c,
             OrderApi__Work_Phone__c,
             OrderApi__Work_Email__c,
-            LegislativeAdvocacyOptIn__c,
+            LegislativeAdvocacyOptOut__c,
             Ocdla_Is_Expert_Witness__c,
             Ocdla_Address_Line_1__c,
             Ocdla_Address_Line_2__c,
