@@ -31,7 +31,7 @@
         "@local/jsx": "file:dev_modules/@local/jsx",
         "@ocdla/global-components": "file:dev_modules/@local/global-components",
         "@ocdla/lib-geo": "file:dev_modules/@ocdla/lib-geo",
-        "@ocdla/lib-http": "^2.1.0",
+        "@ocdla/lib-http": "file:dev_modules/@ocdla/lib-http",
         "@ocdla/lib-utils": "file:dev_modules/@ocdla/lib-utils",
         "@ocdla/salesforce": "file:dev_modules/@ocdla/salesforce",
         "@ocdla/view": "5.2.0",
