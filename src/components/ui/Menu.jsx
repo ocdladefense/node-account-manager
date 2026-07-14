@@ -17,7 +17,8 @@ export default function Menu() {
         contact: /\/contact\/[0-9A-Za-z]+$/,
         order: /\/order\/[0-9A-Za-z]+$/,
         documents: /\/documents$/,
-        upload: /\/upload$/
+        upload: /\/upload$/,
+        jobs: /\/jobs\/[0-9A-Za-z]+$/
     };
 
     let active = "bg-gray-300 hover:bg-gray-400";
@@ -84,6 +85,11 @@ export default function Menu() {
                         <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/events'`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
                             <VscSymbolEvent />
                             Seminars and Events
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/jobs" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.jobs) ? active : ''}`}>
+                            Jobs
                         </a>
                     </li>
                 </ul>

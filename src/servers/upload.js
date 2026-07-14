@@ -49,6 +49,29 @@ const Registered_Applications = {
             const contactId = process.env.SF_CONTACT_ID;
             cb(null, file.originalname);
         }
+    },
+    3: {
+        name: "jobPosting",
+        destination: (req, file, cb) => {
+            const contactId = process.env.SF_CONTACT_ID;
+
+            if (!contactId) {
+                return cb(new Error("Missing contactId"));
+            }
+
+            const dir = path.join("uploads", "JobPostings", contactId);
+
+            // create folder if it doesn't exist
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+            const contactId = process.env.SF_CONTACT_ID;
+            cb(null, file.originalname);
+        }
     }
 };
 

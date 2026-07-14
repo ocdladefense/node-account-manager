@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useToast } from "../notifications/ToastService.jsx";
 
-const SERVER_ENDPOINT = "http://localhost/upload";
+const SERVER_PORT = process.env.PORT;
+const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
 
 const uploadFileToServer = async (file, applicationId, setUploaded) => {
 

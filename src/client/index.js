@@ -17,6 +17,8 @@ import HomePage from "../components/HomePage.jsx";
 import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
 import Documents from '../components/documents/Documents.jsx';
 import Upload from '../components/documents/Upload.jsx';
+import Jobs from '../components/jobs/Jobs.jsx';
+import JobsUpload from '../components/jobs/JobUpload.jsx';
 
 import SObject from "../components/contacts/SObject.jsx";
 
@@ -67,6 +69,10 @@ root.render(
                 </Route>
                 <Route path="upload">
                     <Route index element={<Upload />} />
+                </Route>
+                <Route path="jobs">
+                    <Route index element={<Jobs />} />
+                    <Route path=":upload" element={<JobsUpload />} />
                 </Route>
             </Route>
         </Routes>
