@@ -15,8 +15,9 @@ export default class Job {
 
     documentName;
 
-    constructor(title) {
+    constructor(title, salary) {
         this.title = title;
+        this.salary = salary;
         this.postDate = Date.now();
     }
 }

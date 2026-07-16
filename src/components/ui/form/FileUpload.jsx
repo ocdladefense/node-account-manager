@@ -58,6 +58,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                 </div>
             );
             afterUpload?.(name)
+
         })
             .catch((e) => {
                 console.log("Error Message:", e);
@@ -89,57 +90,64 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
 
     return (
         <div >
-            <form onSubmit={startUploads}>
-                <label className="text-lg font-semibold">{label}</label>
-                <div className="grid grid-cols-1 md:grid-cols-2">
-                    <input
-                        name={name}
-                        id={name}
-                        type="file"
-                        accept={accepting}
-                        onChange={defaultPreview}
-                        className="file-input file-input-bordered w-full"
-                        multiple={multiple}
-                    />
-                    <button
-                        type="submit"
-                        className="buttonStyle"
+            <label className="text-lg font-semibold">{label}</label>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+                <input
+                    name={name}
+                    id={name}
+                    type="file"
+                    accept={accepting}
+                    onChange={defaultPreview}
+                    className="file-input file-input-bordered w-full"
+                    multiple={multiple}
+                />
 
-                    >
-                        Save {label}
-                    </button>
+                {/*
+                <button
+                    type="submit"
+                    className="buttonStyle"
 
-                    {filePreview && preview === true &&
-                        <img src={filePreview} className="w-50 h-75 rounded-sm" />}
-                    {multiple === true &&
-                        <>
-                            <div className="mt-4">
-                                <progress
-                                    className="progress progress-primary w-full"
-                                    value={uploaded}
-                                    max="100"
-                                />
+                >
+                    Save {label}
+                </button>
+                */}
 
-                                <p>{uploaded}%</p>
-                            </div>
-                        </>
-                    }
-                </div>
-            </form>
+                {filePreview && preview === true &&
+                    <img src={filePreview} className="w-50 h-75 rounded-sm" />}
+                {multiple === true &&
+                    <>
+                        <div className="mt-4">
+                            <progress
+                                className="progress progress-primary w-full"
+                                value={uploaded}
+                                max="100"
+                            />
+
+                            <p>{uploaded}%</p>
+                        </div>
+                    </>
+                }
+            </div>
         </div>
 
     );
 }
 
 
-async function uploadFileToServer(file, applicationId, setUploaded) {
+export async function uploadFileToServer(file, applicationId, setUploaded = function() { }, reqData = {}) {
 
 
     return new Promise((resolve, reject) => {
         const formData = new FormData();
 
-        formData.append('files', file);
 
+
+        for (let key in reqData)
+        {
+            formData.append(key, reqData[key]);
+        }
+
+        formData.append('files', file);
         //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
         const xhr = new XMLHttpRequest();
 
@@ -182,8 +190,7 @@ async function uploadFileToServer(file, applicationId, setUploaded) {
 
                 reject({
                     status: xhr.status,
-                    statusText: xhr.statusText,
-                    message: response?.message || response || "Unknown server error"
+                    statusText: xhr.statusText
                 });
             }
         };

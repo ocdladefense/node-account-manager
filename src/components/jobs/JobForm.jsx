@@ -9,10 +9,48 @@ export default function JobForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        e.stopPropagation();
 
-        let jobPosting = new Job("Lawyer", "does cool stuff");
+
+        // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+        //     File uploaded successfully.
+        // </div>);
+        const input = document.getElementById("jobAttachment");
+
+        const files = [...input.files];
+
+        const file = files[0]; // Assuming only one file is uploaded for the job posting.
+        const doTheUploadThing = (data) => {
+            const jobId = data.jobId;
+            console.log("JobUploadHandleSubmit: Success:", data);
+            return uploadFileToServer(file, JOB_POSTING_APP_ID, null, { jobId });
+        };
+
+
+        let jobPosting = new Job("Capital Defense Lawyer", "DOE");
 
         console.log("JobUploadHandleSubmit:", e);
+
+        // Some kind of fetch() call to our Express server.
+
+        fetch("/jobs/upload", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(jobPosting)
+        })
+            .then((response) => response.json())
+            .then(doTheUploadThing)
+            .catch((error) => {
+                console.error("JobUploadHandleSubmit: Error:", error);
+            });
+
+        // Upload Job Title and Salary to the server.
+
+        // Then returned a result, which will include the Job Posting ID.
+
+        // Then process the file upload, which will be associated with the Job Posting ID.
     };
 
     return (
@@ -29,9 +67,9 @@ export default function JobForm() {
 
                 <DateInput label="Application closing date" name="jobCloseDate" type="Date" defaultValue={Date.now()} />
 
-                <Button label="Post Job" buttonType="submit" />
-
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
+
+                <Button label="Post Job" buttonType="submit" />
             </form>
 
 

@@ -6,6 +6,7 @@
 
 import path from "path";
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import cors from "cors";
 import 'dotenv/config';
 import express from 'express';
@@ -22,6 +23,19 @@ const app = express();
 const port = process.env.PORT || 80;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const ALPHANUMERIC_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+function createUniqueAlphanumericId(length = 16) {
+    let id = '';
+
+    while (id.length < length)
+    {
+        id += ALPHANUMERIC_CHARS[crypto.randomInt(0, ALPHANUMERIC_CHARS.length)];
+    }
+
+    return id;
+}
 
 
 console.log(process.cwd());
@@ -43,6 +57,21 @@ app.use('/', downloadRouter);
 
 
 
+
+
+app.post('/jobs/upload', (req, res) => {
+    // Handle the job posting data and file upload here
+    console.log("Received job posting data:", req.body);
+    // You can save the job posting data to your database here
+    // Save the job as a record with two properties: title and salary.
+
+    // save the job.
+
+
+    const jobId = createUniqueAlphanumericId(16);
+
+    res.json({ success: true, jobId });
+});
 
 
 
