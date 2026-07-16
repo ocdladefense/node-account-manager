@@ -9,13 +9,13 @@ export default function Jobs(){
     let jobs = [newJob, newJob2];
 
     return (
-        <div className="container mx-auto px-2 mt-[28px]">
+        <div className="container mx-auto px-2 mt-7">
 
-            <a href="/jobs/upload">
+            <a href="/jobs/upload" className="link">
                 Upload a job!
             </a>
 
-            <h1>Jobs Page Foobar</h1>
+            <h1 className="card-title">Jobs Page Foobar</h1>
             <JobList jobs={jobs} />
         </div>
     )

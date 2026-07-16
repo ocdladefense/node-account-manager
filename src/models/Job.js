@@ -1,15 +1,15 @@
 export default class Job{
-    name;
+    title;
     description;
+    postDate;
+    closeDate;
+    Organization;
+    Salary;
+    Document;
 
-    constructor(name, description){
-        this.name = name;
+    constructor(title, description){
+        this.title = title;
         this.description = description;
+        this.postDate = Date.now();
     }
-
-    getName(){ return this.name; }
-    getDescription(){ return this.description; }
-
-    setName(name){ this.name = name; }
-    setDescription(description){ this.description = description; }
 }
