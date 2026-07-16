@@ -18,11 +18,12 @@ import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
 import Documents from '../components/documents/Documents.jsx';
 import Upload from '../components/documents/Upload.jsx';
 import Jobs from '../components/jobs/Jobs.jsx';
-import JobsUpload from '../components/jobs/JobUpload.jsx';
+import JobForm from '../components/jobs/JobForm.jsx';
 
 import SObject from "../components/contacts/SObject.jsx";
 
-if (process.env.NODE_ENV === 'debug') {
+if (process.env.NODE_ENV === 'debug')
+{
     setDebugLevel(1);
 }
 
@@ -72,7 +73,7 @@ root.render(
                 </Route>
                 <Route path="jobs">
                     <Route index element={<Jobs />} />
-                    <Route path=":upload" element={<JobsUpload />} />
+                    <Route path=":upload" element={<JobForm />} />
                 </Route>
             </Route>
         </Routes>

@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
-import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
 import Menu from './ui/Menu.jsx';
 import ToastProvider from "./ui/notifications/ToastProvider";
 
@@ -11,13 +10,6 @@ import ToastProvider from "./ui/notifications/ToastProvider";
 let client;
 
 
-function isLoggedIn() {
-
-    let sessionInstanceUrl = getCookie("instanceUrl");
-    let sessionAccessToken = getCookie("accessToken");
-
-    return !!sessionAccessToken;
-}
 
 // @jbernal - previously in index.js
 // Retrieve video data and related thumbnail data.
@@ -29,12 +21,14 @@ async function getApiClient() {
 
 
     let applicationTokens = await fetch("/connect").then(resp => resp.json());
+
+
+
+
     applicationInstanceUrl = applicationTokens.instance_url;
     applicationAccessToken = applicationTokens.access_token;
 
 
-    // sessionInstanceUrl = getCookie("instanceUrl");
-    // sessionAccessToken = getCookie("accessToken");
 
     // let session = new SalesforceRestApi(sessionInstanceUrl, sessionAccessToken);
     let application = new SalesforceRestApi(applicationInstanceUrl, applicationAccessToken);
@@ -48,12 +42,14 @@ async function getApiClient() {
 
 export default function App() {
 
-    const [appReady, setAppReady] = useState(false);
+    const [hasApiInstance, setHasApiInstance] = useState(false);
 
     useEffect(() => {
         async function fn() {
+
             client = await getApiClient();
-            setAppReady(true);
+            setHasApiInstance(true);
+
         }
         fn();
     }, []);
@@ -62,10 +58,10 @@ export default function App() {
     return (
         <ToastProvider>
             <div className="mx-auto">
-                <Header loggedIn={isLoggedIn()} />
+                <Header loggedIn={false} />
                 <div className='flex mt-20'>
                     <Menu />
-                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+                    {!hasApiInstance ? <h1>Trying Salesforce Connection...</h1> : <Outlet context={{ client }} />}
                 </div>
             </div>
         </ToastProvider>

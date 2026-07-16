@@ -6,82 +6,9 @@ import { useToast } from "../notifications/ToastService.jsx";
 const SERVER_PORT = process.env.PORT;
 const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
 
-const uploadFileToServer = async (file, applicationId, setUploaded) => {
 
 
-    return new Promise((resolve, reject) => {
-        const formData = new FormData();
-
-        formData.append('files', file);
-
-        //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
-        const xhr = new XMLHttpRequest();
-
-        xhr.timeout = 120000;
-
-        //This opens a POST request
-        xhr.open(
-            "POST",
-            SERVER_ENDPOINT
-        );
-        //This sets the headers for the application
-        if (applicationId) {
-            xhr.setRequestHeader(
-                "x-applicationid",
-                applicationId
-            );
-        }
-
-        //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
-        xhr.upload.onprogress = (event) => {
-            console.log(event);
-            if (event.lengthComputable) {
-                const percent = Math.round(
-                    (event.loaded * 100) / event.total
-                );
-                setUploaded(percent, file);
-            }
-        };
-        //this checks then the upload is done, whether that is bad or good
-        xhr.onload = () => {
-            console.log("Response:", xhr.response);
-            if (xhr.status >= 200 && xhr.status < 300) {
-                resolve(JSON.parse(xhr.response));
-            }
-            else {
-
-                reject({
-                    status: xhr.status,
-                    statusText: xhr.statusText,
-                    message: response?.message || response || "Unknown server error"
-                });
-            }
-        };
-
-
-
-        //Checks for errors unrelated to status
-        xhr.onerror = () => {
-            reject({
-                type: "Network",
-                message: "Network Error on connection or server."
-            });
-        };
-
-        xhr.ontimeout = () => {
-            reject({
-                type: "Timeout",
-                message: "Upload timed out. Try again."
-            });
-        }
-        //this is the part where the data is actually sent
-        xhr.send(formData);
-    });
-};
-
-
-
-function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
+export function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
     const [filePreview, setFilePreview] = useState(null);
     const [uploaded, setUploaded] = useState(0);
     const { CreateToast, UpdateToast } = useToast();
@@ -204,6 +131,80 @@ function FileUpload({ label = "File Upload", name = "file-upload", accepting = "
     );
 }
 
-export { FileUpload, uploadFileToServer };
+
+async function uploadFileToServer(file, applicationId, setUploaded) {
 
 
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+
+        formData.append('files', file);
+
+        //This creates a new instance of XMLHttpRequest since I couldn't find a way to make a fetch track progress
+        const xhr = new XMLHttpRequest();
+
+        xhr.timeout = 120000;
+
+        //This opens a POST request
+        xhr.open(
+            "POST",
+            SERVER_ENDPOINT
+        );
+        //This sets the headers for the application
+        if (applicationId)
+        {
+            xhr.setRequestHeader(
+                "x-applicationid",
+                applicationId
+            );
+        }
+
+        //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
+        xhr.upload.onprogress = (event) => {
+            console.log(event);
+            if (event.lengthComputable)
+            {
+                const percent = Math.round(
+                    (event.loaded * 100) / event.total
+                );
+                setUploaded(percent, file);
+            }
+        };
+        //this checks then the upload is done, whether that is bad or good
+        xhr.onload = () => {
+            console.log("Response:", xhr.response);
+            if (xhr.status >= 200 && xhr.status < 300)
+            {
+                resolve(JSON.parse(xhr.response));
+            }
+            else
+            {
+
+                reject({
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    message: response?.message || response || "Unknown server error"
+                });
+            }
+        };
+
+
+
+        //Checks for errors unrelated to status
+        xhr.onerror = () => {
+            reject({
+                type: "Network",
+                message: "Network Error on connection or server."
+            });
+        };
+
+        xhr.ontimeout = () => {
+            reject({
+                type: "Timeout",
+                message: "Upload timed out. Try again."
+            });
+        }
+        //this is the part where the data is actually sent
+        xhr.send(formData);
+    });
+};

@@ -1,8 +1,9 @@
+import { useOutletContext } from "react-router-dom";
 import JobList from "./JobsList";
 import Job from "../../models/Job";
 
-export default function Jobs(){
-
+export default function Jobs() {
+    const { client } = useOutletContext();
     let newJob = new Job("Dev", "does cool stuff");
     let newJob2 = new Job("Dev2", "does cool stuff");
 

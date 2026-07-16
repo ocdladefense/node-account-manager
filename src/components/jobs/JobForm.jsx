@@ -1,16 +1,16 @@
-import {FileUpload, uploadFileToServer} from "../ui/form/FileUpload";
-import TextInput from "../ui/form/TextInput";
-import DateInput from "../ui/form/DateInput";
+import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
+import TextInput from "../ui/form/TextInput.jsx";
+import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import Job from "../../models/Job.js";
 
-export default function JobsUpload(){
+export default function JobForm() {
     const JOB_POSTING_APP_ID = 3;
-    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        let jobPosting = new Job();
+        let jobPosting = new Job("Lawyer", "does cool stuff");
 
         console.log("JobUploadHandleSubmit:", e);
     };
@@ -31,9 +31,10 @@ export default function JobsUpload(){
 
                 <Button label="Post Job" buttonType="submit" />
 
+                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
             </form>
 
-            <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID}/>
+
         </div>
     );
 }
