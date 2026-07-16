@@ -1,4 +1,7 @@
 import {FileUpload, uploadFileToServer} from "../ui/form/FileUpload";
+import {TextInput} from "../ui/form/TextInput";
+import {DateInput} from "../ui/form/DateInput";
+import Button from "../ui/Button.jsx";
 import {Job} from "../../models/Job.js";
 
 export default function JobsUpload(){
@@ -8,31 +11,29 @@ export default function JobsUpload(){
         e.preventDefault();
 
         let jobPosting = new Job();
+
+        console.log("JobUploadHandleSubmit:", e);
     };
 
     return (
         <div className="container mx-auto px-2">
             <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <label for="title">Job Name</label>
-                <input type="text" id="title" name="title" placeholder="Enter job name" />
-                
-                <label for="description">Job description</label>
-                <input type="text" id="description" name="description" placeholder="Enter job description" />
+                <TextInput label="Job Title" apiName="jobTitle" />
 
-                <label for="organization">Organization</label>
-                <input type="text" id="organization" name="organization" placeholder="Enter organization name" />
-                
-                <label for="salary">Salary</label>
-                <input type="number" step="0.01" id="salary" name="salary" placeholder="Enter salary here" />
+                <TextInput label="Job Description" apiName="jobDescription" />
 
-                <label for="closeDate">Application closing date</label>
-                <input type="date" id="closeDate" name="closeDate" />
+                <TextInput label="Organization" apiName="jobOrganization" />
 
-                <input type="submit" value="submit" />
+                <TextInput label="Salary" apiName="jobSalary" />
+
+                <DateInput label="Application closing date" name="jobCloseDate" type="Date" defaultValue={Date.now()} />
+
+                <Button label="Post Job" buttonType="submit" />
+
             </form>
 
-            <FileUpload label="Job Posting" name="job-posting" applicationId={JOB_POSTING_APP_ID}/>
+            <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID}/>
         </div>
     );
 }
