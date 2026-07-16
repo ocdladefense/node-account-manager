@@ -1,8 +1,8 @@
 import {FileUpload, uploadFileToServer} from "../ui/form/FileUpload";
-import {TextInput} from "../ui/form/TextInput";
-import {DateInput} from "../ui/form/DateInput";
+import TextInput from "../ui/form/TextInput";
+import DateInput from "../ui/form/DateInput";
 import Button from "../ui/Button.jsx";
-import {Job} from "../../models/Job.js";
+import Job from "../../models/Job.js";
 
 export default function JobsUpload(){
     const JOB_POSTING_APP_ID = 3;

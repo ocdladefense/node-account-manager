@@ -20,7 +20,8 @@
         "lint": "eslint src/**",
         "lint-fix": "eslint --fix src/**",
         "git-reset": "git reset --soft HEAD~1",
-        "git-force": "git push origin +main --force"
+        "git-force": "git push origin +main --force",
+        "build-start-server":"webpack --config webpack.config.js --mode development && nodemon src/servers/app.js"
     },
     "author": "José Bernal",
     "license": "ISC",
