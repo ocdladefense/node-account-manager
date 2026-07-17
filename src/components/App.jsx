@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
+import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
 import Menu from './ui/Menu.jsx';
 import ToastProvider from "./ui/notifications/ToastProvider";
 
@@ -10,29 +11,38 @@ import ToastProvider from "./ui/notifications/ToastProvider";
 let client;
 
 
+function hasAccessToken() {
+
+    let url = getCookie("instance_url");
+    let token = getCookie("access_token");
+
+    return !!token;
+}
 
 // @jbernal - previously in index.js
 // Retrieve video data and related thumbnail data.
 async function getApiClient() {
 
     let sessionInstanceUrl, sessionAccessToken;
-    let applicationInstanceUrl, applicationAccessToken;
+    let url, token;
 
 
+    if (hasAccessToken())
+    {
+        url = getCookie("instance_url");
+        token = getCookie("access_token");
+    }
+    else
+    {
+        // If no access token is found, fetch a new one from the server.
+        let applicationTokens = await fetch("/connect").then(resp => resp.json());
+        url = applicationTokens.instance_url;
+        token = applicationTokens.access_token;
+    }
 
-    let applicationTokens = await fetch("/connect").then(resp => resp.json());
 
+    let application = new SalesforceRestApi(url, token);
 
-
-
-    applicationInstanceUrl = applicationTokens.instance_url;
-    applicationAccessToken = applicationTokens.access_token;
-
-
-
-    // let session = new SalesforceRestApi(sessionInstanceUrl, sessionAccessToken);
-    let application = new SalesforceRestApi(applicationInstanceUrl, applicationAccessToken);
-    // user.setApi(session);
 
     return application;
 }
@@ -42,14 +52,12 @@ async function getApiClient() {
 
 export default function App() {
 
-    const [hasApiInstance, setHasApiInstance] = useState(false);
+    const [appReady, setAppReady] = useState(false);
 
     useEffect(() => {
         async function fn() {
-
             client = await getApiClient();
-            setHasApiInstance(true);
-
+            setAppReady(true);
         }
         fn();
     }, []);
@@ -61,7 +69,7 @@ export default function App() {
                 <Header loggedIn={false} />
                 <div className='flex mt-20'>
                     <Menu />
-                    {!hasApiInstance ? <h1>Trying Salesforce Connection...</h1> : <Outlet context={{ client }} />}
+                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
                 </div>
             </div>
         </ToastProvider>

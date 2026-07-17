@@ -143,8 +143,11 @@ router.get("/connect", async (req, res) => {
 
     console.log(data);
 
+    const tokenEndpoint = process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT;
+    console.log("Token endpoint:", tokenEndpoint);
+
     // Exchange authorization code for access token & id_token.
-    const response = await fetch(process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT, {
+    const resp = await fetch(tokenEndpoint, {
         method: "POST",
         body: data,
         headers: {
@@ -153,10 +156,26 @@ router.get("/connect", async (req, res) => {
     });
 
     console.log("Receiving client credential response...");
-    const token = await response.json();
-    console.log(token);
+    const credentials = await resp.json();
 
-    res.json(token);
+    // 2. Set the cookie
+    res.cookie('access_token', credentials.access_token, {
+        httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+        secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+    });
+
+    res.cookie('instance_url', credentials.instance_url, {
+        httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+        secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+    });
+
+    console.log(credentials.access_token);
+
+    res.json(credentials);
 });
 
 
