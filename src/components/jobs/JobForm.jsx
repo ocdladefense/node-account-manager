@@ -23,7 +23,7 @@ export default function JobForm() {
         const doTheUploadThing = (data) => {
             const jobId = data.jobId;
             console.log("JobUploadHandleSubmit: Success:", data);
-            return uploadFileToServer(file, JOB_POSTING_APP_ID, null, { jobId });
+            return uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
         };
 
 
