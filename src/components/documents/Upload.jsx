@@ -9,10 +9,13 @@ export default function Upload() {
     const { client } = useOutletContext();
 
     return (
-        <div className="w-full">
-            <div className="container mx-auto px-2 mt-[28px]">
-                <FileUpload name="uploadDocuments" multiple={true} applicationId={2} />
+        // add onSumbit handler
+        <form >
+            <div className="w-full">
+                <div className="container mx-auto px-2 mt-[28px]">
+                    <FileUpload name="uploadDocuments" multiple={true} applicationId={2} />
+                </div>
             </div>
-        </div>
+        </form>
     )
 };
