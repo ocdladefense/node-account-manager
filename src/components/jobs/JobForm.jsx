@@ -4,6 +4,11 @@ import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import Job from "../../models/Job.js";
 
+/**
+ * Renders the Job Posting Form page for creating new job listings and handling file upploads.
+ *
+ * @returns {React.JSX.Element} The job posting form UI
+ */
 export default function JobForm() {
     const JOB_POSTING_APP_ID = 3;
 
