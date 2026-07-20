@@ -1,11 +1,11 @@
 import JobCard from "./JobCard.jsx";
 
 export default function JobList({ jobs = [] }) {
-    let jobsList = [];
-
-    jobs.map((job) => {
-        jobsList.push(<JobCard job={job} />)
-    });
-
-    return jobsList;
+    return (
+        <div className="space-y-4">
+            {jobs.map((job) => (
+                <JobCard key={job.Id} job={job} />
+            ))}
+        </div>
+    );
 }

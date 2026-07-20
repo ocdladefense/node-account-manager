@@ -1,40 +1,37 @@
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { getJobQuery } from "./JobsQuery";
+import { getJobsQuery } from "./JobsQuery";
 import JobList from "./JobsList";
-import Job from "../../models/Job";
+
 
 export default function Jobs() {
     const { client } = useOutletContext();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // let newJob = new Job("Public Defender 1", "125,000 yr.");
-    // let newJob2 = new Job("Public Defender 2", "130,000 yr.");
-    // newJob.description = "Handles public defense cases.";
-    // newJob2.description = "Handles public defense cases.";
-
-    // let jobs = [newJob, newJob2];
-    // let countJobs = 0;
+    const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
         async function fetchJobs() {
-            const jobQuery = getJob(jobId);
+            const jobsQuery = getJobsQuery();
 
 
             try {
                 setLoading(true);
-                const response = await client.query(jobQuery);
-                setContact(response.records[0]);
+                const response = await client.query(jobsQuery);
+                setJobs(response.records);
             } catch (err) {
                 setError(err);
-                console.error("Error fetching job:", err);
+                console.error("Error fetching jobs:", err);
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchJobs();
-    }, []);
+        if(client) fetchJobs();
+    }, [client]);
+
+    if(loading) return <div>Loading...</div>;
+    if(error) return <div>Error: {error.message}</div>;
 
     return (
         <div className="container mx-auto px-2 mt-7">
