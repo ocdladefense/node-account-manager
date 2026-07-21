@@ -4,6 +4,7 @@ import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import Job from "../../models/Job.js";
+import CheckBox from "../ui/form/CheckBox.jsx";
 
 /**
  * Renders the Job Posting Form page for creating new job listings and handling file upploads.
@@ -17,73 +18,55 @@ export default function JobForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
+        const form = e.currentTarget;
+        const formData = new FormData(form);
 
-        let title = 'Test Title';
-        let record = {
-            Name: title,
-            Salary__c: "DOE"
+        const openUntilFilled =
+            formData.get("OpenUntilFilled__c") === "on";
+
+        const record = {
+            Name: formData.get("Name"),
+            Organization__c: formData.get("Organization__c"),
+            Location__c: formData.get("Location__c"),
+            Salary__c: formData.get("Salary__c"),
+            PostingDate__c: formData.get("PostingDate__c") || null,
+            ClosingDate__c: formData.get("ClosingDate__c") || null,
+            OpenUntilFilled__c: openUntilFilled,
+            IsActive__c: true
         };
+        // ^^^ What about MemberId__c ? ^^^
 
         let resp = await client.create('Job__c', record);
-
         let data = await resp.json();
-
         let jobId = data.id;
 
         const input = document.getElementById("jobAttachment");
-
         const files = [...input.files];
-
         const file = files[0];
 
         uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
-
-
-
-
-
-        // let jobPosting = new Job("Capital Defense Lawyer", "DOE");
-
-        // console.log("JobUploadHandleSubmit:", e);
-
-        // // Some kind of fetch() call to our Express server.
-
-        // fetch("/jobs/upload", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json"
-        //     },
-        //     body: JSON.stringify(jobPosting)
-        // })
-        //     .then((response) => response.json())
-        //     .then(doTheUploadThing)
-        //     .catch((error) => {
-        //         console.error("JobUploadHandleSubmit: Error:", error);
-        //     });
-
-        // Upload Job Title and Salary to the server.
-
-        // Then returned a result, which will include the Job Posting ID.
-
-        // Then process the file upload, which will be associated with the Job Posting ID.
     };
 
     return (
         <div className="container mx-auto px-2">
             <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <TextInput label="Job Title" apiName="jobTitle" />
+                <TextInput label="Job Title" apiName="Name" />
+                <TextInput label="Organization" apiName="Organization__c" />
+                <TextInput label="Location" apiName="Location__c" />
+                <TextInput label="Salary" apiName="Salary__c" />
 
-                <TextInput label="Job Description" apiName="jobDescription" />
-
-                <TextInput label="Organization" apiName="jobOrganization" />
-
-                <TextInput label="Salary" apiName="jobSalary" />
-
-                <DateInput label="Application closing date" name="jobCloseDate" type="Date" defaultValue={Date.now()} />
+                {/* Posted/Closing Dates */}
+                <fieldset className="border rounded p-4 mb-6">
+                    <legend className="text-lg font-semibold">Active Dates</legend>
+                    <div className="mb-4">
+                        <DateInput label="Posting Date" name="PostingDate__c" defaultValue={new Date()} fieldType="date" />
+                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" />
+                        <DateInput label="Closing Date" name="ClosingDate__c" defaultValue={new Date()} fieldType="date" />
+                    </div>
+                </fieldset>
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
-
                 <Button label="Post Job" buttonType="submit" />
             </form>
         </div>
