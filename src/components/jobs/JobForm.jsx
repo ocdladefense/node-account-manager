@@ -19,23 +19,27 @@ export default function JobForm() {
         e.stopPropagation();
 
         let title = 'Test Title';
-        let record = { Name: title };
-        client.create('Job__c', record);
+        let record = {
+            Name: title,
+            Salary__c: "DOE"
+        };
+
+        let resp = await client.create('Job__c', record);
+
+        let data = await resp.json();
+
+        let jobId = data.id;
+
+        const input = document.getElementById("jobAttachment");
+
+        const files = [...input.files];
+
+        const file = files[0];
+
+        uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
 
 
-        // // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-        // //     File uploaded successfully.
-        // // </div>);
-        // const input = document.getElementById("jobAttachment");
 
-        // const files = [...input.files];
-
-        // const file = files[0]; // Assuming only one file is uploaded for the job posting.
-        // const doTheUploadThing = (data) => {
-        //     const jobId = data.jobId;
-        //     console.log("JobUploadHandleSubmit: Success:", data);
-        //     return uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
-        // };
 
 
         // let jobPosting = new Job("Capital Defense Lawyer", "DOE");
