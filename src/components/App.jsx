@@ -21,6 +21,10 @@ function hasAccessToken() {
 
 // @jbernal - previously in index.js
 // Retrieve video data and related thumbnail data.
+/**
+ * Gets the API client for making requests to the Salesforce API.
+ * @returns {Promise<SalesforceRestApi>} A promise that resolves with the API client.
+ */
 async function getApiClient() {
 
     let sessionInstanceUrl, sessionAccessToken;
@@ -49,7 +53,10 @@ async function getApiClient() {
 
 
 
-
+/**
+ * Renders the main application layout, including the header, menu, and content area. It also manages the API client state and handles loading.
+ * @returns {React.JSX.Element} The main application layout.
+ */
 export default function App() {
 
     const [appReady, setAppReady] = useState(false);
