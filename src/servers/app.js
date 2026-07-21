@@ -26,6 +26,11 @@ const __dirname = path.dirname(__filename);
 
 const ALPHANUMERIC_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
+/**
+ * Generates a cryptographically secure, random alphanumeric string to set as an id.
+ * @param {number} [length=16] - The desired character length of the ID.
+ * @returns {string} The generated unique ID.
+ */
 function createUniqueAlphanumericId(length = 16) {
     let id = '';
 
