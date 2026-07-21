@@ -1,6 +1,10 @@
+/**
+ * Generates the SQL query string to fetch all active job postings.
+ * @returns {string} The formatted SQL query string.
+ */
 export function getJobsQuery() {
 
-    return `SELECT 
+    return `SELECT
             Id,
             AttachmentPath__c,
             AttachmentUrl__c,
@@ -18,6 +22,13 @@ export function getJobsQuery() {
             Salary__c
             FROM Job__c WHERE IsActive__c = true`;
 }
+
+
+
+
+
+
+
 
 
 // export function getJobQuery(jobId) {
