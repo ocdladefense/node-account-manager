@@ -1,4 +1,5 @@
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
+import { useOutletContext } from "react-router-dom";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
@@ -11,45 +12,50 @@ import Job from "../../models/Job.js";
  */
 export default function JobForm() {
     const JOB_POSTING_APP_ID = 3;
+    const { client, metadata } = useOutletContext();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-
-        // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-        //     File uploaded successfully.
-        // </div>);
-        const input = document.getElementById("jobAttachment");
-
-        const files = [...input.files];
-
-        const file = files[0]; // Assuming only one file is uploaded for the job posting.
-        const doTheUploadThing = (data) => {
-            const jobId = data.jobId;
-            console.log("JobUploadHandleSubmit: Success:", data);
-            return uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
-        };
+        let title = 'Test Title';
+        let record = { Name: title };
+        client.create('Job__c', record);
 
 
-        let jobPosting = new Job("Capital Defense Lawyer", "DOE");
+        // // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+        // //     File uploaded successfully.
+        // // </div>);
+        // const input = document.getElementById("jobAttachment");
 
-        console.log("JobUploadHandleSubmit:", e);
+        // const files = [...input.files];
 
-        // Some kind of fetch() call to our Express server.
+        // const file = files[0]; // Assuming only one file is uploaded for the job posting.
+        // const doTheUploadThing = (data) => {
+        //     const jobId = data.jobId;
+        //     console.log("JobUploadHandleSubmit: Success:", data);
+        //     return uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+        // };
 
-        fetch("/jobs/upload", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(jobPosting)
-        })
-            .then((response) => response.json())
-            .then(doTheUploadThing)
-            .catch((error) => {
-                console.error("JobUploadHandleSubmit: Error:", error);
-            });
+
+        // let jobPosting = new Job("Capital Defense Lawyer", "DOE");
+
+        // console.log("JobUploadHandleSubmit:", e);
+
+        // // Some kind of fetch() call to our Express server.
+
+        // fetch("/jobs/upload", {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     body: JSON.stringify(jobPosting)
+        // })
+        //     .then((response) => response.json())
+        //     .then(doTheUploadThing)
+        //     .catch((error) => {
+        //         console.error("JobUploadHandleSubmit: Error:", error);
+        //     });
 
         // Upload Job Title and Salary to the server.
 
