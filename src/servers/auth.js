@@ -27,7 +27,7 @@ router.get("/introspect", async (req, res) => {
         token_type_hint: "access_token"
     });
 
-    console.log(body);
+    console.log("auth.js: fetch body: " ,body);
 
     // Exchange authorization code for access token & id_token.
     const resp = await fetch(instanceUrl + "/services/oauth2/introspect", {
@@ -40,7 +40,7 @@ router.get("/introspect", async (req, res) => {
     });
 
     const data = await resp.json();
-    console.log(data);
+    console.log("auth.js: fetch response: ", data);
 
     const userId = parseUserId(data.sub);
 
@@ -55,7 +55,7 @@ router.get("/introspect", async (req, res) => {
     });
 
     const userData = await userResponse.json();
-    console.log(userData);
+    console.log("auth.js: fetch userData: ", userData);
 
     res.json(userData);
 });
@@ -87,7 +87,7 @@ router.get("/logout", (req, res) => {
 
 router.get("/oauth/api/request", async (req, res) => {
 
-    console.log(req.query);
+    console.log("auth.js: api request: ", req.query);
 
     const { code } = req.query;
 
@@ -100,7 +100,7 @@ router.get("/oauth/api/request", async (req, res) => {
         grant_type: "authorization_code"
     });
 
-    console.log(data);
+    console.log("auth.js: api request response: ", data);
 
     // Exchange authorization code for access token & id_token.
     const response = await fetch(process.env.SF_OAUTH_SESSION_TOKEN_URL, {
@@ -111,9 +111,8 @@ router.get("/oauth/api/request", async (req, res) => {
         }
     });
 
-    console.log("Receiving response...");
     const access_token_data = await response.json();
-    console.log(access_token_data);
+    console.log("auth.js: api request access_token_data: ", access_token_data);
 
 
     res.cookie('instanceUrl', access_token_data.instance_url, { maxAge: 86400000 }); // Cookie expires in 24 hours
@@ -141,10 +140,10 @@ router.get("/connect", async (req, res) => {
         client_secret: process.env.SF_OAUTH_APPLICATION_CLIENT_SECRET
     });
 
-    console.log(data);
+    console.log("auth.js: connect route: url params: ",data);
 
     const tokenEndpoint = process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT;
-    console.log("Token endpoint:", tokenEndpoint);
+    console.log("auth.js: connect route: Token endpoint:", tokenEndpoint);
 
     // Exchange authorization code for access token & id_token.
     const resp = await fetch(tokenEndpoint, {
@@ -155,9 +154,10 @@ router.get("/connect", async (req, res) => {
         }
     });
 
-    console.log("Receiving client credential response...");
     const credentials = await resp.json();
-
+    if(credentials.error) console.error("auth.js: connect route: credentials error: ", credentials.error, credentials.error_description);
+    else console.log("auth.js: connect route: credentials: ", credentials);
+route
     // 2. Set the cookie
     res.cookie('access_token', credentials.access_token, {
         httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
@@ -173,7 +173,7 @@ router.get("/connect", async (req, res) => {
         maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
     });
 
-    console.log(credentials.access_token);
+    console.log("auth.js: connect route: access_token: ", credentials.access_token);
 
     res.json(credentials);
 });

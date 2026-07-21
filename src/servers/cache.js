@@ -29,7 +29,7 @@ router.post("/api/cache", (req, res) => {
     if (results !== undefined) serverCache.results = results;
     if (variants !== undefined) serverCache.variants = variants;
 
-    console.log(`Cache saved to server. Hits: ${serverCache.hits}, Misses: ${serverCache.misses}, Variants: ${JSON.stringify(serverCache.variants)}`);
+    console.log(`cache.js: Cache saved to server. Hits: ${serverCache.hits}, Misses: ${serverCache.misses}, Variants: ${JSON.stringify(serverCache.variants)}`);
     res.json({ success: true, message: 'Cache saved' });
 });
 
@@ -43,7 +43,7 @@ export async function useCache(key, fn) {
     let exists = fs.existsSync(filepath);
     let result;
 
-    console.log(`Cache ${exists ? "hit" : "miss"} for ${filepath}`);
+    console.log(`cache.js: Cache ${exists ? "hit" : "miss"} for ${filepath}`);
 
     result = exists ? JSON.parse(fs.readFileSync(filepath, 'utf-8')) : await fn();
 

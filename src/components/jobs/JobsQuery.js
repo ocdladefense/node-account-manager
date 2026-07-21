@@ -20,7 +20,7 @@ export function getJobsQuery() {
             OwnerId,
             PostingDate__c,
             Salary__c
-            FROM Job__c WHERE IsActive__c = true`;
+            FROM Job__c WHERE IsActive__c = true;`;
 }
 
 

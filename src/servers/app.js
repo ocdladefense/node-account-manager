@@ -43,7 +43,7 @@ function createUniqueAlphanumericId(length = 16) {
 }
 
 
-console.log(process.cwd());
+console.log("app.js: server current working directory: ", process.cwd());
 
 
 // Serve static files from the 'dist' directory
@@ -66,7 +66,7 @@ app.use('/', downloadRouter);
 
 app.post('/jobs/upload', (req, res) => {
     // Handle the job posting data and file upload here
-    console.log("Received job posting data:", req.body);
+    console.log("app.js: Received job posting data:", req.body);
     // You can save the job posting data to your database here
     // Save the job as a record with two properties: title and salary.
 
@@ -101,4 +101,5 @@ app.all('/{*any}', (req, res) => {
 // Start the server
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
+    console.log(`dev link: http://localhost:${port}/`)
 });
