@@ -27,7 +27,7 @@ router.get("/introspect", async (req, res) => {
         token_type_hint: "access_token"
     });
 
-    console.log("auth.js: introspect route: fetch body: " ,body);
+    console.log("auth.js: introspect route: fetch body: ", body);
 
     // Exchange authorization code for access token & id_token.
     const resp = await fetch(instanceUrl + "/services/oauth2/introspect", {
@@ -120,7 +120,7 @@ router.get("/connect", async (req, res) => {
         client_secret: process.env.SF_OAUTH_APPLICATION_CLIENT_SECRET
     });
 
-    console.log("auth.js: connect route: url params: ",data);
+    console.log("auth.js: connect route: url params: ", data);
 
     const tokenEndpoint = process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT;
     console.log("auth.js: connect route: Token endpoint:", tokenEndpoint);
@@ -135,27 +135,48 @@ router.get("/connect", async (req, res) => {
     });
 
     const credentials = await resp.json();
-    if(credentials.error) console.error("auth.js: connect route: credentials error: ", credentials.error, credentials.error_description);
-    else console.log("auth.js: connect route: credentials: ", credentials);
 
-    // 2. Set the cookie
-    res.cookie('access_token', credentials.access_token, {
-        httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
-        secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
-        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-    });
+    if (credentials.error)
+    {
+        console.error("auth.js: ", credentials.error, credentials.error_description);
 
-    res.cookie('instance_url', credentials.instance_url, {
-        httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
-        secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
-        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-    });
 
-    console.log("auth.js: connect route: access_token: ", credentials.access_token);
+        let options = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        };
+        res.clearCookie('access_token', options);
 
-    res.json(credentials);
+        res.clearCookie('instance_url', options);
+
+        res.status(500).send({ error: credentials.error });
+    }
+    else
+    {
+        console.log("auth.js: connect route: credentials: ", credentials);
+        // 2. Set the cookie
+        res.cookie('access_token', credentials.access_token, {
+            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        });
+
+        res.cookie('instance_url', credentials.instance_url, {
+            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        });
+
+        console.log("auth.js: connect route: access_token: ", credentials.access_token);
+
+        res.json(credentials);
+    }
+
+
 });
 
 export default router;

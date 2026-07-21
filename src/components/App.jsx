@@ -35,7 +35,7 @@ async function getApiClient() {
     {
         url = getCookie("instance_url");
         token = getCookie("access_token");
-        if(url == undefined || token == undefined)
+        if (url == undefined || token == undefined)
         {
             console.error("App.jsx: Url or token error in app.jsx", url, token);
         }
@@ -46,12 +46,12 @@ async function getApiClient() {
         let applicationTokens = await fetch("/connect").then(resp => resp.json());
         if (applicationTokens.error)
         {
-            console.error("App.jsx: ", applicationTokens.error, applicationTokens.error_description);
-        }   
+            throw new Error("App.jsx: ", applicationTokens.error, applicationTokens.error_description);
+        }
         url = applicationTokens.instance_url;
         token = applicationTokens.access_token;
     }
-    
+
 
     let application = new SalesforceRestApi(url, token);
 
