@@ -1,3 +1,10 @@
+/**
+ * Displays a summary card for an individual job posting.
+ *
+ * @param {Object} props
+ * @param {Object} props.job - The salesforce Job object containing title, organization, location and salary/
+ * @returns {React.JSX.Element} A formatted card component.
+ */
 export default function JobCard({ job }) {
     return (
         <div className="border-t-2 p-4">
