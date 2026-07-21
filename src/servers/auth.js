@@ -103,9 +103,15 @@ router.get("/oauth/api/request", async (req, res) => {
     const access_token_data = await response.json();
     console.log("auth.js: api request access_token_data: ", access_token_data);
 
+    let options = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+    };
 
-    res.cookie('instanceUrl', access_token_data.instance_url, { maxAge: 86400000 }); // Cookie expires in 24 hours
-    res.cookie('accessToken', access_token_data.access_token, { maxAge: 86400000 }); // Cookie expires in 24 hours
+    res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
+    res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
     // What is id_token?
     const { id_token } = access_token_data;
 

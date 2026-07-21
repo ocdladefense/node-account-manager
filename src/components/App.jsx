@@ -42,6 +42,7 @@ async function getApiClient() {
     }
     else
     {
+        throw new Error("YOU HAVE NOT LOGGED IN!");
         // If no access token is found, fetch a new one from the server.
         let applicationTokens = await fetch("/connect").then(resp => resp.json());
         if (applicationTokens.error)
