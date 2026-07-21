@@ -70,7 +70,6 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                 </div>
             );
             afterUpload?.(name)
-
         })
             .catch((e) => {
                 console.log("Error Message:", e);
@@ -89,13 +88,8 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                 );
 
             }
-
             )
         );
-
-
-
-
     }
 
 

@@ -76,8 +76,6 @@ export default function JobForm() {
 
                 <Button label="Post Job" buttonType="submit" />
             </form>
-
-
         </div>
     );
 }
