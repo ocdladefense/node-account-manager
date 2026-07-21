@@ -3,7 +3,10 @@ import { useOutletContext } from "react-router-dom";
 import { getJobsQuery } from "./JobsQuery";
 import JobList from "./JobsList";
 
-
+/**
+ * Renders the Jobs list page, handling data fetching, loading, and error states
+ * @returns {React.JSX.Element} The active jobs overview layout
+ */
 export default function Jobs() {
     const { client } = useOutletContext();
     const [loading, setLoading] = useState(true);
