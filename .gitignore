@@ -8,6 +8,9 @@
 
 .vs
 
+# per person git ignore file
+todolist.md
+
 ## Uploads Folder ###
 /uploads/*/
 
