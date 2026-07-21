@@ -21,7 +21,7 @@ export default function Jobs() {
             try {
                 setLoading(true);
                 const response = await client.query(jobsQuery);
-                console.log(response);
+                console.log("query response:", response);
                 setJobs(response.records);
             } catch (err) {
                 setError(err);

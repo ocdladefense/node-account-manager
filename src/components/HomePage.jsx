@@ -16,7 +16,7 @@ export default function HomePage() {
             try {
                 const response = await client.query("SELECT Name, Id, Ocdla_Member_Status__c FROM Contact LIMIT 10");
 
-                console.log(response.records);
+                console.log("setContacts input: ", response.records);
 
                 setContacts(response.records);
             } catch (error) {

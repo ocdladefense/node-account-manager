@@ -39,7 +39,7 @@ export default function Documents() {
                 const resp = await client.query(soql);
                 setFiles(resp.records);
             } catch (error) {
-                console.error('Error fetching files:', error);
+                console.error('Documents.jsx: Error fetching files:', error);
             } finally {
                 setLoading(false);
             }

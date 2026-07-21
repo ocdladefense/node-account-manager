@@ -37,7 +37,7 @@ async function getApiClient() {
         token = getCookie("access_token");
         if(url == undefined || token == undefined)
         {
-            console.error("Url or token error in app.jsx", url, token);
+            console.error("App.jsx: Url or token error in app.jsx", url, token);
         }
     }
     else
@@ -46,7 +46,7 @@ async function getApiClient() {
         let applicationTokens = await fetch("/connect").then(resp => resp.json());
         if (applicationTokens.error)
         {
-            console.error(applicationTokens.error, applicationTokens.error_description);
+            console.error("App.jsx: ", applicationTokens.error, applicationTokens.error_description);
         }   
         url = applicationTokens.instance_url;
         token = applicationTokens.access_token;

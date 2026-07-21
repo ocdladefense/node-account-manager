@@ -49,7 +49,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                 {file.name} upload started.
             </div>
         ));
-        console.log(toastIds);
+        console.log("toastIds: ", toastIds);
         let updaterFunctions = toastIds.map((id) => {
             let fn = function(percentage, file) {
                 UpdateToast(id,
@@ -60,7 +60,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
             };
             return fn;
         });
-        console.log(updaterFunctions);
+        console.log("updaterFunctions:", updaterFunctions);
 
 
         files.map((file, index) => uploadFileToServer(file, applicationId, updaterFunctions[index]).then(() => {
@@ -72,7 +72,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
             afterUpload?.(name)
         })
             .catch((e) => {
-                console.log("Error Message:", e);
+                console.error("Error Message:", e);
 
                 const message =
                     e?.message ||
@@ -182,7 +182,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
 
         //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
         xhr.upload.onprogress = (event) => {
-            console.log(event);
+            console.log("uploadEvent", event);
             if (event.lengthComputable)
             {
                 const percent = Math.round(
@@ -193,7 +193,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         };
         //this checks then the upload is done, whether that is bad or good
         xhr.onload = () => {
-            console.log("Response:", xhr.response);
+            console.log("upload Response:", xhr.response);
             if (xhr.status >= 200 && xhr.status < 300)
             {
                 resolve(JSON.parse(xhr.response));

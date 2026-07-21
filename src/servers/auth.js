@@ -8,7 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-
+// why is this hard coded?
 function parseUserId(url) {
     return "005cY00000Jlv9wQAB";
     return "https://test.salesforce.com/id/00DcY000007EEn3UAG/005cY00000Jlv9wQAB";
@@ -27,7 +27,7 @@ router.get("/introspect", async (req, res) => {
         token_type_hint: "access_token"
     });
 
-    console.log("auth.js: fetch body: " ,body);
+    console.log("auth.js: introspect route: fetch body: " ,body);
 
     // Exchange authorization code for access token & id_token.
     const resp = await fetch(instanceUrl + "/services/oauth2/introspect", {
@@ -40,7 +40,7 @@ router.get("/introspect", async (req, res) => {
     });
 
     const data = await resp.json();
-    console.log("auth.js: fetch response: ", data);
+    console.log("auth.js: introspect route: fetch response: ", data);
 
     const userId = parseUserId(data.sub);
 
@@ -55,16 +55,10 @@ router.get("/introspect", async (req, res) => {
     });
 
     const userData = await userResponse.json();
-    console.log("auth.js: fetch userData: ", userData);
+    console.log("auth.js: introspect route: fetch userData: ", userData);
 
     res.json(userData);
 });
-
-
-
-
-
-
 
 router.get("/login", (req, res) => {
     const state = "some_state";
@@ -73,17 +67,12 @@ router.get("/login", (req, res) => {
     res.redirect(loginUrl);
 });
 
-
-
 router.get("/logout", (req, res) => {
 
     res.cookie('instanceUrl', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.cookie('accessToken', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.redirect("/");
 });
-
-
-
 
 router.get("/oauth/api/request", async (req, res) => {
 
@@ -123,15 +112,6 @@ router.get("/oauth/api/request", async (req, res) => {
     res.redirect("/");
 });
 
-
-
-
-
-
-
-
-
-
 router.get("/connect", async (req, res) => {
 
     const data = new URLSearchParams({
@@ -157,7 +137,7 @@ router.get("/connect", async (req, res) => {
     const credentials = await resp.json();
     if(credentials.error) console.error("auth.js: connect route: credentials error: ", credentials.error, credentials.error_description);
     else console.log("auth.js: connect route: credentials: ", credentials);
-route
+
     // 2. Set the cookie
     res.cookie('access_token', credentials.access_token, {
         httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
@@ -177,7 +157,5 @@ route
 
     res.json(credentials);
 });
-
-
 
 export default router;

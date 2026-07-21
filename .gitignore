@@ -10,6 +10,8 @@
 
 # per person git ignore file
 todolist.md
+TODOLIST.md
+TODOLIST.MD
 
 ## Uploads Folder ###
 /uploads/*/

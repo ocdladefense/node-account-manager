@@ -48,7 +48,7 @@ export default function ContactForm() {
             };
             console.log("Metadata to send: ", fileData);
             const response = await client.create("FileData__c", fileData);
-            console.log(response);
+            console.log("response:", response);
             if (!response.ok)
             {
                 let message = await response.json();
