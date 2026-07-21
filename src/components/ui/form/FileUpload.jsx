@@ -7,7 +7,19 @@ const SERVER_PORT = process.env.PORT;
 const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
 
 
-
+/**
+ * A component for uploading files, with optional preview and progress tracking.
+ * @param {Object} props - The properties for the FileUpload component.
+ * @param {string} [props.label="File Upload"] - The label for the file input.
+ * @param {string} [props.name="file-upload"] - The name and id for the file input.
+ * @param {string} [props.accepting=""] - The accepted file types (e.g., "image/*").
+ * @param {boolean} [props.preview=false] - Whether to show a preview of the selected file.
+ * @param {boolean} [props.multiple=false] - Whether to allow multiple file uploads.
+ * @param {string|null} [props.applicationId=null] - An optional application ID for server-side processing.
+ * @param {function} [props.afterUpload] - A callback function to be called after a successful upload.
+ * @returns {React.JSX.Element} The FileUpload component.
+ *
+ */
 export function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
     const [filePreview, setFilePreview] = useState(null);
     const [uploaded, setUploaded] = useState(0);
@@ -133,7 +145,14 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
     );
 }
 
-
+/**
+ * Uploads a file to the server with progress tracking and optional application ID.
+ * @param {File} file
+ * @param {string|null} applicationId
+ * @param {function} setUploaded
+ * @param {Object} reqData
+ * @returns {Promise<Object>} A promise that resolves with the server response or rejects with an error.
+ */
 export async function uploadFileToServer(file, applicationId, setUploaded = function() { }, reqData = {}) {
 
 
