@@ -35,7 +35,7 @@ async function getApiClient() {
     {
         url = getCookie("instance_url");
         token = getCookie("access_token");
-        if (url == undefined || token == undefined)
+        if (url == "undefined" || token == "undefined")
         {
             console.error("App.jsx: Url or token error in app.jsx", url, token);
         }

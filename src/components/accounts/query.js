@@ -8,8 +8,6 @@ export function getAccountQuery(accountId) {
         Site,
         Website,
         NumberOfEmployees,
-        OrderApi__Outstanding_Credits__c,
-        OrderApi__Account_Email__c,
         Industry,
         Phone,
         Fax,
