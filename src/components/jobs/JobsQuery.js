@@ -27,7 +27,7 @@ export function getJobsQuery(jobId) {
 
     let query = `SELECT ${fields.join(SQL_FIELD_SEPERATOR)} FROM Job__c`;
 
-    if(jobId) query += `WHERE Id='${jobId}'"`;
+    if (jobId) query += ` WHERE Id='${jobId}'`;
 
     return query;
 }
