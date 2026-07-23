@@ -2,7 +2,7 @@
  * Generates the SQL query string to fetch all active job postings.
  * @returns {string} The formatted SQL query string.
  */
-export function getJobsQuery() {
+export function getJobsQuery(jobId) {
 
     return `SELECT
             Id,
@@ -20,7 +20,7 @@ export function getJobsQuery() {
             OwnerId,
             PostingDate__c,
             Salary__c
-            FROM Job__c`;
+            FROM Job__c${jobId ? (" WHERE Id='" + jobId + "'") : ""}`;
 }
 
 

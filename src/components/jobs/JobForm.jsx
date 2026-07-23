@@ -11,7 +11,7 @@ import CheckBox from "../ui/form/CheckBox.jsx";
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
-export default function JobForm() {
+export default function JobForm({ job = {} }) {
     const JOB_POSTING_APP_ID = 3;
     const { client, metadata } = useOutletContext();
 
@@ -51,8 +51,8 @@ export default function JobForm() {
         <div className="container mx-auto px-2">
             <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <TextInput label="Job Title" apiName="Name" />
-                <TextInput label="Organization" apiName="Organization__c" />
+                <TextInput label="Job Title" apiName="Name" value={job.Name} />
+                <TextInput label="Organization" apiName="Organization__c" value={job.Organization__c} />
                 <TextInput label="Location" apiName="Location__c" />
                 <TextInput label="Salary" apiName="Salary__c" />
 

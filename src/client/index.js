@@ -19,11 +19,11 @@ import Documents from '../components/documents/Documents.jsx';
 import Upload from '../components/documents/Upload.jsx';
 import Jobs from '../components/jobs/Jobs.jsx';
 import JobForm from '../components/jobs/JobForm.jsx';
+import JobEdit from "../components/jobs/JobEdit.jsx";
 
 import SObject from "../components/contacts/SObject.jsx";
 
-if (process.env.NODE_ENV === 'debug')
-{
+if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
 
@@ -73,7 +73,11 @@ root.render(
                 </Route>
                 <Route path="jobs">
                     <Route index element={<Jobs />} />
-                    <Route path=":upload" element={<JobForm />} />
+                </Route>
+                <Route path="job">
+                    <Route path="new" element={<JobForm />} />
+                    <Route path=":jobId" element={<JobForm />} />
+                    <Route path=":jobId/edit" element={<JobEdit />} />
                 </Route>
             </Route>
         </Routes>
