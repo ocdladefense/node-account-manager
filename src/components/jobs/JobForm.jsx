@@ -18,7 +18,7 @@ export default function JobForm({ job = {} }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const form = e.currentTarget;
+        const form = e.target; // currentTarget
         const formData = new FormData(form);
 
         const openUntilFilled =

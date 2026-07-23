@@ -12,6 +12,7 @@
 todolist.md
 TODOLIST.md
 TODOLIST.MD
+*.code-workspace
 
 ## Uploads Folder ###
 /uploads/*/
