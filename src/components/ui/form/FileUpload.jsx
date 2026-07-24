@@ -1,7 +1,7 @@
 import { Network } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { useToast } from "../notifications/ToastService.jsx";
+import { useToast } from "../notifications/ToastService";
 
 const SERVER_PORT = process.env.PORT;
 const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;

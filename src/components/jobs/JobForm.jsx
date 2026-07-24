@@ -1,6 +1,6 @@
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
-import { useToast } from "../notifications/ToastService.jsx";
+import { useToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
