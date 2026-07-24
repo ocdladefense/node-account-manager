@@ -1,5 +1,6 @@
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import { useToast } from "../notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
@@ -15,6 +16,7 @@ export default function JobForm({ job = {} }) {
     const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
     const { client, metadata } = useOutletContext();
+    const { CreateToast, UpdateToast } = useToast();
 
 
     // add delete action, be sure to add delete confirmation (window.confirm) then redirect to jobs page
@@ -51,6 +53,9 @@ export default function JobForm({ job = {} }) {
         if (job.Id) {
             record.Id = job.Id;
             resp = await client.update('Job__c', record);
+            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                Changes saved.
+            </div>);
         }
         else {
             resp = await client.create('Job__c', record);
@@ -88,7 +93,7 @@ export default function JobForm({ job = {} }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
-                {job.Id && <Button action={handleDelete} label="Delete Job" buttonType="button" />}
+                {job.Id && <Button className="bg-red-800" action={handleDelete} label="Delete Job" buttonType="button" />}
             </form>
         </div>
     );
