@@ -47,7 +47,7 @@ export default function JobForm({ job = {} }) {
             ClosingDate__c: formData.get("ClosingDate__c") || null,
             OpenUntilFilled__c: openUntilFilled,
             IsActive__c: true,
-            
+            OwnerId: process.env.SF_CONTACT_ID
         };
         // ^^^ What about MemberId__c ? ^^^
 

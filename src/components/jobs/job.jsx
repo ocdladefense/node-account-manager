@@ -18,7 +18,7 @@ export default function Job({ job = {} }) {
             {job.OpenUntilFilled__c ? <p>Open Until Filled</p> : <Date value={job.ClosingDate__c} />}
             {/* job file */}
         
-            {job. && <Button label="Edit job" action={navigate(`job/${job.id/edit}`)} />}
+            {job.OwnerId == process.env.SF_CONTACT_ID && <Button label="Edit job" action={navigate(`job/${job.id/edit}`)} />}
         </div>
     );
 }
