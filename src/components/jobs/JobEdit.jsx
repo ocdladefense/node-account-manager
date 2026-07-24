@@ -23,6 +23,4 @@ export default function JobEdit() {
 
     return job ? <JobForm job={job} /> : null;
 
-
-
 }

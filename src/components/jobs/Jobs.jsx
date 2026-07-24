@@ -42,7 +42,7 @@ export default function Jobs() {
 
             <h1 className="card-title">There are currently {jobs.length} jobs active.</h1>
 
-            <a href="/jobs/upload" className="link">
+            <a href="/jobs/new" className="link">
                 Upload a job!
             </a>
 
