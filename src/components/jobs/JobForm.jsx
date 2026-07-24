@@ -46,7 +46,8 @@ export default function JobForm({ job = {} }) {
             PostingDate__c: formData.get("PostingDate__c") || null,
             ClosingDate__c: formData.get("ClosingDate__c") || null,
             OpenUntilFilled__c: openUntilFilled,
-            IsActive__c: true
+            IsActive__c: true,
+            
         };
         // ^^^ What about MemberId__c ? ^^^
 

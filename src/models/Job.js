@@ -26,6 +26,7 @@ export default class Job {
     salary;
 
     documentName;
+    
 
     /**
      * @param {string} title - The Job Title
