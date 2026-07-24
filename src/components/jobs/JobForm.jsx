@@ -1,11 +1,10 @@
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import Job from "../../models/Job.js";
 import CheckBox from "../ui/form/CheckBox.jsx";
-import Actions from "../ui/Actions.jsx";
 
 /**
  * Renders the Job Posting Form page for creating new job listings and handling file upploads.
@@ -13,13 +12,19 @@ import Actions from "../ui/Actions.jsx";
  * @returns {React.JSX.Element} The job posting form UI
  */
 export default function JobForm({ job = {} }) {
+    const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
     const { client, metadata } = useOutletContext();
 
-    const normalActions = {
-        // "edit": { action: handleEdit, buttonType: "button", label: "Edit Job" }
-        // add delete action, be sure to add delete confirmation (window.confirm) then redirect to jobs page
-    };
+
+    // add delete action, be sure to add delete confirmation (window.confirm) then redirect to jobs page
+    const handleDelete = async (e) => {
+        if (window.confirm("Are you sure you want to delete this job listing?")) {
+            await client.delete("Job__c", job.Id);
+            navigate(`/jobs`);
+        }
+        return;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -49,6 +54,7 @@ export default function JobForm({ job = {} }) {
         }
         else {
             resp = await client.create('Job__c', record);
+            navigate(`/jobs`);
         }
 
         let data = await resp.json();
@@ -65,7 +71,6 @@ export default function JobForm({ job = {} }) {
         <div className="container mx-auto px-2">
             <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <Actions foobar={normalActions} />
                 <TextInput label="Job Title" apiName="Name" value={job.Name} />
                 <TextInput label="Organization" apiName="Organization__c" value={job.Organization__c} />
                 <TextInput label="Location" apiName="Location__c" />
@@ -83,7 +88,7 @@ export default function JobForm({ job = {} }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Edit Job" : "Post Job"} buttonType="submit" />
-                {/* Delete Button */}
+                {job.Id && <Button action={handleDelete} label="Delete Job" buttonType="button" />}
             </form>
         </div>
     );
