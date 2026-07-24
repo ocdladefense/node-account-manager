@@ -93,7 +93,7 @@ export default function JobForm({ job = {} }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
-                {job.Id && <Button className="bg-red-800" action={handleDelete} label="Delete Job" buttonType="button" />}
+                {job.Id && <Button className="buttonStyle bg-red-800" action={handleDelete} label="Delete Job" buttonType="button" />}
             </form>
         </div>
     );
