@@ -6,6 +6,7 @@ Enable customers to manage their OCDLA accounts, profiles and related customer i
 
 ## Salesforce
 Parts of this project may require the Salesforce REST API.
+Signing into Saleforce while using a VPN will disable your account for security reasons. Please disable your VPN if you are using one.
 * Install the [Salesforce development tools for VSCode](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install).
   * This includes the VSCode extensions, the Salesforce CLI, and an appropriate version of the Java Development Kit.
 * Connect to org: <code>sf org login web --alias Sandbox__OcdPartial --instance-url https://test.salesforce.com</code>
