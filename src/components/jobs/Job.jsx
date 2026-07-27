@@ -18,10 +18,12 @@ export default function Job() {
         fetchJob();
     }, []);
 
-    console.log('jobs.jsx: ownerId: ', job.OwnerId);
-    console.log('jobs.jsx: userId: ', process.env.SF_CONTACT_ID);
-    console.log('jobs.jsx: Id Compare: ', job.OwnerId === process.env.SF_CONTACT_ID);
+    if (job){
+        console.log('Job.jsx: ownerId: ', job.OwnerId);
+        console.log('Job.jsx: userId: ', process.env.SF_CONTACT_ID);
+        console.log('Job.jsx: Id Compare: ', job.OwnerId === process.env.SF_CONTACT_ID);
 
+    }
 
     return job ? (
         <div className="container mx-auto px-2">

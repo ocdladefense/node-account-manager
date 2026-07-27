@@ -19,7 +19,10 @@ export default function JobForm({ job = {} }) {
     const { CreateToast, UpdateToast } = useToast();
 
     const handleDelete = async (e) => {
-        if (window.confirm("Are you sure you want to delete this job listing?")) {
+        if (job.OwnerId != process.env.SF_CONTACT_ID) {
+            navigate(`/job/${job.Id}`);
+        }
+        else if (window.confirm("Are you sure you want to delete this job listing?")) {
             await client.delete("Job__c", job.Id);
             navigate(`/jobs`);
         }
@@ -41,17 +44,21 @@ export default function JobForm({ job = {} }) {
             PostingDate__c: formData.get("PostingDate__c") || null,
             ClosingDate__c: formData.get("ClosingDate__c") || null,
             OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
-            IsActive__c: true,
-            OwnerId: process.env.SF_CONTACT_ID
+            IsActive__c: true
         };
         // ^^^ What about MemberId__c ? ^^^
 
         if (job.Id) {
-            record.Id = job.Id;
-            resp = await client.update('Job__c', record);
-            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Changes saved.
-            </div>);
+            if (job.OwnerId != process.env.SF_CONTACT_ID) {
+                navigate(`/job/${job.Id}`);
+            }
+            else{
+                record.Id = job.Id;
+                resp = await client.update('Job__c', record);
+                CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Changes saved.
+                </div>);
+            }
         }
         else {
             resp = await client.create('Job__c', record);
