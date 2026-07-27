@@ -18,6 +18,7 @@ import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
 import Documents from '../components/documents/Documents.jsx';
 import Upload from '../components/documents/Upload.jsx';
 import Jobs from '../components/jobs/Jobs.jsx';
+import Job from '../components/jobs/Job.jsx';
 import JobForm from '../components/jobs/JobForm.jsx';
 import JobEdit from "../components/jobs/JobEdit.jsx";
 
@@ -76,7 +77,7 @@ root.render(
                 </Route>
                 <Route path="job">
                     <Route path="new" element={<JobForm />} />
-                    <Route path=":jobId" element={<JobForm />} />
+                    <Route path=":jobId" element={<Job />} />
                     <Route path=":jobId/edit" element={<JobEdit />} />
                 </Route>
             </Route>

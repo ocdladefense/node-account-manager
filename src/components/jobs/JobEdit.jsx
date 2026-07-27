@@ -1,13 +1,11 @@
+import { useParams, useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useOutletContext } from "react-router-dom";
 import { getJobsQuery } from "./JobsQuery";
 import JobForm from "./JobForm";
 
-
 export default function JobEdit() {
 
-    const { client, metadata } = useOutletContext();
+    const { client } = useOutletContext();
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
 
@@ -20,9 +18,6 @@ export default function JobEdit() {
         fetchJob();
     }, []);
 
-
     return job ? <JobForm job={job} /> : null;
-
-
 
 }

@@ -15,11 +15,9 @@ import CheckBox from "../ui/form/CheckBox.jsx";
 export default function JobForm({ job = {} }) {
     const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
-    const { client, metadata } = useOutletContext();
+    const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
 
-
-    // add delete action, be sure to add delete confirmation (window.confirm) then redirect to jobs page
     const handleDelete = async (e) => {
         if (window.confirm("Are you sure you want to delete this job listing?")) {
             await client.delete("Job__c", job.Id);
@@ -31,12 +29,9 @@ export default function JobForm({ job = {} }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const form = e.target; // currentTarget
+        const form = e.target;
         const formData = new FormData(form);
         let resp;
-
-        const openUntilFilled =
-            formData.get("OpenUntilFilled__c") === "on";
 
         const record = {
             Name: formData.get("Name"),
@@ -45,7 +40,7 @@ export default function JobForm({ job = {} }) {
             Salary__c: formData.get("Salary__c"),
             PostingDate__c: formData.get("PostingDate__c") || null,
             ClosingDate__c: formData.get("ClosingDate__c") || null,
-            OpenUntilFilled__c: openUntilFilled,
+            OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
             IsActive__c: true,
             OwnerId: process.env.SF_CONTACT_ID
         };

@@ -12,7 +12,7 @@ export default function HomePage() {
         async function fetchContacts() {
 
             try {
-                const response = await client.query(`SELECT Name, Id, Ocdla_Member_Status__c FROM Contact WHERE Id=${process.env.SF_CONTACT_ID} LIMIT 10`);
+                const response = await client.query(`SELECT Name,Id,Ocdla_Member_Status__c FROM Contact WHERE Id='${process.env.SF_CONTACT_ID}' LIMIT 10`);
 
                 console.log("setContacts input: ", response.records);
 
