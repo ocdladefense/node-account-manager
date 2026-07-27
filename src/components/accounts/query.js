@@ -1,8 +1,8 @@
 // Account.jsx uses query for getting information about the specific account by using it's unique Id.
 export function getAccountQuery(accountId) {
-    
+
     const SQL_FIELD_SEPERATOR = ",";
-    
+
     let fields = [
         "Id",
         "Name",
@@ -16,10 +16,10 @@ export function getAccountQuery(accountId) {
         "Fax",
         "BillingAddress"
     ];
-    
+
     let query = `SELECT ${fields.join(SQL_FIELD_SEPERATOR)} FROM Account`;
 
-    if (accountId) query += `WHERE Id='${accountId}'"`;
+    if (accountId) query += ` WHERE Id='${accountId}'"`;
 
     return query;
 
