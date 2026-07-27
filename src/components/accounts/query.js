@@ -17,12 +17,11 @@ export function getAccountQuery(accountId) {
         "BillingAddress"
     ];
 
-    let query = `SELECT ${fields.join(SQL_FIELD_SEPERATOR)} FROM Account`;
+    let query = "SELECT " + fields.join(",") + " FROM Account";
 
-    if (accountId) query += ` WHERE Id='${accountId}'"`;
+    if (accountId) query += (" WHERE Id='" + accountId + "'");
 
     return query;
-
 }
 
 // Accounts.jsx uses query for getting a list of all accounts.
