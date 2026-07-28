@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
 export default function JobCard({ job }) {
 
     const navigate = useNavigate();
+    const attachementUrl = job.AttachmentUrl__c;
+    const fileName = job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "View Attachment";
+
 
 
     return (
@@ -19,6 +22,7 @@ export default function JobCard({ job }) {
             <h4>{job.Organization__c}</h4>
             <p>Location: {job.Location__c}</p>
             <p>Salary: {job.Salary__c}</p>
+            <a href={attachementUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{fileName}</a>
         </div>
     )
 }
