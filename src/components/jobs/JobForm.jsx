@@ -12,19 +12,23 @@ import CheckBox from "../ui/form/CheckBox.jsx";
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
-export default function JobForm({ job = {} }) {
+export default function JobForm({ job = {}, onCancel = null}) {
     const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
 
     const handleDelete = async (e) => {
-        if (job.OwnerId != process.env.SF_CONTACT_ID) {
-            navigate(`/job/${job.Id}`);
-        }
-        else if (window.confirm("Are you sure you want to delete this job listing?")) {
+        if (window.confirm("Are you sure you want to delete this job listing?")) {
             await client.delete("Job__c", job.Id);
             navigate(`/jobs`);
+        }
+        return;
+    }
+
+    const handleCancel = async (e) => {
+        if (window.confirm("Are you sure you want to discard changes?")) {
+            onCancel();
         }
         return;
     }
@@ -49,20 +53,14 @@ export default function JobForm({ job = {} }) {
         // ^^^ What about MemberId__c ? ^^^
 
         if (job.Id) {
-            if (job.OwnerId != process.env.SF_CONTACT_ID) {
-                navigate(`/job/${job.Id}`);
-            }
-            else{
-                record.Id = job.Id;
-                resp = await client.update('Job__c', record);
-                CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Changes saved.
-                </div>);
-            }
+            record.Id = job.Id;
+            resp = await client.update('Job__c', record);
+            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                Changes saved.
+            </div>);
         }
         else {
             resp = await client.create('Job__c', record);
-            navigate(`/jobs`);
         }
 
         let data = await resp.json();
@@ -73,6 +71,7 @@ export default function JobForm({ job = {} }) {
         const file = files[0];
 
         uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+        navigate(`/job/${jobId}`);
     };
 
     return (
@@ -81,22 +80,23 @@ export default function JobForm({ job = {} }) {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <TextInput label="Job Title" apiName="Name" value={job.Name} />
                 <TextInput label="Organization" apiName="Organization__c" value={job.Organization__c} />
-                <TextInput label="Location" apiName="Location__c" />
-                <TextInput label="Salary" apiName="Salary__c" />
+                <TextInput label="Location" apiName="Location__c" value={job.Location__c} />
+                <TextInput label="Salary" apiName="Salary__c" value={job.Salary__c} />
 
                 {/* Posted/Closing Dates */}
                 <fieldset className="border rounded p-4 mb-6">
                     <legend className="text-lg font-semibold">Active Dates</legend>
                     <div className="mb-4">
-                        <DateInput label="Posting Date" name="PostingDate__c" defaultValue={new Date()} fieldType="date" />
-                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" />
-                        <DateInput label="Closing Date" name="ClosingDate__c" defaultValue={new Date()} fieldType="date" />
+                        <DateInput label="Posting Date" name="PostingDate__c" fieldType="date" defaultValue={job.PostingDate__c || new Date()} />
+                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c } />
+                        <DateInput label="Closing Date" name="ClosingDate__c" fieldType="date" defaultValue={job.ClosingDate__c || new Date()} />
                     </div>
                 </fieldset>
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
                 {job.Id && <Button className="!bg-red-800 buttonStyle " action={handleDelete} label="Delete Job" buttonType="button" />}
+                {onCancel && <Button className="!bg-yellow-300 buttonStyle " action={handleCancel} label="Discard Changes" buttonType="button" />}
             </form>
         </div>
     );

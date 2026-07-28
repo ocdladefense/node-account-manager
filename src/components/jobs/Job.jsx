@@ -1,6 +1,7 @@
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getJobsQuery } from "./JobsQuery";
+import { compareSFId } from "./jobUtils";
 import Button from "../ui/Button.jsx";
 
 export default function Job() {
@@ -8,22 +9,29 @@ export default function Job() {
     const { client } = useOutletContext();
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
+    const [isOwner, setIsOwner] = useState(false);
+    let userId = process.env.SF_USER_ID;
+    let postingDate;
+    let closingDate;
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);
         const fetchJob = async () => {
+            let job;
             const resp = await client.query(soql);
-            setJob(resp.records[0]);
+            job = resp.records[0];
+            setJob(job);
+            setIsOwner(compareSFId(job.OwnerId, userId));
+            postingDate = new Date(...job.PostingDate__c.split("-"));
+            closingDate = new Date(...job.ClosingDate__c.split("-"));
+
         };
         fetchJob();
     }, []);
 
-    if (job){
-        console.log('Job.jsx: ownerId: ', job.OwnerId);
-        console.log('Job.jsx: userId: ', process.env.SF_CONTACT_ID);
-        console.log('Job.jsx: Id Compare: ', job.OwnerId === process.env.SF_CONTACT_ID);
-
-    }
+    // console.log(`date parsed:`, postingDate, closingDate);
+    // console.log(`date raw:`, job.PostingDate__c, job.ClosingDate__c);
+    // console.log(`date split: `, job.PostingDate__c.split("-"), job.ClosingDate__c.split("-"));
 
     return job ? (
         <div className="container mx-auto px-2">
@@ -31,11 +39,10 @@ export default function Job() {
             <p>{job.Organization__c}</p>
             <p>{job.Location__C}</p>
             <p>{job.Salary__c}</p>
-            <Date value={job.PostingDate__c} />
-            {job.OpenUntilFilled__c ? <p>Open Until Filled</p> : <Date value={job.ClosingDate__c} />}
+            <p>{postingDate}</p>
+            {job.OpenUntilFilled__c ? <p>Open Until Filled</p> : <p>{closingDate}</p>}
             {/* job file */}
-
-            {job.OwnerId == process.env.SF_CONTACT_ID && <Button label="Edit job" action={() => navigate(`job/${jobId}/edit`)} />}
+            {isOwner && <Button label="Edit job" action={() => navigate(`/job/${jobId}/edit`)} />}
         </div>
     ) : null;
 }
