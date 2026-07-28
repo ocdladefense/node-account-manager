@@ -47,7 +47,7 @@ export default function JobForm({ job = {} }) {
             ClosingDate__c: formData.get("ClosingDate__c") || null,
             OpenUntilFilled__c: openUntilFilled,
             IsActive__c: true,
-            OwnerId: process.env.SF_CONTACT_ID
+            // OwnerId: process.env.SF_CONTACT_ID,
         };
         // ^^^ What about MemberId__c ? ^^^
 
@@ -60,17 +60,31 @@ export default function JobForm({ job = {} }) {
         }
         else {
             resp = await client.create('Job__c', record);
-            navigate(`/jobs`);
         }
 
         let data = await resp.json();
         let jobId = data.id;
 
         const input = document.getElementById("jobAttachment");
+
         const files = [...input.files];
+
         const file = files[0];
 
-        uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+        if (file && jobId) {
+            const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+
+            const filePath = `uploads/JobPostings/${jobId}/${file.name}`;
+
+            const updateResp = await client.update('Job__c', {
+                Id: jobId,
+                AttachmentPath__c: filePath
+            });
+
+            console.log("Salesforce update result:", updateResp);
+
+            navigate(`/jobs`);
+        }
     };
 
     return (
