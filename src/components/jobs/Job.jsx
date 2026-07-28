@@ -23,23 +23,62 @@ export default function Job() {
             job = resp.records[0];
             setJob(job);
             setIsOwner(compareSFId(job.OwnerId, userId));
-            postingDate = new Date(...job.PostingDate__c.split("-"));
-            closingDate = new Date(...job.ClosingDate__c.split("-"));
         };
         fetchJob();
     }, []);
 
     return job ? (
-        <div className="container mx-auto px-2">
-            <h1>{job.Name}</h1>
-            <p>{job.Organization__c}</p>
-            <p>{job.Location__C}</p>
-            <p>{job.Salary__c}</p>
-            <p>{postingDate}</p>
-            {job.OpenUntilFilled__c ? <p>Open Until Filled</p> : <p>{closingDate}</p>}
-            <a href={job.AttachmentUrl__c} className="text-blue-600" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "No Attachment"}</a> <br />
-            {isOwner && <Button label="Edit job" action={() => navigate(`/job/${jobId}/edit`)} />}
+        <div className="container mx-auto px-4 py-8">
+            <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+                <div className="flex justify-between items-start mb-4">
+                    <h1 className="text-3xl font-bold text-gray-800">{job.Name}</h1>
+                    {isOwner && (
+                        <Button
+                            label="Edit Job"
+                            action={() => navigate(`/job/${jobId}/edit`)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                        />
+                    )}
+                </div>
+                <p className="text-xl text-gray-600 mb-6">{job.Organization__c}</p>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700">Location</h3>
+                        <p className="text-gray-600">{job.Location__c}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700">Salary</h3>
+                        <p className="text-gray-600">{job.Salary__c}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700">Date Posted</h3>
+                        <p className="text-gray-600">{job.PostingDate__c}</p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-700">Closing Date</h3>
+                        {job.OpenUntilFilled__c ? (
+                            <p className="text-gray-600">Open Until Filled</p>
+                        ) : (
+                            <p className="text-gray-600">{job.ClosingDate__c}</p>
+                        )}
+                    </div>
+                    {job.AttachmentUrl__c && (
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-700">Attachment</h3>
+                            <a href={job.AttachmentUrl__c} className="text-blue-600 hover:underline" target="_blank" rel="noreferrer">
+                                {job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "View Attachment"}
+                            </a>
+                        </div>
+                    )}
+
+                </div>
+                <br />
+                <div>
+                    {isOwner && <Button label="Edit job" action={() => navigate(`/job/${jobId}/edit`)} />}
+
+                </div>
+            </div>
         </div>
     ) : null;
 }

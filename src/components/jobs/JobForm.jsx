@@ -12,7 +12,7 @@ import CheckBox from "../ui/form/CheckBox.jsx";
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
-export default function JobForm({ job = {}, onCancel = null}) {
+export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
     const { client } = useOutletContext();
@@ -50,7 +50,6 @@ export default function JobForm({ job = {}, onCancel = null}) {
             OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
             IsActive__c: true
         };
-        // ^^^ What about MemberId__c ? ^^^
 
         if (job.Id) {
             record.Id = job.Id;
@@ -58,6 +57,8 @@ export default function JobForm({ job = {}, onCancel = null}) {
             CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
                 Changes saved.
             </div>);
+
+            navigate(`/job/${job.Id}`);
         }
         else {
             resp = await client.create('Job__c', record);
@@ -102,7 +103,7 @@ export default function JobForm({ job = {}, onCancel = null}) {
                     <legend className="text-lg font-semibold">Active Dates</legend>
                     <div className="mb-4">
                         <DateInput label="Posting Date" name="PostingDate__c" fieldType="date" defaultValue={job.PostingDate__c || new Date()} />
-                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c } />
+                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c} />
                         <DateInput label="Closing Date" name="ClosingDate__c" fieldType="date" defaultValue={job.ClosingDate__c || new Date()} />
                     </div>
                 </fieldset>
