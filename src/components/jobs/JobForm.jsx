@@ -75,7 +75,7 @@ export default function JobForm({ job = {}, onCancel = null}) {
         if (file && jobId) {
             const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
 
-            const filePath = `uploads/JobPostings/${jobId}/${file.name}`;
+            const filePath = `${jobId}/${file.name}`;
 
             const updateResp = await client.update('Job__c', {
                 Id: jobId,

@@ -13,6 +13,9 @@ export default function Job() {
     let userId = process.env.SF_USER_ID;
     let postingDate;
     let closingDate;
+    let attachmentUrl;
+    let fileName;
+
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);
@@ -24,6 +27,8 @@ export default function Job() {
             setIsOwner(compareSFId(job.OwnerId, userId));
             postingDate = new Date(...job.PostingDate__c.split("-"));
             closingDate = new Date(...job.ClosingDate__c.split("-"));
+            attachmentUrl = job.AttachmentUrl__c;
+            fileName = job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "View Attachment";
 
         };
         fetchJob();
@@ -41,8 +46,9 @@ export default function Job() {
             <p>{job.Salary__c}</p>
             <p>{postingDate}</p>
             {job.OpenUntilFilled__c ? <p>Open Until Filled</p> : <p>{closingDate}</p>}
-            {/* job file */}
+            <a href={job.AttachmentUrl__c} className="text-blue-600" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "View Attachment"}</a> <br />
             {isOwner && <Button label="Edit job" action={() => navigate(`/job/${jobId}/edit`)} />}
+
         </div>
     ) : null;
 }

@@ -23,7 +23,7 @@ export default function JobCard({ job }) {
                 <h4>{job.Organization__c}</h4>
                 <p>Location: {job.Location__c}</p>
                 <p>Salary: {job.Salary__c}</p>
-                <a href={attachementUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{fileName}</a>
+                <a href={attachementUrl} className="text-blue-600" target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{fileName}</a>
             </div>
         </div>
     )
