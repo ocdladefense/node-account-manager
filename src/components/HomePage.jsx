@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
+import { getAccountContactsQuery } from './accounts/query';
 
 export default function HomePage() {
 
@@ -12,9 +13,7 @@ export default function HomePage() {
         async function fetchContacts() {
 
             try {
-                const response = await client.query(`SELECT Name, Id, Ocdla_Member_Status__c FROM Contact WHERE Id=${process.env.SF_CONTACT_ID} LIMIT 10`);
-
-                console.log("setContacts input: ", response.records);
+                const response = await client.query(getAccountContactsQuery(process.env.SF_ACCOUNT_ID));
 
                 setContacts(response.records);
             } catch (error) {

@@ -12,14 +12,12 @@ import CheckBox from "../ui/form/CheckBox.jsx";
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
-export default function JobForm({ job = {} }) {
+export default function JobForm({ job = {}, onCancel = null}) {
     const navigate = useNavigate();
     const JOB_POSTING_APP_ID = 3;
-    const { client, metadata } = useOutletContext();
+    const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
 
-
-    // add delete action, be sure to add delete confirmation (window.confirm) then redirect to jobs page
     const handleDelete = async (e) => {
         if (window.confirm("Are you sure you want to delete this job listing?")) {
             await client.delete("Job__c", job.Id);
@@ -28,15 +26,19 @@ export default function JobForm({ job = {} }) {
         return;
     }
 
+    const handleCancel = async (e) => {
+        if (window.confirm("Are you sure you want to discard changes?")) {
+            onCancel();
+        }
+        return;
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const form = e.target; // currentTarget
+        const form = e.target;
         const formData = new FormData(form);
         let resp;
-
-        const openUntilFilled =
-            formData.get("OpenUntilFilled__c") === "on";
 
         const record = {
             Name: formData.get("Name"),
@@ -45,9 +47,8 @@ export default function JobForm({ job = {} }) {
             Salary__c: formData.get("Salary__c"),
             PostingDate__c: formData.get("PostingDate__c") || null,
             ClosingDate__c: formData.get("ClosingDate__c") || null,
-            OpenUntilFilled__c: openUntilFilled,
-            IsActive__c: true,
-            OwnerId: process.env.SF_CONTACT_ID
+            OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
+            IsActive__c: true
         };
         // ^^^ What about MemberId__c ? ^^^
 
@@ -60,7 +61,6 @@ export default function JobForm({ job = {} }) {
         }
         else {
             resp = await client.create('Job__c', record);
-            navigate(`/jobs`);
         }
 
         let data = await resp.json();
@@ -71,6 +71,7 @@ export default function JobForm({ job = {} }) {
         const file = files[0];
 
         uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+        navigate(`/job/${jobId}`);
     };
 
     return (
@@ -79,22 +80,23 @@ export default function JobForm({ job = {} }) {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <TextInput label="Job Title" apiName="Name" value={job.Name} />
                 <TextInput label="Organization" apiName="Organization__c" value={job.Organization__c} />
-                <TextInput label="Location" apiName="Location__c" />
-                <TextInput label="Salary" apiName="Salary__c" />
+                <TextInput label="Location" apiName="Location__c" value={job.Location__c} />
+                <TextInput label="Salary" apiName="Salary__c" value={job.Salary__c} />
 
                 {/* Posted/Closing Dates */}
                 <fieldset className="border rounded p-4 mb-6">
                     <legend className="text-lg font-semibold">Active Dates</legend>
                     <div className="mb-4">
-                        <DateInput label="Posting Date" name="PostingDate__c" defaultValue={new Date()} fieldType="date" />
-                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" />
-                        <DateInput label="Closing Date" name="ClosingDate__c" defaultValue={new Date()} fieldType="date" />
+                        <DateInput label="Posting Date" name="PostingDate__c" fieldType="date" defaultValue={job.PostingDate__c || new Date()} />
+                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c } />
+                        <DateInput label="Closing Date" name="ClosingDate__c" fieldType="date" defaultValue={job.ClosingDate__c || new Date()} />
                     </div>
                 </fieldset>
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
                 {job.Id && <Button className="!bg-red-800 buttonStyle " action={handleDelete} label="Delete Job" buttonType="button" />}
+                {onCancel && <Button className="!bg-yellow-300 buttonStyle " action={handleCancel} label="Discard Changes" buttonType="button" />}
             </form>
         </div>
     );
