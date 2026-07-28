@@ -12,7 +12,7 @@ export default function JobCard({ job }) {
 
     const navigate = useNavigate();
     const attachementUrl = job.AttachmentUrl__c;
-    const fileName = job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "View Attachment";
+    const fileName = job.AttachmentPath__c ? job.AttachmentPath__c.split("/").pop() : "No Attachment";
 
 
 
