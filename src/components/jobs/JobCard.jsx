@@ -17,12 +17,14 @@ export default function JobCard({ job }) {
 
 
     return (
-        <div className="border-t-2 p-4" onClick={navigate(`/job/${job.id}`)}>
-            <h3 className="card-title">{job.Name}</h3>
-            <h4>{job.Organization__c}</h4>
-            <p>Location: {job.Location__c}</p>
-            <p>Salary: {job.Salary__c}</p>
-            <a href={attachementUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{fileName}</a>
+        <div className="border-t-2">
+            <div className="p-4 hover:cursor-pointer hover:border-2 hover:border-blue-300" onClick={() => navigate(`/job/${job.Id}`)}>
+                <h3 className="card-title">{job.Name}</h3>
+                <h4>{job.Organization__c}</h4>
+                <p>Location: {job.Location__c}</p>
+                <p>Salary: {job.Salary__c}</p>
+                <a href={attachementUrl} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>{fileName}</a>
+            </div>
         </div>
     )
 }

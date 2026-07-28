@@ -1,28 +1,30 @@
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useOutletContext } from "react-router-dom";
 import { getJobsQuery } from "./JobsQuery";
+import { compareSFId } from "./jobUtils";
 import JobForm from "./JobForm";
 
-
 export default function JobEdit() {
-
-    const { client, metadata } = useOutletContext();
+    const navigate = useNavigate();
+    const { client } = useOutletContext();
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
+    const [isOwner, setIsOwner] = useState(false);
+    let userId = process.env.SF_USER_ID;
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);
         const fetchJob = async () => {
+            let job; 
             const resp = await client.query(soql);
-            setJob(resp.records[0]);
+            job = resp.records[0];
+            setJob(job);
+            setIsOwner(compareSFId(job.OwnerId, userId));
         };
         fetchJob();
     }, []);
 
-
-    return job ? <JobForm job={job} /> : null;
-
-
-
+    return isOwner ? (
+    <JobForm job={job} onCancel={() => navigate(`/job/${job.Id}`)}/>
+) : <div>You do not have permission to edit this job.</div>;
 }
