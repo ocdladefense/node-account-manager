@@ -35,24 +35,24 @@ export default function Header({ loggedIn = false }) {
     };
 
     if (loggedIn) {
-        console.log("User is logged in");
+        //console.log("User is logged in");
         items.push(logoutItem);
     } else {
-        console.log("User is NOT logged in");
+        //console.log("User is NOT logged in");
         items.push(loginItem);
     }
 
     // 
 
     return (
-        <header className="w-full mb-0 py-1 px-[10px] sticky top-0 z-50 bg-transparent">
+        <header className="w-full mb-0 py-1 px-[10px] fixed top-0 z-50 bg-transparent">
             <nav>
 
                 <ul className="inline-block" style={{ float: "right" }}>
 
                     <li style={{ verticalAlign: "middle" }} className="inline-block">
                         <a href="/">
-                            <img className="phone:w-[150px] desktop:w-[200px]" style={{ display: "inline-block", verticalAlign: "middle", width: "250px" }} src="/images/logos/logo.png" />
+                            <img className="phone:w-[150px] desktop:w-[200px]" style={{ verticalAlign: "middle", width: "250px" }} src="/images/logos/logo.png" />
                         </a>
                     </li>
 
