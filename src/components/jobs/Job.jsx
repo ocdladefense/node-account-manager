@@ -33,6 +33,7 @@ export default function Job() {
                 <div className="flex justify-between items-start mb-4">
                     <h1 className="text-3xl font-bold text-gray-800">{job.Name}</h1>
                 </div>
+
                 <p className="text-xl text-gray-600 mb-6">{job.Organization__c}</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
