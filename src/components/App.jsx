@@ -82,9 +82,9 @@ export default function App() {
         <ToastProvider>
             <div className="mx-auto">
                 <Header loggedIn={false} />
-                <div className='flex mt-20'>
+                <div className='flex w-full'>
                     <Menu />
-                    {!appReady ? <h1>Loading...</h1> : <Outlet context={{ client }} />}
+                    {appReady ? <Outlet context={{ client }} /> : <h1>Loading...</h1>}
                 </div>
             </div>
         </ToastProvider>
