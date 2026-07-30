@@ -18,6 +18,7 @@ import districtRoutes from './district.js';
 import legislatorsRoutes from './legislators.js';
 import uploadRouter from './upload.js';
 import downloadRouter from './download.js';
+import fs from 'fs';
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -95,6 +96,37 @@ app.all('/{*any}', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
+
+
+// route to delete uploaded files
+app.delete("/delete", (req, res) => {
+    const filePath = req.body.path;
+
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    const absolutePath = path.join(uploadsDir, filePath);
+
+    if (!absolutePath.startsWith(uploadsDir)) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid path"
+        });
+    }
+
+    console.log("app.js attempt delete file: ", absolutePath);
+    fs.unlink(absolutePath, err => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                error: err.message
+            });
+        }
+
+        res.json({
+            success: true
+        });
+    });
+    console.log("app.js: delete result: ", res);
+});
 
 
 

@@ -85,15 +85,15 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(req.headers);
+        console.log("upload.js: upload req.headers: ", req.headers);
         let appId = req.headers["x-applicationid"];
         if (!appId)
         {
             throw new Error("No application Id provided.")
         }
-        console.log("App Id:" + appId);
+        console.log("upload.js: App Id:" + appId);
         let app = Registered_Applications[appId];
-        console.log("App:" + app);
+        console.log("upload.js: App: ", app);
         let destination = app.destination;
 
         destination(req, file, cb);
