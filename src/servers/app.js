@@ -65,19 +65,19 @@ app.use('/', downloadRouter);
 
 
 
-app.post('/jobs/upload', (req, res) => {
-    // Handle the job posting data and file upload here
-    console.log("app.js: Received job posting data:", req.body);
-    // You can save the job posting data to your database here
-    // Save the job as a record with two properties: title and salary.
+// app.post('/jobs/upload', (req, res) => {
+//     // Handle the job posting data and file upload here
+//     console.log("app.js: Received job posting data:", req.body);
+//     // You can save the job posting data to your database here
+//     // Save the job as a record with two properties: title and salary.
 
-    // save the job.
+//     // save the job.
 
 
-    const jobId = createUniqueAlphanumericId(16);
+//     const jobId = createUniqueAlphanumericId(16);
 
-    res.json({ success: true, jobId });
-});
+//     res.json({ success: true, jobId });
+// });
 
 
 
@@ -91,27 +91,20 @@ app.get('/', (req, res) => {
 
 
 
-// Define a route to serve index.html
-app.all('/{*any}', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
-});
-
-
-
 // route to delete uploaded files
 app.delete("/delete", (req, res) => {
     const filePath = req.body.path;
-
+    
     const uploadsDir = path.join(process.cwd(), "uploads");
     const absolutePath = path.join(uploadsDir, filePath);
-
+    
     if (!absolutePath.startsWith(uploadsDir)) {
         return res.status(400).json({
             success: false,
             error: "Invalid path"
         });
     }
-
+    
     console.log("app.js attempt delete file: ", absolutePath);
     fs.unlink(absolutePath, err => {
         if (err) {
@@ -120,13 +113,22 @@ app.delete("/delete", (req, res) => {
                 error: err.message
             });
         }
-
+        
         res.json({
             success: true
         });
     });
     console.log("app.js: delete result: ", res);
 });
+
+
+
+
+// Define a route to serve index.html
+app.all('/{*any}', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+});
+
 
 
 

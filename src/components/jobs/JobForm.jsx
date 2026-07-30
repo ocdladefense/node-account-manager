@@ -21,7 +21,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
             await client.delete("Job__c", job.Id);
-            deleteFile(job.AttachmentPath__c)
+            deleteFile(`JobPostings/${job.AttachmentPath__c}`);
             navigate(`/jobs`);
         }
         return;
