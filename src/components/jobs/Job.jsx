@@ -30,6 +30,7 @@ export default function Job() {
     return job ? (
         <div className="container mx-auto px-4 py-8">
             <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+                <Button className="!w-fit !bg-white !text-gray-800 !border border-black-300 !hover:bg-gray-100 !px-3 !py-1 !text-sm !font-medium !rounded-lg !transition-colors" action={() => navigate(`/jobs`)} label="< Back" buttonType="button"></Button>
                 <div className="flex justify-between items-start mb-4">
                     <h1 className="text-3xl font-bold text-gray-800">{job.Name}</h1>
                 </div>

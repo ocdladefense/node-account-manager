@@ -93,6 +93,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         <div className="container mx-auto px-2">
             <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                {!onCancel && <Button className="!w-fit !bg-white !text-gray-800 !border border-black-300 !hover:bg-gray-100 !px-3 !py-1 !text-sm !font-medium !rounded-lg !transition-colors" action={() => navigate(`/jobs`)} label="< Back" buttonType="button"></Button>}
                 <TextInput label="Job Title" apiName="Name" value={job.Name} />
                 <TextInput label="Organization" apiName="Organization__c" value={job.Organization__c} />
                 <TextInput label="Location" apiName="Location__c" value={job.Location__c} />
@@ -110,8 +111,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
-                {job.Id && <Button className="!bg-red-800 buttonStyle " action={handleDelete} label="Delete Job" buttonType="button" />}
-                {onCancel && <Button className="!bg-yellow-300 buttonStyle " action={handleCancel} label="Discard Changes" buttonType="button" />}
+                {job.Id && <Button className="!bg-red-800" action={handleDelete} label="Delete Job" buttonType="button" />}
+                {onCancel && <Button className="!bg-yellow-300" action={handleCancel} label="Discard Changes" buttonType="button" />}
             </form>
         </div>
     );
