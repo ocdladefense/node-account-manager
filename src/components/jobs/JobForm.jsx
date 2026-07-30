@@ -4,7 +4,6 @@ import { useToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
-import Job from "../../models/Job.js";
 import CheckBox from "../ui/form/CheckBox.jsx";
 
 /**
@@ -62,6 +61,9 @@ export default function JobForm({ job = {}, onCancel = null }) {
         }
         else {
             resp = await client.create('Job__c', record);
+            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                Job posted.
+            </div>);
         }
 
         let data = await resp.json();
@@ -85,13 +87,13 @@ export default function JobForm({ job = {}, onCancel = null }) {
 
             console.log("Salesforce update result:", updateResp);
 
-            navigate(`/job/${jobId}`);
         }
+        navigate(`/job/${jobId}`);
     };
 
     return (
         <div className="container mx-auto px-2">
-            <h1 className="text-2xl font-bold mb-6">Post a Job</h1>
+            <h1 className="text-2xl font-bold mb-6 mt-6">{job.Id ? "Edit Job Posting" : "Post a Job"}</h1>
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 {!onCancel && <Button className="!w-fit !bg-white !text-gray-800 !border border-black-300 !hover:bg-gray-100 !px-3 !py-1 !text-sm !font-medium !rounded-lg !transition-colors" action={() => navigate(`/jobs`)} label="< Back" buttonType="button"></Button>}
                 <TextInput label="Job Title" apiName="Name" value={job.Name} />
