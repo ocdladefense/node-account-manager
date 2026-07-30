@@ -32,13 +32,6 @@ export default function Job() {
             <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
                 <div className="flex justify-between items-start mb-4">
                     <h1 className="text-3xl font-bold text-gray-800">{job.Name}</h1>
-                    {isOwner && (
-                        <Button
-                            label="Edit Job"
-                            action={() => navigate(`/job/${jobId}/edit`)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                        />
-                    )}
                 </div>
                 <p className="text-xl text-gray-600 mb-6">{job.Organization__c}</p>
 
