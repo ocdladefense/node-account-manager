@@ -29,7 +29,7 @@ export default function Jobs() {
     const [onlyOwned, setOnlyOwned] = useState(false);
     const [closingDateSort, setClosingDateSort] = useState("");
 
-    const userId = process.env.SF_USER_ID;
+    const userId = client.getUserId(); // New method from SalesforceRestApi, replaced .env hardcode
 
     useEffect(() => {
         async function fetchJobs() {

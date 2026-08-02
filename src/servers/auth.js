@@ -8,20 +8,49 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// why is this hard coded?
-function parseUserId(url) {
-    return "005cY00000Jlv9wQAB";
-    return "https://test.salesforce.com/id/00DcY000007EEn3UAG/005cY00000Jlv9wQAB";
+// ---!!!--- CHECK THIS FILE FOR ANY NECESSARY SANITIZATION ---!!!---
+
+/**
+ * Extracts the Salesforce user ID from an identity URL.
+ *
+ * Example identity URL:
+ * https://test.salesforce.com/id/ORG_ID/USER_ID
+ *
+ * @param {string} identityUrl
+ * @returns {string}
+ */
+function parseUserId(identityUrl) {
+    if (!identityUrl) {
+        throw new Error(
+            "Cannot parse Salesforce user ID: identity URL is missing."
+        );
+    }
+
+    const url = new URL(identityUrl);
+
+    const pathParts = url.pathname
+        .split("/")
+        .filter(Boolean); // removes the empty string at [0]
+
+    const userId = pathParts.at(-1); // Grabs the last item, in this case the user ID
+
+    if (!userId || !userId.startsWith("005")) {
+        throw new Error(
+            "Salesforce identity URL did not contain a valid user ID."
+        );
+    }
+
+    return userId;
 }
 
 // Todo, turn this into a POST endpoint.
 router.get("/introspect", async (req, res) => {
 
-    const accessToken = req.cookies.accessToken;
-    const instanceUrl = req.cookies.instanceUrl;
+    const access_token = req.cookies.access_token;
+    const instance_url = req.cookies.instance_url;
 
     const body = new URLSearchParams({
-        token: accessToken,
+        token: access_token,
         client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
         client_secret: process.env.SF_OAUTH_SESSION_CLIENT_SECRET,
         token_type_hint: "access_token"
@@ -30,7 +59,7 @@ router.get("/introspect", async (req, res) => {
     console.log("auth.js: introspect route: fetch body: ", body);
 
     // Exchange authorization code for access token & id_token.
-    const resp = await fetch(instanceUrl + "/services/oauth2/introspect", {
+    const resp = await fetch(instance_url + "/services/oauth2/introspect", {
         method: "POST",
         body: body,
         headers: {
@@ -46,10 +75,10 @@ router.get("/introspect", async (req, res) => {
 
     const query = `SELECT ContactId FROM User WHERE Id = '${userId}'`;
 
-    const userResponse = await fetch(instanceUrl + "/services/data/v56.0/query?q=" + encodeURIComponent(query), {
+    const userResponse = await fetch(instance_url + "/services/data/v56.0/query?q=" + encodeURIComponent(query), {
         method: "GET",
         headers: {
-            'Authorization': `Bearer ${accessToken}`,
+            'Authorization': `Bearer ${access_token}`,
             'Accept': 'application/json'
         }
     });
@@ -69,8 +98,10 @@ router.get("/login", (req, res) => {
 
 router.get("/logout", (req, res) => {
 
-    res.cookie('instanceUrl', '', { expires: new Date(0) }); // Setting expiration to epoch
-    res.cookie('accessToken', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
+
     res.redirect("/");
 });
 
@@ -89,8 +120,6 @@ router.get("/oauth/api/request", async (req, res) => {
         grant_type: "authorization_code"
     });
 
-    console.log("auth.js: api request response: ", data);
-
     // Exchange authorization code for access token & id_token.
     const response = await fetch(process.env.SF_OAUTH_SESSION_TOKEN_URL, {
         method: "POST",
@@ -101,7 +130,31 @@ router.get("/oauth/api/request", async (req, res) => {
     });
 
     const access_token_data = await response.json();
-    console.log("auth.js: api request access_token_data: ", access_token_data);
+
+    if (!response.ok || access_token_data.error) {
+        console.error(
+            "Salesforce OAuth error:",
+            access_token_data.error,
+            access_token_data.error_description
+        );
+
+        return res.status(401).json({
+            error: "Salesforce login failed."
+        });
+    }
+
+    const userId = parseUserId(access_token_data.id);
+
+    console.log(
+        "Salesforce login response fields:",
+        Object.keys(access_token_data)
+    );
+
+    console.log("Salesforce identity values:", {
+        user_id: access_token_data.user_id,
+        id: access_token_data.id,
+        hasIdToken: Boolean(access_token_data.id_token)
+    });
 
     let options = {
         httpOnly: false,
@@ -112,8 +165,7 @@ router.get("/oauth/api/request", async (req, res) => {
 
     res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
     res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
-    // What is id_token?
-    const { id_token } = access_token_data;
+    res.cookie("user_id", userId, options);
 
     res.redirect("/");
 });
@@ -142,8 +194,7 @@ router.get("/connect", async (req, res) => {
 
     const credentials = await resp.json();
 
-    if (credentials.error)
-    {
+    if (credentials.error) {
         console.error("auth.js: ", credentials.error, credentials.error_description);
 
 
@@ -159,8 +210,7 @@ router.get("/connect", async (req, res) => {
 
         res.status(500).send({ error: credentials.error });
     }
-    else
-    {
+    else {
         console.log("auth.js: connect route: credentials: ", credentials);
         // 2. Set the cookie
         res.cookie('access_token', credentials.access_token, {

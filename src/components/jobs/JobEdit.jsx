@@ -10,12 +10,12 @@ export default function JobEdit() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = process.env.SF_USER_ID;
+    let userId = client.getUserId();
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);
         const fetchJob = async () => {
-            let job; 
+            let job;
             const resp = await client.query(soql);
             job = resp.records[0];
             setJob(job);
@@ -25,6 +25,6 @@ export default function JobEdit() {
     }, []);
 
     return isOwner ? (
-    <JobForm job={job} onCancel={() => navigate(`/job/${job.Id}`)}/>
-) : <div>You do not have permission to edit this job.</div>;
+        <JobForm job={job} onCancel={() => navigate(`/job/${job.Id}`)} />
+    ) : <div>You do not have permission to edit this job.</div>;
 }
