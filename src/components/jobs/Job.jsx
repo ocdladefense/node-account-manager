@@ -4,6 +4,7 @@ import { getJobsQuery } from "./JobsQuery";
 import { compareSFId } from "./jobUtils";
 import Button from "../ui/Button.jsx";
 import { BackButton } from "../ui/Button.jsx";
+import DateDisplay from "../ui/DateDisplay.jsx";
 
 export default function Job() {
     const navigate = useNavigate();
@@ -48,15 +49,13 @@ export default function Job() {
                         <p className="text-gray-600">{job.Salary__c}</p>
                     </div>
                     <div>
-                        <h3 className="text-lg font-semibold text-gray-700">Date Posted</h3>
-                        <p className="text-gray-600">{job.PostingDate__c}</p>
+                        <DateDisplay label="Date Posted" value={job.PostingDate__c} type="Date" />
                     </div>
                     <div>
-                        <h3 className="text-lg font-semibold text-gray-700">Closing Date</h3>
                         {job.OpenUntilFilled__c ? (
                             <p className="text-gray-600">Open Until Filled</p>
                         ) : (
-                            <p className="text-gray-600">{job.ClosingDate__c}</p>
+                            <DateDisplay label="Closing Date" value={job.ClosingDate__c} type="Date" />
                         )}
                     </div>
                     {job.AttachmentUrl__c && (
