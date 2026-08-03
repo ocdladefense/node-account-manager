@@ -94,6 +94,10 @@ app.get('/', (req, res) => {
 // route to delete uploaded files
 app.delete("/delete", (req, res) => {
     const filePath = req.body.path;
+    const isDirectory = req.body.isDirectory || false;
+    const recursive = req.body.recursive || false;
+
+    const rmdirOptions = { recursive: recursive, force:true};
     
     const uploadsDir = path.join(process.cwd(), "uploads");
     const absolutePath = path.join(uploadsDir, filePath);
@@ -104,21 +108,36 @@ app.delete("/delete", (req, res) => {
             error: "Invalid path"
         });
     }
-    
-    console.log("app.js attempt delete file: ", absolutePath);
-    fs.unlink(absolutePath, err => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                error: err.message
+
+    if (isDirectory){
+        fs.rm(absolutePath, rmdirOptions, err => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    error: err.message
+                });
+            }
+
+            res.json({
+                success: true
             });
-        }
-        
-        res.json({
-            success: true
         });
-    });
-    console.log("app.js: delete result: ", res);
+    }
+
+    else{
+        fs.unlink(absolutePath, err => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    error: err.message
+                });
+            }
+
+            res.json({
+                success: true
+            });
+        });
+    }
 });
 
 

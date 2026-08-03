@@ -223,29 +223,44 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
  * @async
  * @function deleteFile
  * @param {string} filePath - The relative path or identifier of the file to delete.
+ * @param {bool} isDirectory - indicates filePath leads to a directory
+ * @param {bool} recursive - should delete all directory contents and sub directories
  * @returns {Promise<void>} Resolves when the request completes.
  *
  * @throws {Error} If the request fails or the server returns an unexpected response.
  *
  * @example
  * await deleteFile("uploads/example.pdf");
+ * 
+ * @example
+ * await deleteFile("uploads/examples", true);
  */
-export async function deleteFile(filePath) {
-    const response = await fetch("/delete", {
+export async function deleteFile(filePath, isDirectory = false, recursive = false) {
+
+    const endpoint = "/delete";
+
+    const body = {
+        path: filePath,
+        isDirectory: isDirectory,
+        recursive: recursive
+    }
+
+    const request = {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            path: filePath
-        })
-    });
+        body: JSON.stringify(body)
+    }
+
+    const response = await fetch(endpoint, request);
 
     const result = await response.json();
 
     if (result.success) {
-        console.log("FileUpload.jsx: Deleted: ", filePath);
+        console.log("Deleted: ", filePath);
     } else {
-        alert(result.error);
-    }
+        console.log("Failed to delete: ", result.error);    }
+
+    return result;
 }
