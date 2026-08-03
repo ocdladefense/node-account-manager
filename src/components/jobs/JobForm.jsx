@@ -96,12 +96,9 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 Id: jobId,
                 AttachmentPath__c: filePath
             });
-<<<<<<< HEAD
 
             console.log("Salesforce update result:", updateResp);
 
-=======
->>>>>>> job-file-delete
         }
         navigate(`/job/${jobId}`);
     };
