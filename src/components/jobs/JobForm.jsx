@@ -1,4 +1,4 @@
-import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer, deleteFile } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
@@ -14,20 +14,32 @@ import CheckBox from "../ui/form/CheckBox.jsx";
  */
 export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
-    const JOB_POSTING_APP_ID = 3;
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
-
+    const JOB_POSTING_APP_ID = 3;
+    
     const handleDelete = async (e) => {
-        if (window.confirm("Are you sure you want to delete this job listing?")) {
-            await client.delete("Job__c", job.Id);
-            navigate(`/jobs`);
+        if (window.confirm("Delete this job listing? This cannot be undone.")) {
+            let fileResult;
+
+            if (job.AttachmentPath__c) {
+                fileResult = await deleteFile(`JobPostings/${job.Id}`, true, true);
+            }
+            
+            if (!fileResult.success){
+                alert("Failed to delete file: " + fileResult.error);
+            }
+            else{
+                await client.delete("Job__c", job.Id);
+                navigate(`/jobs`);
+            }
+            
         }
         return;
     }
 
     const handleCancel = async (e) => {
-        if (window.confirm("Are you sure you want to discard changes?")) {
+        if (window.confirm("Discard all changes? This cannot be undone.")) {
             onCancel();
         }
         return;
@@ -38,9 +50,10 @@ export default function JobForm({ job = {}, onCancel = null }) {
         e.stopPropagation();
         const form = e.target;
         const formData = new FormData(form);
-        let resp;
+        
+        let response;
 
-        const record = {
+        const jobRecord = {
             Name: formData.get("Name"),
             Organization__c: formData.get("Organization__c"),
             Location__c: formData.get("Location__c"),
@@ -52,8 +65,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
         };
 
         if (job.Id) {
-            record.Id = job.Id;
-            resp = await client.update('Job__c', record);
+            jobRecord.Id = job.Id;
+            response = await client.update('Job__c', jobRecord);
             CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
                 Changes saved.
             </div>);
@@ -61,20 +74,18 @@ export default function JobForm({ job = {}, onCancel = null }) {
             navigate(`/job/${job.Id}`);
         }
         else {
-            resp = await client.create('Job__c', record);
+            response = await client.create('Job__c', jobRecord);
             CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Job posted.
+                Job Posted.
             </div>);
         }
 
-        let data = await resp.json();
-        let jobId = data.id;
+        let confirmation = await response.json();
+        let jobId = confirmation.id;
 
-        const input = document.getElementById("jobAttachment");
-
-        const files = [...input.files];
-
-        const file = files[0];
+        const fileInput = document.getElementById("jobAttachment"); 
+        const fileList = fileInput.files;
+        const file = fileList[0];
 
         if (file && jobId) {
             const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
@@ -85,9 +96,12 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 Id: jobId,
                 AttachmentPath__c: filePath
             });
+<<<<<<< HEAD
 
             console.log("Salesforce update result:", updateResp);
 
+=======
+>>>>>>> job-file-delete
         }
         navigate(`/job/${jobId}`);
     };
@@ -112,7 +126,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
                     </div>
                 </fieldset>
 
-                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} standalone={false} />
+                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
                 {job.Id && <CautionButton className="" action={handleDelete} label="Delete Job" buttonType="button" />}
                 {onCancel && <Button className="!bg-yellow-300" action={handleCancel} label="Discard Changes" buttonType="button" />}

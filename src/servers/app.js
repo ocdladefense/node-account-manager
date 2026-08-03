@@ -18,6 +18,7 @@ import districtRoutes from './district.js';
 import legislatorsRoutes from './legislators.js';
 import uploadRouter from './upload.js';
 import downloadRouter from './download.js';
+import fs from 'fs';
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -64,19 +65,19 @@ app.use('/', downloadRouter);
 
 
 
-app.post('/jobs/upload', (req, res) => {
-    // Handle the job posting data and file upload here
-    console.log("app.js: Received job posting data:", req.body);
-    // You can save the job posting data to your database here
-    // Save the job as a record with two properties: title and salary.
+// app.post('/jobs/upload', (req, res) => {
+//     // Handle the job posting data and file upload here
+//     console.log("app.js: Received job posting data:", req.body);
+//     // You can save the job posting data to your database here
+//     // Save the job as a record with two properties: title and salary.
 
-    // save the job.
+//     // save the job.
 
 
-    const jobId = createUniqueAlphanumericId(16);
+//     const jobId = createUniqueAlphanumericId(16);
 
-    res.json({ success: true, jobId });
-});
+//     res.json({ success: true, jobId });
+// });
 
 
 
@@ -85,6 +86,58 @@ app.post('/jobs/upload', (req, res) => {
 // Define a route to serve index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+});
+
+
+
+
+// route to delete uploaded files
+app.delete("/delete", (req, res) => {
+    const filePath = req.body.path;
+    const isDirectory = req.body.isDirectory || false;
+    const recursive = req.body.recursive || false;
+
+    const rmdirOptions = { recursive: recursive, force:true};
+    
+    const uploadsDir = path.join(process.cwd(), "uploads");
+    const absolutePath = path.join(uploadsDir, filePath);
+    
+    if (!absolutePath.startsWith(uploadsDir)) {
+        return res.status(400).json({
+            success: false,
+            error: "Invalid path"
+        });
+    }
+
+    if (isDirectory){
+        fs.rm(absolutePath, rmdirOptions, err => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    error: err.message
+                });
+            }
+
+            res.json({
+                success: true
+            });
+        });
+    }
+
+    else{
+        fs.unlink(absolutePath, err => {
+            if (err) {
+                return res.status(500).json({
+                    success: false,
+                    error: err.message
+                });
+            }
+
+            res.json({
+                success: true
+            });
+        });
+    }
 });
 
 

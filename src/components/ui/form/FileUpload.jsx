@@ -92,8 +92,6 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
         );
     }
 
-
-
     return (
         <div >
             <label className="text-lg font-semibold">{label}</label>
@@ -107,16 +105,6 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                     className="file-input file-input-bordered w-full"
                     multiple={multiple}
                 />
-
-                {/*
-                <button
-                    type="submit"
-                    className="buttonStyle"
-
-                >
-                    Save {label}
-                </button>
-                */}
 
                 {filePreview && preview === true &&
                     <img src={filePreview} className="w-50 h-75 rounded-sm" />}
@@ -141,6 +129,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
 
 /**
  * Uploads a file to the server with progress tracking and optional application ID.
+ * @async
  * @param {File} file
  * @param {string|null} applicationId
  * @param {function} setUploaded
@@ -228,3 +217,50 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         xhr.send(formData);
     });
 };
+
+/**
+ * Sends a request to the server to delete an uploaded file.
+ * @async
+ * @function deleteFile
+ * @param {string} filePath - The relative path or identifier of the file to delete.
+ * @param {bool} isDirectory - indicates filePath leads to a directory
+ * @param {bool} recursive - should delete all directory contents and sub directories
+ * @returns {Promise<void>} Resolves when the request completes.
+ *
+ * @throws {Error} If the request fails or the server returns an unexpected response.
+ *
+ * @example
+ * await deleteFile("uploads/example.pdf");
+ * 
+ * @example
+ * await deleteFile("uploads/examples", true);
+ */
+export async function deleteFile(filePath, isDirectory = false, recursive = false) {
+
+    const endpoint = "/delete";
+
+    const body = {
+        path: filePath,
+        isDirectory: isDirectory,
+        recursive: recursive
+    }
+
+    const request = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    }
+
+    const response = await fetch(endpoint, request);
+
+    const result = await response.json();
+
+    if (result.success) {
+        console.log("Deleted: ", filePath);
+    } else {
+        console.log("Failed to delete: ", result.error);    }
+
+    return result;
+}
