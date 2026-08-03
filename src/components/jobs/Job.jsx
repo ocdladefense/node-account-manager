@@ -12,7 +12,7 @@ export default function Job() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = process.env.SF_USER_ID;
+    let userId = client.getUserId();
     let postingDate;
     let closingDate;
 

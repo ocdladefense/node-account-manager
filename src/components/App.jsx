@@ -28,33 +28,31 @@ function hasAccessToken() {
 async function getApiClient() {
 
     let sessionInstanceUrl, sessionAccessToken;
-    let url, token;
+    let url, token, userId;
 
 
-    if (hasAccessToken())
-    {
+    if (hasAccessToken()) {
         url = getCookie("instance_url");
         token = getCookie("access_token");
-        if (url == "undefined" || token == "undefined")
-        {
-            console.error("App.jsx: Url or token error in app.jsx", url, token);
+        userId = getCookie("user_id");
+        if (url == "undefined" || token == "undefined" || userId == "undefined") {
+            console.error("App.jsx: Url, token, or userId error in app.jsx", url, token, userId);
         }
     }
-    else
-    {
+    else {
         throw new Error("YOU HAVE NOT LOGGED IN!");
         // If no access token is found, fetch a new one from the server.
         let applicationTokens = await fetch("/connect").then(resp => resp.json());
-        if (applicationTokens.error)
-        {
+        if (applicationTokens.error) {
             throw new Error("App.jsx: ", applicationTokens.error, applicationTokens.error_description);
         }
         url = applicationTokens.instance_url;
         token = applicationTokens.access_token;
+        userId = applicationTokens.user_id;
     }
 
 
-    let application = new SalesforceRestApi(url, token);
+    let application = new SalesforceRestApi(url, token, userId);
 
     return application;
 }
