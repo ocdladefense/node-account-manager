@@ -1,5 +1,6 @@
 import { FileUpload, uploadFileToServer, deleteFile } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
@@ -16,8 +17,12 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
+    const [postingDate, setPostingDate] = useState(job.PostingDate__c || "today");
+    const [isOpenUntilFilled, setIsOpenUntilFilled] = useState(
+        job.OpenUntilFilled__c ?? false
+    );
     const JOB_POSTING_APP_ID = 3;
-    
+
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
             let fileResult;
@@ -25,7 +30,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
             if (job.AttachmentPath__c) {
                 fileResult = await deleteFile(`JobPostings/${job.Id}`, true, true);
             }
-            
+
             if (!fileResult.success){
                 alert("Failed to delete file: " + fileResult.error);
             }
@@ -33,7 +38,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 await client.delete("Job__c", job.Id);
                 navigate(`/jobs`);
             }
-            
+
         }
         return;
     }
@@ -50,7 +55,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         e.stopPropagation();
         const form = e.target;
         const formData = new FormData(form);
-        
+
         let response;
 
         const jobRecord = {
@@ -83,7 +88,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         let confirmation = await response.json();
         let jobId = confirmation.id;
 
-        const fileInput = document.getElementById("jobAttachment"); 
+        const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
@@ -117,9 +122,11 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 <fieldset className="border rounded p-4 mb-6">
                     <legend className="text-lg font-semibold">Active Dates</legend>
                     <div className="mb-4">
-                        <DateInput label="Posting Date" name="PostingDate__c" fieldType="date" defaultValue={job.PostingDate__c || new Date()} />
-                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c} />
-                        <DateInput label="Closing Date" name="ClosingDate__c" fieldType="date" defaultValue={job.ClosingDate__c || new Date()} />
+                        <DateInput label="Posting Date" name="PostingDate__c" fieldType="date" defaultValue={postingDate} min={"today"} onChange={(e) => setPostingDate(e.target.value)} />
+
+                        <CheckBox label="Open Until Filled?" name="OpenUntilFilled__c" defaultValue={job.OpenUntilFilled__c} onChange={(e) => setIsOpenUntilFilled(e.target.checked)} />
+
+                        {!isOpenUntilFilled && <DateInput label="Closing Date" name="ClosingDate__c" fieldType="date" defaultValue={job.ClosingDate__c || postingDate} min={postingDate} />}
                     </div>
                 </fieldset>
 
