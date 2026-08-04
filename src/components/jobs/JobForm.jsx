@@ -7,6 +7,7 @@ import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import { CautionButton, BackButton } from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
+import { response } from "express";
 
 /**
  * Renders the Job Posting Form page for creating new job listings and handling file upploads.
@@ -17,7 +18,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
-    const [files, setFiles] = useState([]);
+    const [deleteFile, setDeleteFile] = useState(false);
     const JOB_POSTING_APP_ID = 3;
 
     const handleDelete = async (e) => {
@@ -50,11 +51,9 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const form = e.target;
-        const formData = new FormData(form);
 
-        let response;
-
+        //const form = e.target;
+        const formData = new FormData(e.target);
         const jobRecord = {
             Name: formData.get("Name"),
             Organization__c: formData.get("Organization__c"),
@@ -66,24 +65,43 @@ export default function JobForm({ job = {}, onCancel = null }) {
             IsActive__c: true
         };
 
+
+        let response;
+
+
         if (job.Id) {
             jobRecord.Id = job.Id;
-            response = await client.update('Job__c', jobRecord);
-            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Changes saved.
-            </div>);
-
-            navigate(`/job/${job.Id}`);
+            response = updateJobPosting(jobRecord);
         }
         else {
-            response = await client.create('Job__c', jobRecord);
-            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Job Posted.
-            </div>);
+            response = createJobPosting(jobRecord);
         }
 
         let confirmation = await response.json();
         let jobId = confirmation.id;
+
+        attachFile(jobId)
+
+        navigate(`/job/${jobId}`);
+    };
+
+    const createJobPosting = async (jobRecord) => {
+        const response = await client.create('Job__c', jobRecord);
+        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+            Job Posted.
+        </div>);
+        return response;
+    }
+
+    const updateJobPosting = async (jobRecord) => {
+        const response = await client.update('Job__c', jobRecord);
+        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+            Changes saved.
+        </div>);
+        return response;
+    }
+
+    const attachFile = async (jobId) => {
 
         const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
@@ -94,27 +112,14 @@ export default function JobForm({ job = {}, onCancel = null }) {
 
             const filePath = `${jobId}/${file.name}`;
 
-            const updateResp = await client.update('Job__c', {
+            const jobRecord = {
                 Id: jobId,
                 AttachmentPath__c: filePath
-            });
+            }
 
-            console.log("Salesforce update result:", updateResp);
-
+            updateJobPosting(jobRecord);
         }
-        navigate(`/job/${jobId}`);
-    };
-
-    const handleFileDelete = async (filePath) => {
-        setFiles(files.filter(item => item !== filePath));
-        await deleteFile(`JobPostings/${filePath}`);
-        await client.update('Job__c', {
-            Id: job.Id,
-            AttachmentPath__c: ""
-        });
     }
-
-    if (job.AttachmentPath__c != files[0]) setFiles([job.AttachmentPath__c]);
 
     return (
         <div className="container mx-auto px-2">
@@ -140,7 +145,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 {job?.AttachmentPath__c && (
                     <FileView
                         files={[job.AttachmentPath__c]}
-                        deleteFunction={handleFileDelete}
+                        deleteFunction={() => {}}
                     />
                 )}
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
