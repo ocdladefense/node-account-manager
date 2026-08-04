@@ -1,25 +1,29 @@
-export default function DateInput({ label, name, defaultValue, fieldType }) {
+export default function DateInput({ label, name, defaultValue, fieldType, min, max, onChange }) {
     const formatValue = (value) => {
         if (!value) return "";
 
-        const d = new Date(value);
+        const d = value == "today" ? new Date() : new Date(value);
+
+        if (isNaN(d.getTime())) return value; // a fallback if date is invalid
+
+        const localDate = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
 
         if (fieldType === "date") {
-            return d.toISOString().split("T")[0]; // YYYY-MM-DD
+            return localDate.toISOString().split("T")[0]; // YYYY-MM-DD
         }
 
         if (fieldType === "datetime-local") {
-            return d.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
+            return localDate.toISOString().slice(0, 16); // YYYY-MM-DDTHH:mm
         }
 
         return value;
     };
 
-    let myDate = new Date();
-
     return (
         <div>
-            <label className="block text-sm font-semibold mb-2" htmlFor={name}>
+            <label
+                className="block text-sm font-semibold mb-2"
+                htmlFor={name}>
                 {label}
             </label>
 
@@ -28,6 +32,9 @@ export default function DateInput({ label, name, defaultValue, fieldType }) {
                 className="w-full px-3 py-2 border rounded"
                 name={name}
                 defaultValue={formatValue(defaultValue)}
+                min={formatValue(min)}
+                max={formatValue(max)}
+                onChange={onChange}
             />
         </div>
     );
