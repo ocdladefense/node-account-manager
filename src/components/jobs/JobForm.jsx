@@ -17,7 +17,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
     const JOB_POSTING_APP_ID = 3;
-    
+
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
             let fileResult;
@@ -25,7 +25,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
             if (job.AttachmentPath__c) {
                 fileResult = await deleteFile(`JobPostings/${job.Id}`, true, true);
             }
-            
+
             if (!fileResult.success){
                 alert("Failed to delete file: " + fileResult.error);
             }
@@ -33,7 +33,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 await client.delete("Job__c", job.Id);
                 navigate(`/jobs`);
             }
-            
+
         }
         return;
     }
@@ -50,7 +50,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         e.stopPropagation();
         const form = e.target;
         const formData = new FormData(form);
-        
+
         let response;
 
         const jobRecord = {
@@ -83,7 +83,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         let confirmation = await response.json();
         let jobId = confirmation.id;
 
-        const fileInput = document.getElementById("jobAttachment"); 
+        const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
@@ -125,8 +125,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
-                {job.Id && <CautionButton className="" action={handleDelete} label="Delete Job" buttonType="button" />}
-                {onCancel && <Button className="!bg-yellow-300" action={handleCancel} label="Discard Changes" buttonType="button" />}
+                {job.Id && <CautionButton action={handleDelete} label="Delete Job" buttonType="button" />}
+                {onCancel && <CautionButton action={handleCancel} label="Discard Changes" buttonType="button" isCancel={true} />}
             </form>
         </div>
     );
