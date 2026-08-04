@@ -2,6 +2,7 @@ import { Network } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useToast } from "../notifications/ToastService";
+import { CautionButton } from "../Button";
 
 const SERVER_PORT = process.env.PORT;
 const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
@@ -144,8 +145,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
 
 
 
-        for (let key in reqData)
-        {
+        for (let key in reqData) {
             formData.append(key, reqData[key]);
         }
 
@@ -161,8 +161,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
             SERVER_ENDPOINT
         );
         //This sets the headers for the application
-        if (applicationId)
-        {
+        if (applicationId) {
             xhr.setRequestHeader(
                 "x-applicationid",
                 applicationId
@@ -172,8 +171,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
         xhr.upload.onprogress = (event) => {
             console.log("uploadEvent", event);
-            if (event.lengthComputable)
-            {
+            if (event.lengthComputable) {
                 const percent = Math.round(
                     (event.loaded * 100) / event.total
                 );
@@ -183,12 +181,10 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         //this checks then the upload is done, whether that is bad or good
         xhr.onload = () => {
             console.log("upload Response:", xhr.response);
-            if (xhr.status >= 200 && xhr.status < 300)
-            {
+            if (xhr.status >= 200 && xhr.status < 300) {
                 resolve(JSON.parse(xhr.response));
             }
-            else
-            {
+            else {
 
                 reject({
                     status: xhr.status,
@@ -231,7 +227,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
  *
  * @example
  * await deleteFile("uploads/example.pdf");
- * 
+ *
  * @example
  * await deleteFile("uploads/examples", true);
  */
@@ -260,7 +256,44 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
     if (result.success) {
         console.log("Deleted: ", filePath);
     } else {
-        console.log("Failed to delete: ", result.error);    }
+        console.log("Failed to delete: ", result.error);
+    }
 
     return result;
+}
+
+
+/**
+ * returns component to view and remove existing uploads
+ * @function FileView
+ * @param {Array} files - paths for files to display or delete
+ * @param {function} deleteFunction - the function that is run when the user clicks delete file
+ * @example
+ * let files = ["uploads/example.pdf", "uploads/example2.pdf"];
+
+ * @returns {html}
+ *
+ * @example
+ * <FileView files={files}>
+ */
+export function FileView({ files = [], deleteFunction }) {
+    return (
+        <div>
+            {files.map((filePath) => {
+                const fileName = filePath.split("/").pop();
+
+                return (
+                    <div key={filePath} >
+                        <h3 className="inline">{fileName}</h3>
+                        <CautionButton
+                            action={() => deleteFunction(filePath)}
+                            label="Delete file"
+                            buttonType="button"
+                            className="inline"
+                        />
+                    </div>
+                );
+            })}
+        </div>
+    );
 }

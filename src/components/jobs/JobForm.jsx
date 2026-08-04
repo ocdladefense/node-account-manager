@@ -1,5 +1,6 @@
-import { FileUpload, uploadFileToServer, deleteFile } from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer, deleteFile, FileView } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
@@ -16,8 +17,9 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
+    const [files, setFiles] = useState([]);
     const JOB_POSTING_APP_ID = 3;
-    
+
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
             let fileResult;
@@ -25,15 +27,15 @@ export default function JobForm({ job = {}, onCancel = null }) {
             if (job.AttachmentPath__c) {
                 fileResult = await deleteFile(`JobPostings/${job.Id}`, true, true);
             }
-            
-            if (!fileResult.success){
+
+            if (job.AttachmentPath__c && !fileResult.success) {
                 alert("Failed to delete file: " + fileResult.error);
             }
-            else{
+            else {
                 await client.delete("Job__c", job.Id);
                 navigate(`/jobs`);
             }
-            
+
         }
         return;
     }
@@ -50,7 +52,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         e.stopPropagation();
         const form = e.target;
         const formData = new FormData(form);
-        
+
         let response;
 
         const jobRecord = {
@@ -83,7 +85,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
         let confirmation = await response.json();
         let jobId = confirmation.id;
 
-        const fileInput = document.getElementById("jobAttachment"); 
+        const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
@@ -102,6 +104,17 @@ export default function JobForm({ job = {}, onCancel = null }) {
         }
         navigate(`/job/${jobId}`);
     };
+
+    const handleFileDelete = async (filePath) => {
+        setFiles(files.filter(item => item !== filePath));
+        await deleteFile(`JobPostings/${filePath}`);
+        await client.update('Job__c', {
+            Id: job.Id,
+            AttachmentPath__c: ""
+        });
+    }
+
+    if (job.AttachmentPath__c != files[0]) setFiles([job.AttachmentPath__c]);
 
     return (
         <div className="container mx-auto px-2">
@@ -123,10 +136,16 @@ export default function JobForm({ job = {}, onCancel = null }) {
                     </div>
                 </fieldset>
 
-                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" />
+                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" preview="true" />
+                {job?.AttachmentPath__c && (
+                    <FileView
+                        files={[job.AttachmentPath__c]}
+                        deleteFunction={handleFileDelete}
+                    />
+                )}
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
                 {job.Id && <CautionButton className="" action={handleDelete} label="Delete Job" buttonType="button" />}
-                {onCancel && <Button className="!bg-yellow-300" action={handleCancel} label="Discard Changes" buttonType="button" />}
+                {onCancel && <Button className="bg-yellow-300!" action={handleCancel} label="Discard Changes" buttonType="button" />}
             </form>
         </div>
     );
