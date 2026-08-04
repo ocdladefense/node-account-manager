@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { getJobsQuery } from "./JobsQuery";
 import { compareSFId } from "./jobUtils";
 import JobList from "./JobsList";
+import Button from "../ui/Button";
 
 // Mapper array for the filter fields and corresponding api endpoints
 const FILTER_FIELDS = [
@@ -18,6 +19,7 @@ const FILTER_FIELDS = [
  * @returns {React.JSX.Element} The active jobs overview layout
  */
 export default function Jobs() {
+    const navigate = useNavigate();
     const { client } = useOutletContext();
 
     const [loading, setLoading] = useState(true);
@@ -30,6 +32,10 @@ export default function Jobs() {
     const [closingDateSort, setClosingDateSort] = useState("");
 
     const userId = client.getUserId();
+
+    const handleUppload = async (e) => {
+        navigate("/job/new")
+    }
 
     useEffect(() => {
         async function fetchJobs() {
@@ -118,10 +124,9 @@ export default function Jobs() {
             <h1 className="card-title">
                 Showing {displayedJobs.length} of {jobs.length} active jobs.
             </h1>
+            <br />
 
-            <a href="/job/new" className="link">
-                Upload a job!
-            </a>
+            <Button action={handleUppload} label="Uppload a Job +" buttonType="button" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-6">
                 {/* Text filter */}

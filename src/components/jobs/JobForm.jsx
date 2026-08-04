@@ -132,8 +132,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
 
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" />
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
-                {job.Id && <CautionButton className="" action={handleDelete} label="Delete Job" buttonType="button" />}
-                {onCancel && <Button className="!bg-yellow-300" action={handleCancel} label="Discard Changes" buttonType="button" />}
+                {job.Id && <CautionButton action={handleDelete} label="Delete Job" buttonType="button" />}
+                {onCancel && <CautionButton action={handleCancel} label="Discard Changes" buttonType="button" isCancel={true} />}
             </form>
         </div>
     );
