@@ -7,7 +7,6 @@ import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
 import { CautionButton, BackButton } from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
-import { response } from "express";
 
 /**
  * Renders the Job Posting Form page for creating new job listings and handling file upploads.
@@ -18,8 +17,22 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
-    const [deleteFile, setDeleteFile] = useState(false);
     const JOB_POSTING_APP_ID = 3;
+
+    const attachFile = async (jobId, file) => {
+        if (file && jobId) {
+            const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+
+            const filePath = `${jobId}/${file.name}`;
+
+            const jobRecord = {
+                Id: jobId,
+                AttachmentPath__c: filePath
+            }
+
+            await client.update('Job__c', jobRecord);
+        }
+    }
 
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
@@ -52,7 +65,6 @@ export default function JobForm({ job = {}, onCancel = null }) {
         e.preventDefault();
         e.stopPropagation();
 
-        //const form = e.target;
         const formData = new FormData(e.target);
         const jobRecord = {
             Name: formData.get("Name"),
@@ -64,62 +76,32 @@ export default function JobForm({ job = {}, onCancel = null }) {
             OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
             IsActive__c: true
         };
+     
+        if(job.Id) jobRecord.Id = job.Id;
 
+        let response = job.Id ? await client.update('Job__c', jobRecord) 
+                              : await client.create('Job__c', jobRecord);
 
-        let response;
-
-
-        if (job.Id) {
-            jobRecord.Id = job.Id;
-            response = updateJobPosting(jobRecord);
-        }
-        else {
-            response = createJobPosting(jobRecord);
-        }
-
-        let confirmation = await response.json();
-        let jobId = confirmation.id;
-
-        attachFile(jobId)
-
-        navigate(`/job/${jobId}`);
-    };
-
-    const createJobPosting = async (jobRecord) => {
-        const response = await client.create('Job__c', jobRecord);
         CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-            Job Posted.
+            {job.Id ? "Changes saved" : "Job Posted"}
         </div>);
-        return response;
-    }
 
-    const updateJobPosting = async (jobRecord) => {
-        const response = await client.update('Job__c', jobRecord);
-        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-            Changes saved.
-        </div>);
-        return response;
-    }
-
-    const attachFile = async (jobId) => {
+        let jobId = response.status === 204 ? job.Id : await response.json().Id;
 
         const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
-        if (file && jobId) {
-            const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
-
-            const filePath = `${jobId}/${file.name}`;
-
-            const jobRecord = {
-                Id: jobId,
-                AttachmentPath__c: filePath
+        if (file){
+            if (job.AttachmentPath__c){
+                deleteFile(job.AttachmentPath__c);
             }
-
-            updateJobPosting(jobRecord);
+            response = await attachFile(jobId, file);
         }
-    }
+
+        navigate(`/job/${jobId}`);
+    };
+
 
     return (
         <div className="container mx-auto px-2">

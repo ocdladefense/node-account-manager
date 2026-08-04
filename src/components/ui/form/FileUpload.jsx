@@ -50,7 +50,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                 {file.name} upload started.
             </div>
         ));
-        console.log("toastIds: ", toastIds);
+        //console.log("toastIds: ", toastIds);
         let updaterFunctions = toastIds.map((id) => {
             let fn = function(percentage, file) {
                 UpdateToast(id,
@@ -61,7 +61,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
             };
             return fn;
         });
-        console.log("updaterFunctions:", updaterFunctions);
+        //console.log("updaterFunctions:", updaterFunctions);
 
 
         files.map((file, index) => uploadFileToServer(file, applicationId, updaterFunctions[index]).then(() => {
@@ -170,7 +170,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
 
         //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
         xhr.upload.onprogress = (event) => {
-            console.log("uploadEvent", event);
+            //console.log("uploadEvent", event);
             if (event.lengthComputable) {
                 const percent = Math.round(
                     (event.loaded * 100) / event.total
@@ -180,7 +180,7 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         };
         //this checks then the upload is done, whether that is bad or good
         xhr.onload = () => {
-            console.log("upload Response:", xhr.response);
+            //console.log("upload Response:", xhr.response);
             if (xhr.status >= 200 && xhr.status < 300) {
                 resolve(JSON.parse(xhr.response));
             }
@@ -254,9 +254,9 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
     const result = await response.json();
 
     if (result.success) {
-        console.log("Deleted: ", filePath);
+        //console.log("Deleted: ", filePath);
     } else {
-        console.log("Failed to delete: ", result.error);
+        //console.log("Failed to delete: ", result.error);
     }
 
     return result;
