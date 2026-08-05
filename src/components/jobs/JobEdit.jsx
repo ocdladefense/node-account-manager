@@ -10,7 +10,7 @@ export default function JobEdit() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = client.getUserId();
+    let userId = getCookie(user_id);
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);

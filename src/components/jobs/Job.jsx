@@ -12,7 +12,7 @@ export default function Job() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = client.getUserId();
+    let userId = getCookie(user_id);
     let postingDate;
     let closingDate;
 

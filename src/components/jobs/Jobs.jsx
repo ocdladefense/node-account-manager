@@ -31,7 +31,7 @@ export default function Jobs() {
     const [onlyOwned, setOnlyOwned] = useState(false);
     const [closingDateSort, setClosingDateSort] = useState("");
 
-    const userId = client.getUserId();
+    const userId = getCookie(user_id);
 
     const handleUppload = async (e) => {
         navigate("/job/new")
