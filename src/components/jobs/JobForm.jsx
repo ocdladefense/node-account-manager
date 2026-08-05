@@ -9,7 +9,7 @@ import { CautionButton, BackButton } from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 
 /**
- * Renders the Job Posting Form page for creating new job listings and handling file upploads.
+ * Renders the Job Posting Form page for creating new job listings and handling file uploads.
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
@@ -17,22 +17,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const navigate = useNavigate();
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
+    const [removeFile, setRemoveFile] = useState(false);
     const JOB_POSTING_APP_ID = 3;
-
-    const attachFile = async (jobId, file) => {
-        if (file && jobId) {
-            const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
-
-            const filePath = `${jobId}/${file.name}`;
-
-            const jobRecord = {
-                Id: jobId,
-                AttachmentPath__c: filePath
-            }
-
-            await client.update('Job__c', jobRecord);
-        }
-    }
 
     const handleDelete = async (e) => {
         if (window.confirm("Delete this job listing? This cannot be undone.")) {
@@ -82,22 +68,41 @@ export default function JobForm({ job = {}, onCancel = null }) {
         let response = job.Id ? await client.update('Job__c', jobRecord) 
                               : await client.create('Job__c', jobRecord);
 
-        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-            {job.Id ? "Changes saved" : "Job Posted"}
-        </div>);
+        let jobId; 
 
-        let jobId = response.status === 204 ? job.Id : await response.json().Id;
+        if (response.status === 204){ jobId = job.Id; }
+        else {
+            let json = await response.json();
+            jobId = json.id;
+        }
 
         const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
         if (file){
-            if (job.AttachmentPath__c){
-                deleteFile(job.AttachmentPath__c);
-            }
-            response = await attachFile(jobId, file);
+            if (job.AttachmentPath__c) deleteFile("JobPostings/" + job.AttachmentPath__c);
+            
+            const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
+
+            const filePath = `${jobId}/${file.name}`;
+
+            await client.update('Job__c', {
+                Id: jobId,
+                AttachmentPath__c: filePath
+            });
+
+        } else if(removeFile){
+            deleteFile("JobPostings/" + job.AttachmentPath__c);
+            await client.update('Job__c', {
+                Id: jobId,
+                AttachmentPath__c: null
+            })
         }
+
+        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+            {job.Id ? "Changes saved" : "Job Posted"}
+        </div>);
 
         navigate(`/job/${jobId}`);
     };
@@ -126,8 +131,9 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" preview="true" />
                 {job?.AttachmentPath__c && (
                     <FileView
-                        files={[job.AttachmentPath__c]}
-                        deleteFunction={() => {}}
+                        filePaths={[job.AttachmentPath__c]}
+                        action={(path) => {setRemoveFile(!removeFile)}}
+                        buttonLabel={removeFile ? "Restore File" : "Delete File"}
                     />
                 )}
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />

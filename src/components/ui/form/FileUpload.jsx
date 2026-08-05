@@ -266,8 +266,8 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
 /**
  * returns component to view and remove existing uploads
  * @function FileView
- * @param {Array} files - paths for files to display or delete
- * @param {function} deleteFunction - the function that is run when the user clicks delete file
+ * @param {Array} filePaths - paths for files to display or delete
+ * @param {function(FilePath)} action - the function that is run when the user clicks delete file function must take filePath parameter which is a string
  * @example
  * let files = ["uploads/example.pdf", "uploads/example2.pdf"];
 
@@ -276,18 +276,18 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
  * @example
  * <FileView files={files}>
  */
-export function FileView({ files = [], deleteFunction }) {
+export function FileView({ filePaths, action, buttonLabel }) {
     return (
         <div>
-            {files.map((filePath) => {
-                const fileName = filePath.split("/").pop();
+            {filePaths.map((path) => {
+                const fileName = path.split("/").pop();
 
                 return (
-                    <div key={filePath} >
+                    <div key={path} >
                         <h3 className="inline">{fileName}</h3>
                         <CautionButton
-                            action={() => deleteFunction(filePath)}
-                            label="Delete file"
+                            action={() => action(path)}
+                            label={buttonLabel}
                             buttonType="button"
                             className="inline"
                         />
