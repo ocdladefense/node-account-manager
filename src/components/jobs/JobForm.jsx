@@ -1,4 +1,4 @@
-import { FileUpload, uploadFileToServer, deleteFile } from "../ui/form/FileUpload.jsx";
+import { FileUpload, uploadFileToServer, deleteFile, FileView } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "../ui/notifications/ToastService.jsx";
@@ -9,7 +9,7 @@ import { CautionButton, BackButton } from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 
 /**
- * Renders the Job Posting Form page for creating new job listings and handling file upploads.
+ * Renders the Job Posting Form page for creating new job listings and handling file uploads.
  *
  * @returns {React.JSX.Element} The job posting form UI
  */
@@ -18,9 +18,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
     const [postingDate, setPostingDate] = useState(job.PostingDate__c || "today");
-    const [isOpenUntilFilled, setIsOpenUntilFilled] = useState(
-        job.OpenUntilFilled__c ?? false
-    );
+    const [isOpenUntilFilled, setIsOpenUntilFilled] = useState(job.OpenUntilFilled__c ?? false );
+    const [removeFile, setRemoveFile] = useState(false);
     const JOB_POSTING_APP_ID = 3;
 
     const handleDelete = async (e) => {
@@ -31,10 +30,10 @@ export default function JobForm({ job = {}, onCancel = null }) {
                 fileResult = await deleteFile(`JobPostings/${job.Id}`, true, true);
             }
 
-            if (!fileResult.success){
+            if (job.AttachmentPath__c && !fileResult.success) {
                 alert("Failed to delete file: " + fileResult.error);
             }
-            else{
+            else {
                 await client.delete("Job__c", job.Id);
                 navigate(`/jobs`);
             }
@@ -53,11 +52,8 @@ export default function JobForm({ job = {}, onCancel = null }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        const form = e.target;
-        const formData = new FormData(form);
 
-        let response;
-
+        const formData = new FormData(e.target);
         const jobRecord = {
             Name: formData.get("Name"),
             Organization__c: formData.get("Organization__c"),
@@ -68,45 +64,51 @@ export default function JobForm({ job = {}, onCancel = null }) {
             OpenUntilFilled__c: formData.get("OpenUntilFilled__c") === "on",
             IsActive__c: true
         };
+        
+        if(job.Id) jobRecord.Id = job.Id;
+        
+        let response = job.Id ? await client.update('Job__c', jobRecord) 
+                              : await client.create('Job__c', jobRecord);
 
-        if (job.Id) {
-            jobRecord.Id = job.Id;
-            response = await client.update('Job__c', jobRecord);
-            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Changes saved.
-            </div>);
+        let jobId; 
 
-            navigate(`/job/${job.Id}`);
-        }
+        if (response.status === 204){ jobId = job.Id; }
         else {
-            response = await client.create('Job__c', jobRecord);
-            CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                Job Posted.
-            </div>);
+            let json = await response.json();
+            jobId = json.id;
         }
-
-        let confirmation = await response.json();
-        let jobId = confirmation.id;
 
         const fileInput = document.getElementById("jobAttachment");
         const fileList = fileInput.files;
         const file = fileList[0];
 
-        if (file && jobId) {
+        if (file){
+            if (job.AttachmentPath__c) deleteFile("JobPostings/" + job.AttachmentPath__c);
+            
             const uploadResult = await uploadFileToServer(file, JOB_POSTING_APP_ID, undefined, { jobId });
 
             const filePath = `${jobId}/${file.name}`;
 
-            const updateResp = await client.update('Job__c', {
+            await client.update('Job__c', {
                 Id: jobId,
                 AttachmentPath__c: filePath
             });
 
-            console.log("Salesforce update result:", updateResp);
-
+        } else if(removeFile){
+            deleteFile("JobPostings/" + job.AttachmentPath__c);
+            await client.update('Job__c', {
+                Id: jobId,
+                AttachmentPath__c: null
+            })
         }
+
+        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+            {job.Id ? "Changes saved" : "Job Posted"}
+        </div>);
+
         navigate(`/job/${jobId}`);
     };
+
 
     return (
         <div className="container mx-auto px-2">
@@ -130,7 +132,14 @@ export default function JobForm({ job = {}, onCancel = null }) {
                     </div>
                 </fieldset>
 
-                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" />
+                <FileUpload label="Post Attachment" name="jobAttachment" applicationId={JOB_POSTING_APP_ID} accepting=".pdf,.doc,.docx" preview="true" />
+                {job?.AttachmentPath__c && (
+                    <FileView
+                        filePaths={[job.AttachmentPath__c]}
+                        action={(path) => {setRemoveFile(!removeFile)}}
+                        buttonLabel={removeFile ? "Restore File" : "Delete File"}
+                    />
+                )}
                 <Button label={job.Id ? "Save Changes" : "Post Job"} buttonType="submit" />
                 {job.Id && <CautionButton action={handleDelete} label="Delete Job" buttonType="button" />}
                 {onCancel && <CautionButton action={handleCancel} label="Discard Changes" buttonType="button" isCancel={true} />}

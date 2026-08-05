@@ -3,7 +3,7 @@ import "../css/drawer.css";
 import { createRoot } from 'react-dom/client';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from '../components/App.jsx';
 import Sites from '../components/ui/Sites.jsx';
 import Account from '../components/accounts/Account.jsx';
@@ -76,6 +76,8 @@ root.render(
                     <Route index element={<Jobs />} />
                 </Route>
                 <Route path="job">
+                    <Route index element={<Navigate to="/jobs" />} /> 
+                    <Route path="undefined" element={<Navigate to="/jobs"/>} />
                     <Route path="new" element={<JobForm />} />
                     <Route path=":jobId" element={<Job />} />
                     <Route path=":jobId/edit" element={<JobEdit />} />
