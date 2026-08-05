@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { getAccountContactsQuery } from './accounts/query';
+import { getCookie } from '@ocdla/salesforce/CookieUtils';
 
 export default function HomePage() {
 
     let { client } = useOutletContext();
     let [contacts, setContacts] = useState([]);
+    let userId = getCookie("user_id");
 
 
     return (
@@ -15,10 +17,8 @@ export default function HomePage() {
 
                 <div className="space-y-2">
                     <p>Here's where we explain our purpose to you!</p>
-
-                    <a href="/login">Log In</a>
                     <br />
-                    <a href="/logout">Log Out</a>
+                    {userId ? <a href="/logout">Log Out</a> : <a href="/login">Log In</a>}
 
                 </div>
             </div>
