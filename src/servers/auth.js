@@ -103,6 +103,10 @@ router.get("/logout", (req, res) => {
     res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
 
     res.redirect("/");
+
+    // Notify user they have lgged out successfully
+    // Remove cookies for secure account related behavior
+    // Provide a link back to home or login page
 });
 
 router.get("/oauth/api/request", async (req, res) => {

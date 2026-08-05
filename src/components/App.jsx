@@ -6,6 +6,7 @@ import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
 import Menu from './ui/Menu.jsx';
 import ToastProvider from "./ui/notifications/ToastProvider";
+import LoginPrompt from './ui/LoginPrompt.jsx';
 
 
 let client;
@@ -82,7 +83,7 @@ export default function App() {
                 <Header loggedIn={false} />
                 <div className='flex w-full'>
                     <Menu />
-                    {appReady ? <Outlet context={{ client }} /> : <h1>Loading...</h1>}
+                    {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
                 </div>
             </div>
         </ToastProvider>
