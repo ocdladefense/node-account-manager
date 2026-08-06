@@ -28,25 +28,53 @@ export default function AccountContacts() {
 
     return (
         <div className="w-full">
-            {contacts &&
-                <div className="container mx-auto px-2 mt-[28px]">
-                    <h1 className="text-2xl font-bold mb-4">All Contacts</h1>
 
-                    <div className="space-y-2">
-                        {contacts.map((contact) => (
-                            <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSelectContact(contact.Id)}>
-                                <h1>{contact.Name}</h1>
-                                <p>Email: {contact.Email}</p>
-                                <p>Member Status: {contact.Ocdla_Member_Status__c}</p>
-                                <p>Membership Expires On: {contact.Ocdla_Membership_Expiration_Date__c}</p>
-                            </div>
-                        ))}
-                    </div>
+            <div className="container mx-auto px-2 mt-[28px]">
+
+                <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
+
+                <div className="overflow-x-auto">
+
+                    <table className="w-full border-collapse">
+
+                        <thead>
+
+                            <tr className="border-b bg-gray-100">
+
+                                <th className="px-4 py-3 text-left">Name</th>
+
+                                <th className="px-4 py-3 text-left">Email</th>
+
+                                <th className="px-4 py-3 text-left">Member Status</th>
+
+                                <th className="px-4 py-3 text-left">Membership Expiration</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {contacts.map((contact) => (
+                                <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => handleSelectContact(contact.Id)}>
+
+                                    <td className="px-4 py-3">{contact.Name}</td>
+
+                                    <td className="px-4 py-3">{contact.Email || "(N/A)"}</td>
+
+                                    <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "(N/A)"}</td>
+
+                                    <td className="px-4 py-3">{contact.Ocdla_Membership_Expiration_Date__c || "(N/A)"}</td>
+
+                                </tr>
+                            ))}
+                        </tbody>
+
+                    </table>
+
                 </div>
 
-
-            }
+            </div>
 
         </div>
     );
