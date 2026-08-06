@@ -11,14 +11,28 @@ const contactId = process.env.SF_CONTACT_ID;
 export default function Upload() {
     const { client } = useOutletContext();
 
+    const DOCUMENT_UPLOAD_APP_ID = 2;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const fileInput = document.getElementById("uploadDocuments");
+        const fileList = fileInput.files;
+        const file = fileList[0];
+        const uploadResult = await uploadFileToServer(file, DOCUMENT_UPLOAD_APP_ID, undefined, { contactId });
+    };
+
     return (
-        // add onSumbit handler
-        <form >
+        <form onSubmit={handleSubmit} className="foobar">
             <div className="w-full">
                 <div className="container mx-auto px-2 mt-[28px]">
-                    <FileUpload name="uploadDocuments" multiple={true} applicationId={2} />
+                    <FileUpload label="Upload Documents" name="uploadDocuments" multiple={true} applicationId={DOCUMENT_UPLOAD_APP_ID} />
                 </div>
+
+                <Button label="Upload" buttonType="submit" />
             </div>
+
+
         </form>
     )
 };
