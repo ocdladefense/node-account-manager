@@ -34,5 +34,14 @@ export function getAccountsQuery() {
 
 // AccountsContacts.jsx uses query for getting the list of contacts of each account by using it's unique Id.
 export function getAccountContactsQuery(accountId) {
-    return `SELECT Id, Name FROM Contact WHERE AccountId = '${accountId}'`;
+    return `
+        SELECT
+            Id,
+            Name,
+            Email,
+            Ocdla_Member_Status__c,
+            Ocdla_Membership_Expiration_Date__c
+        FROM Contact
+        WHERE AccountId = '${accountId}'
+    `;
 }
