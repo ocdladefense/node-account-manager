@@ -86,9 +86,10 @@ export default function App() {
             <div className="mx-auto">
                 <Header loggedIn={false} />
                 <div className='flex w-full lg:mt-[60px]'>
-                    <Menu />
+                    <Menu className="flex-1" />
                     {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
                 </div>
+                <Footer />
             </div>
         </ToastProvider>
     );
