@@ -83,10 +83,22 @@ export default function Contact() {
                         <Actions buttons={conditionalActions} />
                     )}
 
+
+
                     {/* Contact Name  & Saluitation*/}
                     <div>
-                        <h2 className="text-3xl font-bold mb-4">{contact.Salutation || 'None'} {contact.Name}</h2>
+                        <h2 className="text-3xl font-bold mb-4">{contact.Salutation || ''} {contact.Name}</h2>
                     </div>
+
+
+
+                    {/* Contact Information: Phone, Fax, Email */}
+                    <Section cols={2}>
+                        <Email label="Email:" value={contact.Email} privacy={false} />
+                        <Phone label="Phone:" value={contact.Phone} privacy={false} />
+                        <Phone label="Fax:" value={contact.Fax} privacy={false} />
+                    </Section>
+
 
 
                     {/* Bar Number and License */}
@@ -95,24 +107,24 @@ export default function Contact() {
                         <Info label="Investigator License Number:" value={contact.Ocdla_Investigator_License_Number__c} />
                     </Section>
 
+
+
                     {/* Organization */}
                     <Section cols={3}>
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
                         <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
-                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={true} />
+                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={false} />
                     </Section>
 
-                    {/* Phone Number / Fax */}
-                    <Section cols={2}>
-                        <Phone label="Phone:" value={contact.Phone} privacy={false} />
-                        <Phone label="Fax:" value={contact.Fax} privacy={false} />
-                    </Section>
+
 
                     {/* OCDLA Phone / Website */}
                     <Section cols={2}>
                         <Phone label="OCDLA Phone:" value={contact.Ocdla_Cell_Phone__c} privacy={true} />
                         <Website label="OCDLA Website:" value={contact.Ocdla_Website__c} />
                     </Section>
+
+
 
                     {/* Mailing Address */}
                     <fieldset className="section section-grid-4">
@@ -125,11 +137,23 @@ export default function Contact() {
                         </Section>
                     </fieldset>
 
+
+
                     {/* Legislative Advocacy Opt In*/}
                     <Section cols={2}>
                         <CheckboxStatus label="Legislative Advocacy Opt in:" value={contact.LegislativeAdvocacyOptIn__c} />
                         <CheckboxStatus label="Expert Witness Status:" value={contact.Ocdla_Is_Expert_Witness__c} />
                     </Section>
+
+
+
+                    {/* Membership: Status & Expiration*/}
+                    <Section cols={2}>
+                        <Info label="Membership Status:" value={contact.Ocdla_Member_Status__c} />
+                        <DateDisplay label="Membership Expiration:" value={contact.Ocdla_Membership_Expiration_Date__c} type="Date" />
+                    </Section>
+
+
 
                     {contact?.Ocdla_Is_Expert_Witness__c && (
 

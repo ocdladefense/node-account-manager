@@ -37,6 +37,8 @@ export function getContactQuery(contactId) {
             Ocdla_Expert_Travel_Availability__c,
             Ocdla_Expert_Minimum_Hours__c,
             Ocdla_Expert_Hourly_Rate__c,
-            Ocdla_Expert_Comments__c
+            Ocdla_Expert_Comments__c,
+            Ocdla_Member_Status__c,
+            Ocdla_Membership_Expiration_Date__c
             FROM Contact WHERE Id = '${contactId}'`;
 }
