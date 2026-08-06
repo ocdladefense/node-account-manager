@@ -33,7 +33,7 @@ export default function DateDisplay({ label, value, type }) {
             <div>
                 <div className="gap-1 rounded bg-blue-50">
                     <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                    <p className="text-xl">No Date Available</p>
+                    <p className="text-xl">-</p>
                 </div>
             </div>
         );
