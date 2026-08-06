@@ -61,9 +61,9 @@ export default function AccountContacts() {
 
                                     <td className="px-4 py-3">{contact.Name}</td>
 
-                                    <td className="px-4 py-3">{contact.Email || "(N/A)"}</td>
+                                    <td className="px-4 py-3">{contact.Email || "-"}</td>
 
-                                    <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "(N/A)"}</td>
+                                    <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "-"}</td>
 
                                     <td className="px-4 py-3">{<DateDisplay value={contact.Ocdla_Membership_Expiration_Date__c} type="Date" />}</td>
 
