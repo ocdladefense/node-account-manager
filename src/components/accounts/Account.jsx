@@ -28,7 +28,7 @@ export default function Account() {
     }, [accountId]);
 
     return (
-        <div className="container mx-auto px-2 mt-[28px]">
+        <div className="container mx-auto px-2">
             {account && (
                 <>
                     <AccountHeader name={account.Name} email={account.Email__c} website={account.Website} phoneNumber={account.Phone} fax={account.Fax}
