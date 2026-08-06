@@ -48,7 +48,7 @@ export default function ContactForm() {
             };
             console.log("Metadata to send: ", fileData);
             const response = await client.create("FileData__c", fileData);
-            console.log(response);
+            console.log("response:", response);
             if (!response.ok)
             {
                 let message = await response.json();
@@ -74,7 +74,7 @@ export default function ContactForm() {
         let target = e.target;
         const checkboxes = {
             expertWitness: target.querySelector('#isExpertWitness'),
-            legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptIn')
+            legislativeAdvocacy: target.querySelector('#LegislativeAdvocacyOptOut__c')
         }
         const publicDefenseSurveyValues = [];
         for (let element of target.querySelector('#Public_Defense_Survey__c').selectedOptions)
@@ -89,8 +89,8 @@ export default function ContactForm() {
 
         contactRecord.Public_Defense_Survey__c = publicDefenseSurveyValues.join(";");
 
-        contactRecord.LegislativeAdvocacyOptIn__c =
-            formData.get("LegislativeAdvocacyOptIn__c") === "on";
+        contactRecord.LegislativeAdvocacyOptOut__c =
+            formData.get("LegislativeAdvocacyOptOut__c") === "on";
         contactRecord.Ocdla_Is_Expert_Witness__c =
             formData.get("Ocdla_Is_Expert_Witness__c") === "on";
         contactRecord.Ocdla_Is_State_Expert__c =
@@ -151,7 +151,7 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Opt Ins</legend>
                             <div className="mb-4">
-                                <CheckBox label="Legislative Opt In" name="LegislativeAdvocacyOptIn__c" defaultValue={contact.LegislativeAdvocacyOptIn__c} />
+                                <CheckBox label="Legislative Opt Out" name="LegislativeAdvocacyOptOut__c" defaultValue={contact.LegislativeAdvocacyOptOut__c} />
                                 <CheckBox label="Is Expert Witness" name="Ocdla_Is_Expert_Witness__c" defaultValue={contact.Ocdla_Is_Expert_Witness__c} />
                             </div>
                         </fieldset>
@@ -169,8 +169,8 @@ export default function ContactForm() {
                         <fieldset className="border rounded p-4 mb-6">
                             <legend className="text-lg font-semibold">Contact Info</legend>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <TextInput label="Work Email" apiName="OrderApi__Work_Email__c" currentValue={contact.OrderApi__Work_Email__c} />
-                                <TextInput label="Work Phone:" apiName="OrderApi__Work_Phone__c" currentValue={contact.OrderApi__Work_Phone__c} />
+                                <TextInput label="Work Email" apiName="Email" currentValue={contact.Email} />
+                                <TextInput label="Work Phone:" apiName="Email" currentValue={contact.Email} />
                                 <TextInput label="Website" apiName="Ocdla_Website__c" currentValue={contact.Ocdla_Website__c} />
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

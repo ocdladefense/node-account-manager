@@ -18,7 +18,8 @@ export default env => {
 
     return {
         dotenv: {
-            prefix: ["GOOGLE_", "SF_"]
+            //prefix: ["GOOGLE_", "SF_"]
+            prefix: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "_"]
         },
         entry: {
             app: path.resolve(__dirname, "./src/client/index.js"),

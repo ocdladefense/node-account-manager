@@ -17,7 +17,8 @@ export default function Menu() {
         contact: /\/contact\/[0-9A-Za-z]+$/,
         order: /\/order\/[0-9A-Za-z]+$/,
         documents: /\/documents$/,
-        upload: /\/upload$/
+        upload: /\/upload$/,
+        jobs: /\/jobs\/[0-9A-Za-z]+$/
     };
 
     let active = "bg-gray-300 hover:bg-gray-400";
@@ -50,18 +51,18 @@ export default function Menu() {
                             Profile
                         </a>
                     </li>
-                    <li>
-                        <a href={`/account/${process.env.SF_ACCOUNT_ID}/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
+                    {/* <li>
+                        {/* <a href={`/account/${process.env.SF_ACCOUNT_ID}/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
                             <TbPackages />
                             Orders
                         </a>
-                    </li>
-                    <li>
+                    </li> */}
+                    {/* <li>
                         <a href={`/order/${process.env.SF_ORDER_ID}`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.order) ? active : ''}`}>
                             <LuPackageOpen />
                             Order Details
                         </a>
-                    </li>
+                    </li> */}
                     <li>
                         <a href="/documents" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.documents) ? active : ''}`}>
                             <MdDescription />
@@ -74,16 +75,22 @@ export default function Menu() {
                             Upload
                         </a>
                     </li>
-                    <li>
-                        <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/payments`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
+
+                    {/* <li>
+                         <a href=`/account/${process.env.SF_ACCOUNT_ID}/payments`"#" className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
                             <MdPayment />
                             Upcoming Payments
                         </a>
                     </li>
                     <li>
-                        <a href={/*`/account/${process.env.SF_ACCOUNT_ID}/events'`*/"#"} className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
+                        <a href=`/account/${process.env.SF_ACCOUNT_ID}/events'`"#" className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
                             <VscSymbolEvent />
                             Seminars and Events
+                        </a>
+                    </li>     Restore commented out href links!!!! */}
+                    <li>
+                        <a href="/jobs" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.jobs) ? active : ''}`}>
+                            Jobs
                         </a>
                     </li>
                 </ul>

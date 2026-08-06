@@ -16,7 +16,7 @@ router.get("/download/:contactId/:filename", (req, res) => {
 
     res.setHeader('Content-Type', contentType);
     res.download(filePath, filename, (err) => {
-        if (err) console.error("Download error:", err);
+        if (err) console.error("download.js: Download error:", err);
     });
 });
 

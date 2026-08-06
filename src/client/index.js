@@ -3,7 +3,7 @@ import "../css/drawer.css";
 import { createRoot } from 'react-dom/client';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from '../components/App.jsx';
 import Sites from '../components/ui/Sites.jsx';
 import Account from '../components/accounts/Account.jsx';
@@ -17,6 +17,10 @@ import HomePage from "../components/HomePage.jsx";
 import ContactExpertForm from "../components/contacts/ContactExpertForm.jsx";
 import Documents from '../components/documents/Documents.jsx';
 import Upload from '../components/documents/Upload.jsx';
+import Jobs from '../components/jobs/Jobs.jsx';
+import Job from '../components/jobs/Job.jsx';
+import JobForm from '../components/jobs/JobForm.jsx';
+import JobEdit from "../components/jobs/JobEdit.jsx";
 
 import SObject from "../components/contacts/SObject.jsx";
 
@@ -67,6 +71,16 @@ root.render(
                 </Route>
                 <Route path="upload">
                     <Route index element={<Upload />} />
+                </Route>
+                <Route path="jobs">
+                    <Route index element={<Jobs />} />
+                </Route>
+                <Route path="job">
+                    <Route index element={<Navigate to="/jobs" />} /> 
+                    <Route path="undefined" element={<Navigate to="/jobs"/>} />
+                    <Route path="new" element={<JobForm />} />
+                    <Route path=":jobId" element={<Job />} />
+                    <Route path=":jobId/edit" element={<JobEdit />} />
                 </Route>
             </Route>
         </Routes>

@@ -5,6 +5,7 @@ import { getAccountQuery } from "./query.js";
 import AccountContacts from "./AccountContacts";
 import AccountHeader from "./AccountHeader.jsx";
 import { ZapIcon } from "lucide-react";
+import FormatAddress from "../ui/FormatAddress.jsx";
 
 export default function Account() {
 
@@ -26,16 +27,12 @@ export default function Account() {
         fetchAccount();
     }, [accountId]);
 
-    function formatAddress(address) {
-        if (!address.street) return 'No Address'
-        return `${address.street} ${address.city} ${address.state} ${address.postalCode}`;
-    }
-
     return (
-        <div className="container mx-auto px-2 mt-[28px]">
+        <div className="container mx-auto px-2">
             {account && (
                 <>
-                    <AccountHeader name={account.Name} email={account.OrderApi__Account_Email__c} website={account.Website} phoneNumber={account.Phone} fax={account.Fax} address={formatAddress(account.BillingAddress)} />
+                    <AccountHeader name={account.Name} email={account.Email__c} website={account.Website} phoneNumber={account.Phone} fax={account.Fax}
+                        address={<FormatAddress address={account.BillingAddress} />} />
                     <AccountContacts></AccountContacts>
                 </>
             )}

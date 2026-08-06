@@ -9,14 +9,16 @@ const Registered_Applications = {
         destination: (req, file, cb) => {
             const contactId = process.env.SF_CONTACT_ID;
 
-            if (!contactId) {
+            if (!contactId)
+            {
                 return cb(new Error("Missing contactId"));
             }
 
             const dir = path.join("uploads", contactId);
 
             // create folder if it doesn't exist
-            if (!fs.existsSync(dir)) {
+            if (!fs.existsSync(dir))
+            {
                 fs.mkdirSync(dir, { recursive: true });
             }
 
@@ -32,14 +34,16 @@ const Registered_Applications = {
         destination: (req, file, cb) => {
             const contactId = process.env.SF_CONTACT_ID;
 
-            if (!contactId) {
+            if (!contactId)
+            {
                 return cb(new Error("Missing contactId"));
             }
 
             const dir = path.join("uploads", contactId);
 
             // create folder if it doesn't exist
-            if (!fs.existsSync(dir)) {
+            if (!fs.existsSync(dir))
+            {
                 fs.mkdirSync(dir, { recursive: true });
             }
 
@@ -49,6 +53,31 @@ const Registered_Applications = {
             const contactId = process.env.SF_CONTACT_ID;
             cb(null, file.originalname);
         }
+    },
+    3: {
+        name: "jobPosting",
+        destination: (req, file, cb) => {
+            // const contactId = process.env.SF_CONTACT_ID;
+            const jobId = req.body.jobId;
+
+            if (!jobId)
+            {
+                return cb(new Error("Missing jobId"));
+            }
+
+            const dir = path.join("uploads", "JobPostings", jobId);
+
+            // create folder if it doesn't exist
+            if (!fs.existsSync(dir))
+            {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            cb(null, dir);
+        },
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
+        }
     }
 };
 
@@ -56,14 +85,15 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(req.headers);
+        console.log("upload.js: upload req.headers: ", req.headers);
         let appId = req.headers["x-applicationid"];
-        if (!appId) {
+        if (!appId)
+        {
             throw new Error("No application Id provided.")
         }
-        console.log("App Id:" + appId);
+        console.log("upload.js: App Id:" + appId);
         let app = Registered_Applications[appId];
-        console.log("App:" + app);
+        console.log("upload.js: App: ", app);
         let destination = app.destination;
 
         destination(req, file, cb);
@@ -93,9 +123,11 @@ function checkFileType(file, cb) {
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
 
-    if (mimetype && extname) {
+    if (mimetype && extname)
+    {
         return cb(null, true);
-    } else {
+    } else
+    {
         cb('Error: Images only! (jpeg, jpg, png, gif)');
     }
 

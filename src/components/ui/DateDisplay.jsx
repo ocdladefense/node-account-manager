@@ -1,7 +1,7 @@
 
 export default function DateDisplay({ label, value, type }) {
     let formattedData;
-    const formatDate = (dateString) => {
+    const formatDateTime = (dateString) => {
         const date = new Date(dateString);
 
         return date.toLocaleString("en-US", {
@@ -14,8 +14,8 @@ export default function DateDisplay({ label, value, type }) {
         });
     };
 
-    const formatDateOnly = (dateString) => {
-        const date = new Date(dateString);
+    const formatDate = (dateString) => {
+        const date = new Date(dateString + "T00:00:00");
 
         return date.toLocaleDateString("en-US", {
             year: "numeric",
@@ -25,33 +25,10 @@ export default function DateDisplay({ label, value, type }) {
     };
 
 
-    if (value != null) {
-        if (type == "DateTime") {
-            formattedData = formatDate(value);
-            return (
-                <div>
-                    <div className="gap-1 rounded bg-blue-50">
-                        <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                        <p className="text-xl">{formattedData}</p>
-                    </div>
-                </div>
-            );
-        }
-        else {
-            formattedData = formatDateOnly(value);
-            return (
-                <div>
-                    <div className="gap-1 rounded bg-blue-50">
-                        <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                        <p className="text-xl">{formattedData}</p>
-                    </div>
-                </div>
-            );
-        }
 
 
-    }
-    else
+
+    if (value == null) {
         return (
             <div>
                 <div className="gap-1 rounded bg-blue-50">
@@ -60,4 +37,18 @@ export default function DateDisplay({ label, value, type }) {
                 </div>
             </div>
         );
+    }
+
+    formattedData = type == "DateTime" ? formatDateTime(value) : formatDate(value);
+
+
+    return (
+        <div>
+            <div className="gap-1 rounded bg-blue-50">
+                <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
+                <p className="text-xl">{formattedData}</p>
+            </div>
+        </div>
+    );
+
 }

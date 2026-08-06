@@ -1,0 +1,40 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start-server",
+      "type": "shell",
+      "command": "npm run start-server",
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "group": "dev",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "watch-js",
+      "type": "shell",
+      "command": "npm run watch:js",
+      "problemMatcher": [],
+      "presentation": {
+        "panel": "dedicated",
+        "group": "dev",
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "dev",
+      "dependsOn": [
+        "start-server",
+        "watch-js"
+      ],
+      "dependsOrder": "parallel",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+  ]
+}

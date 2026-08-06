@@ -43,7 +43,7 @@ export default function SObject() {
             const metadata = await client.queryObjectMetadata("Contact");
             const data = new MetaData(metadata);
             setMetadata(data);
-            console.log(metadata);
+            console.log("metadata:", metadata);
         };
 
         fetchMetadata();

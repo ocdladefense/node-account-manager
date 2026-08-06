@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
-import { getContactQuery } from "./query.js"
+import { getContactQuery } from "./query.js";
 import Info from "../ui/Info.jsx";
 import Phone from "../ui/Phone.jsx";
 import Email from "../ui/Email.jsx";
