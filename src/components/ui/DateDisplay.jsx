@@ -1,5 +1,5 @@
 
-export default function DateDisplay({ label, value, type }) {
+export default function DateDisplay({ label, value, type, textClassName = "text-xl" }) {
     let formattedData;
     const formatDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -31,9 +31,9 @@ export default function DateDisplay({ label, value, type }) {
     if (value == null) {
         return (
             <div>
-                <div className="gap-1 rounded bg-blue-50">
-                    <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                    <p className="text-xl">-</p>
+                <div className="gap-1 rounded">
+                    <label className="text-xl block text-sm font-semibold mb-2">{label}</label>
+                    <p className={textClassName}>-</p>
                 </div>
             </div>
         );
@@ -44,9 +44,9 @@ export default function DateDisplay({ label, value, type }) {
 
     return (
         <div>
-            <div className="gap-1 rounded bg-blue-50">
-                <label class="text-xl block text-sm font-semibold mb-2">{label}</label>
-                <p className="text-xl">{formattedData}</p>
+            <div className="gap-1 rounded">
+                <label className="text-xl block text-sm font-semibold mb-2">{label}</label>
+                <p className={textClassName}>{formattedData}</p>
             </div>
         </div>
     );
