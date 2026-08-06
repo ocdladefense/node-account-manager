@@ -36,7 +36,10 @@ export default function AccountContacts() {
                         {contacts.map((contact) => (
                             <div key={contact.Id} className="p-4 border rounded cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSelectContact(contact.Id)}>
-                                <p>{contact.Name}</p>
+                                <h1>{contact.Name}</h1>
+                                <p>Email: {contact.Email}</p>
+                                <p>Member Status: {contact.Ocdla_Member_Status__c}</p>
+                                <p>Membership Expires On: {contact.Ocdla_Membership_Expiration_Date__c}</p>
                             </div>
                         ))}
                     </div>
