@@ -4,7 +4,7 @@ import { getJobsQuery } from "./JobsQuery";
 import { compareSFId } from "./jobUtils";
 import JobList from "./JobsList";
 import Button from "../ui/Button";
-
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
 // Mapper array for the filter fields and corresponding api endpoints
 const FILTER_FIELDS = [
     ["Name", "Title"],
@@ -31,7 +31,7 @@ export default function Jobs() {
     const [onlyOwned, setOnlyOwned] = useState(false);
     const [closingDateSort, setClosingDateSort] = useState("");
 
-    const userId = getCookie(user_id);
+    const userId = getCookie("user_id");
 
     const handleUppload = async (e) => {
         navigate("/job/new")

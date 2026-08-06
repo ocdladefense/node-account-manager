@@ -5,6 +5,7 @@ import { compareSFId } from "./jobUtils";
 import Button from "../ui/Button.jsx";
 import { BackButton } from "../ui/Button.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
 
 export default function Job() {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Job() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = getCookie(user_id);
+    let userId = getCookie("user_id");
     let postingDate;
     let closingDate;
 

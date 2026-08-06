@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { getJobsQuery } from "./JobsQuery";
 import { compareSFId } from "./jobUtils";
 import JobForm from "./JobForm";
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
 
 export default function JobEdit() {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function JobEdit() {
     const { jobId } = useParams();
     const [job, setJob] = useState(null);
     const [isOwner, setIsOwner] = useState(false);
-    let userId = getCookie(user_id);
+    let userId = getCookie("user_id");
 
     useEffect(() => {
         const soql = getJobsQuery(jobId);
