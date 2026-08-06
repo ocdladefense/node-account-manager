@@ -18,12 +18,10 @@ export default function ToastProvider({ children }) {
 
 
     const CreateToast = (component, timeout = TIMEOUT_TIMER) => {
-        const random = Math.random(0, 100);
-        const date = Date.now();
         const id = getNextToastId();
         setToasts(toasts => [...toasts, { id, component }]);
 
-        // setTimeout(() => CloseToast(id), timeout);
+        setTimeout(() => CloseToast(id), timeout);
 
         return id;
     }
