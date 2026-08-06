@@ -30,7 +30,7 @@ export default function AccountContacts() {
     return (
         <div className="w-full">
 
-            <div className="container mx-auto px-2 mt-[28px]">
+            <div className="container mx-auto px-6 mt-[28px]">
 
                 <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
 

@@ -14,6 +14,7 @@ export function getAccountQuery(accountId) {
         "Industry",
         "Phone",
         "Fax",
+        "Email__c",
         "BillingAddress"
     ];
 
