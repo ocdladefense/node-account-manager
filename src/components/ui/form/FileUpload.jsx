@@ -96,7 +96,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
     return (
         <div >
             <label className="text-lg font-semibold">{label}</label>
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="">
                 <input
                     name={name}
                     id={name}
@@ -107,9 +107,9 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                     multiple={multiple}
                 />
 
-                {filePreview && preview === true &&
-                    <img src={filePreview} className="w-50 h-75 rounded-sm" />}
-                {multiple === true &&
+                {filePreview && preview === true && <img src={filePreview} className="w-50 h-75 rounded-sm" />}
+
+                {(true || multiple === true) &&
                     <>
                         <div className="mt-4">
                             <progress
@@ -137,7 +137,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
  * @param {Object} reqData
  * @returns {Promise<Object>} A promise that resolves with the server response or rejects with an error.
  */
-export async function uploadFileToServer(file, applicationId, setUploaded = function() { }, reqData = {}) {
+export async function uploadFileToServer(file, applicationId, setUploaded = function() { }, additionalFields = {}) {
 
 
     return new Promise((resolve, reject) => {
@@ -145,8 +145,9 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
 
 
 
-        for (let key in reqData) {
-            formData.append(key, reqData[key]);
+        for (let key in additionalFields)
+        {
+            formData.append(key, additionalFields[key]);
         }
 
         formData.append('files', file);
@@ -161,7 +162,8 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
             SERVER_ENDPOINT
         );
         //This sets the headers for the application
-        if (applicationId) {
+        if (applicationId)
+        {
             xhr.setRequestHeader(
                 "x-applicationid",
                 applicationId
@@ -171,7 +173,8 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         //this tracks the upload of the data from the browser to the uploads, the onprogress meaning when progress is being made it will run this code
         xhr.upload.onprogress = (event) => {
             //console.log("uploadEvent", event);
-            if (event.lengthComputable) {
+            if (event.lengthComputable)
+            {
                 const percent = Math.round(
                     (event.loaded * 100) / event.total
                 );
@@ -181,10 +184,12 @@ export async function uploadFileToServer(file, applicationId, setUploaded = func
         //this checks then the upload is done, whether that is bad or good
         xhr.onload = () => {
             //console.log("upload Response:", xhr.response);
-            if (xhr.status >= 200 && xhr.status < 300) {
+            if (xhr.status >= 200 && xhr.status < 300)
+            {
                 resolve(JSON.parse(xhr.response));
             }
-            else {
+            else
+            {
 
                 reject({
                     status: xhr.status,
@@ -253,9 +258,11 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
 
     const result = await response.json();
 
-    if (result.success) {
+    if (result.success)
+    {
         //console.log("Deleted: ", filePath);
-    } else {
+    } else
+    {
         //console.log("Failed to delete: ", result.error);
     }
 
