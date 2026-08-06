@@ -5,6 +5,7 @@ import { compareSFId } from "./jobUtils";
 import JobList from "./JobsList";
 import Button from "../ui/Button";
 import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
+
 // Mapper array for the filter fields and corresponding api endpoints
 const FILTER_FIELDS = [
     ["Name", "Title"],
@@ -41,7 +42,8 @@ export default function Jobs() {
         async function fetchJobs() {
             const jobsQuery = getJobsQuery();
 
-            try {
+            try
+            {
                 setLoading(true);
 
                 const response = await client.query(jobsQuery);
@@ -49,15 +51,18 @@ export default function Jobs() {
                 console.log("query response:", response);
 
                 setJobs(response.records);
-            } catch (err) {
+            } catch (err)
+            {
                 setError(err);
                 console.error("Error fetching jobs:", err);
-            } finally {
+            } finally
+            {
                 setLoading(false);
             }
         }
 
-        if (client) {
+        if (client)
+        {
             fetchJobs();
         }
     }, [client]);
@@ -78,22 +83,26 @@ export default function Jobs() {
 
     // Copied filteredJobs array for safe order manipulation. Jobs with no closing date go last.
     const displayedJobs = [...filteredJobs].sort((jobA, jobB) => {
-        if (!closingDateSort) {
+        if (!closingDateSort)
+        {
             return 0;
         }
 
         const dateA = jobA.ClosingDate__c;
         const dateB = jobB.ClosingDate__c;
 
-        if (!dateA && !dateB) {
+        if (!dateA && !dateB)
+        {
             return 0;
         }
 
-        if (!dateA) {
+        if (!dateA)
+        {
             return 1;
         }
 
-        if (!dateB) {
+        if (!dateB)
+        {
             return -1;
         }
 
@@ -110,11 +119,13 @@ export default function Jobs() {
         setClosingDateSort("");
     };
 
-    if (loading) {
+    if (loading)
+    {
         return <div>Loading...</div>;
     }
 
-    if (error) {
+    if (error)
+    {
         return <div>Error: {error.message}</div>;
     }
 

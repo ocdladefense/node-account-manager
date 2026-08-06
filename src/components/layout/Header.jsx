@@ -34,10 +34,12 @@ export default function Header({ loggedIn = false }) {
         // loggedIn: loggedIn
     };
 
-    if (loggedIn) {
+    if (loggedIn)
+    {
         //console.log("User is logged in");
         items.push(logoutItem);
-    } else {
+    } else
+    {
         //console.log("User is NOT logged in");
         items.push(loginItem);
     }
@@ -45,13 +47,13 @@ export default function Header({ loggedIn = false }) {
     // 
 
     return (
-        <header className="mb-0 py-1 px-[10px] fixed top-0 right-0 z-50 bg-transparent">
+        <header className="w-full mb-0 py-1 px-[10px] fixed top-0 right-0 z-50 bg-white border-b border-gray-300">
             <nav>
                 <ul className="inline-block" style={{ float: "right" }}>
 
                     <li style={{ verticalAlign: "middle" }} className="inline-block">
                         <a href="/">
-                            <img className="phone:w-[150px] desktop:w-[200px] bg-white" style={{ display: "inline-block", verticalAlign: "middle", width: "250px" }} src="/images/logos/logo.png" />
+                            <img className="sm:w-[75px] lg:w-[150px] bg-white" style={{ display: "inline-block", verticalAlign: "middle" }} src="/images/logos/logo.png" />
                         </a>
                     </li>
 
