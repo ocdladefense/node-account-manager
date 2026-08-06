@@ -138,6 +138,12 @@ app.delete("/delete", (req, res) => {
             });
         });
 
+        let dirPath = absolutePath.substring(0,absolutePath.lastIndexOf("/"));
+        const files = fs.readdirSync(dirPath);
+
+        if(files.length == 0){
+            fs.rmdir(dirPath, ()=>{});
+        }
     }
 });
 
