@@ -1,3 +1,5 @@
+import { formatPhoneNumber } from "../ui/Phone";
+
 export default function AccountHeader({ name, email, website, phoneNumber, fax, address, memberAmount }) {
     let SF_NO_DATA_ENTERED = process.env.SF_NO_DATA_ENTERED || '&nbsp;';
 
@@ -28,13 +30,21 @@ export default function AccountHeader({ name, email, website, phoneNumber, fax, 
 
                 <div>
                     <p className="text-sm text-gray-500">Phone Number</p>
-                    <p className="font-semibold">{phoneNumber || "\u00A0"}</p>
+                    <p className="font-semibold">
+                        {phoneNumber ? formatPhoneNumber(phoneNumber) : "\u00A0"}
+                    </p>
                 </div>
 
 
                 <div>
                     <p className="text-sm text-gray-500">Fax</p>
-                    <p className=" font-semibold">{fax || "\u00A0"}</p>
+                    {fax ? (
+                        <a href={fax} className="font-semibold text-blue-600 hover:underline" >
+                            {formatPhoneNumber(fax)}
+                        </a>
+                    ) : (
+                        "\u00A0"
+                    )}
                 </div>
 
 
