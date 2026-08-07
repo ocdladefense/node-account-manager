@@ -61,7 +61,14 @@ export default function AccountContacts() {
 
                                     <td className="px-4 py-3">{contact.Name}</td>
 
-                                    <td className="px-4 py-3">{contact.Email || "-"}</td>
+                                    <td className="px-4 py-3">
+                                        {contact.Email ? (
+                                            <a href={`mailto:${contact.Email}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+                                                {contact.Email}</a>
+                                        ) : (
+                                            "-"
+                                        )}
+                                    </td>
 
                                     <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "-"}</td>
 

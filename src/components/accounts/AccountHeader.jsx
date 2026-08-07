@@ -14,7 +14,14 @@ export default function AccountHeader({ name, email, website, phoneNumber, fax, 
 
                 <div>
                     <p className="text-sm text-gray-500">Email Address</p>
-                    <p className=" font-semibold">{email || "\u00A0"}</p>
+
+                    {email ? (
+                        <a href={`mailto:${email}`} className="font-semibold text-blue-600 hover:underline" >
+                            {email}
+                        </a>
+                    ) : (
+                        "\u00A0"
+                    )}
                 </div>
 
 
