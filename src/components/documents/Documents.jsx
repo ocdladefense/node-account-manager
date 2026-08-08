@@ -5,11 +5,21 @@ import { getFileDataByContact } from './query.js';
 
 const contactId = process.env.SF_CONTACT_ID;
 
+// const { client } = useOutletContext();
+
+// Testing assignments
+const testFile = {
+    id: "file-1",
+    name: "test-document.pdf",
+    size: 245760,
+    type: "pdf",
+    dateCreated: "2026-08-08T12:00:00"
+};
+
 
 
 export default function Documents() {
-    // const { client } = useOutletContext();
-    const testFile = {};
+
     const [files, setFiles] = useState([testFile]);
     const [loading, setLoading] = useState(true);
     // const [sortColumn, setSortColumn] = useState('Filename__c');
@@ -23,41 +33,37 @@ export default function Documents() {
         fetchFiles();
     }, []);
 
-
-
     // Navigate to download endpoint when row is clicked (instead of download button)
     const handleRowClick = (file) => {
-        window.location.href = `/download/${contactId}/${file.Filename__c}?type=${encodeURIComponent(file.FileType__c)}`;
+        window.location.href = `/download/${contactId}/${file.name}?type=${encodeURIComponent(file.type)}`;
     };
 
     return (
         <div className="w-full">
             <div className="container mx-auto px-2 mt-[28px]">
-                <h1 className="text-2xl font-bold text-center mb-6">Documents</h1>
+                <h1 className="text-2xl font-bold text-center mb-6">
+                    Documents
+                </h1>
+
                 <div className="bg-white rounded-lg shadow-sm">
+
                     {/* Table Header */}
                     <div className="border-b border-gray-200 p-4">
                         <div className="grid gap-4 grid-cols-4">
-                            <div className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600">
-                                Label 1
+                            <div className="text-sm font-semibold text-gray-900">
+                                Name
                             </div>
-                        </div>
 
-                        <div className="grid gap-4 grid-cols-4">
-                            <div className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600">
-                                Label 2
+                            <div className="text-sm font-semibold text-gray-900">
+                                Size
                             </div>
-                        </div>
 
-                        <div className="grid gap-4 grid-cols-4">
-                            <div className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600">
-                                Label 3
+                            <div className="text-sm font-semibold text-gray-900">
+                                File Type
                             </div>
-                        </div>
 
-                        <div className="grid gap-4 grid-cols-4">
-                            <div className="text-sm font-semibold text-gray-900 cursor-pointer hover:text-blue-600">
-                                Label 4
+                            <div className="text-sm font-semibold text-gray-900">
+                                Date Created
                             </div>
                         </div>
                     </div>
@@ -66,37 +72,33 @@ export default function Documents() {
                     <div className="divide-y divide-gray-200">
                         {files.map((file) => (
                             <div
-                                key={file.Id}
+                                key={file.id}
                                 onClick={() => handleRowClick(file)}
                                 className="p-4 hover:bg-gray-50 transition cursor-pointer"
                             >
                                 <div className="grid gap-4 grid-cols-4">
-                                    {/* Filename */}
-                                    <div>
-                                        <div className="text-sm font-medium text-gray-900">{file.Filename__c}</div>
+
+                                    <div className="text-sm font-medium text-gray-900">
+                                        {file.name}
                                     </div>
 
-                                    {/* File Size */}
-                                    <div>
-                                        <div className="text-sm text-gray-700">{formatFileSize(file.FileSize__c)}</div>
+                                    <div className="text-sm text-gray-700">
+                                        {formatFileSize(file.size)}
                                     </div>
 
-                                    {/* File Type */}
-                                    <div>
-                                        <div className="text-sm text-gray-700">{file.FileType__c}</div>
+                                    <div className="text-sm text-gray-700">
+                                        {file.type}
                                     </div>
 
-                                    {/* Date Created */}
-                                    <div>
-                                        <div className="text-sm text-gray-700">{formatDate(file.CreatedDate)}</div>
+                                    <div className="text-sm text-gray-700">
+                                        {formatDate(file.dateCreated)}
                                     </div>
+
                                 </div>
                             </div>
                         ))}
-                        {files.length === 0 && (
-                            <div className="p-4 text-center text-gray-500">No documents found</div>
-                        )}
                     </div>
+
                 </div>
             </div>
         </div>
