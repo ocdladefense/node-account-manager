@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router";
 import { getAccountContactsQuery } from "./query.js";
+import Button from "../ui/Button.jsx";
+import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
 
 
@@ -20,6 +22,7 @@ export default function AccountContacts() {
             const resp = await client.query(soql);
             setContacts(resp.records);
         };
+
         fetchAccountContacts();
     }, []);
 
@@ -27,63 +30,91 @@ export default function AccountContacts() {
         navigate(`/contact/${contactId}`);
     };
 
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(e.currentTarget);
+
+        const selectedContactIds = formData.getAll("contactIds");
+
+        console.log("Selected contacts:", selectedContactIds);
+    };
+
+
+
     return (
-        <div className="w-full">
 
-            <div className="container mx-auto px-6 mt-[28px]">
+        <form onSubmit={handleSubmit}>
 
-                <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
+            <div className="w-full">
 
-                <div className="overflow-x-auto">
+                <div className="container mx-auto px-6 mt-[28px]">
 
-                    <table className="w-full border-collapse">
+                    <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
 
-                        <thead>
+                    <div className="overflow-x-auto">
 
-                            <tr className="border-b bg-gray-100">
+                        <table className="w-full border-collapse">
 
-                                <th className="px-4 py-3 text-left">Name</th>
+                            <thead>
 
-                                <th className="px-4 py-3 text-left">Email</th>
+                                <tr className="border-b bg-gray-100">
 
-                                <th className="px-4 py-3 text-left">Member Status</th>
+                                    <th className="px-4 py-3"></th>
 
-                                <th className="px-4 py-3 text-left">Membership Expiration</th>
+                                    <th className="px-4 py-3 text-left">Name</th>
 
-                            </tr>
+                                    <th className="px-4 py-3 text-left">Email</th>
 
-                        </thead>
+                                    <th className="px-4 py-3 text-left">Member Status</th>
 
-                        <tbody>
-
-                            {contacts.map((contact) => (
-                                <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => handleSelectContact(contact.Id)}>
-
-                                    <td className="px-4 py-3">{contact.Name}</td>
-
-                                    <td className="px-4 py-3">
-                                        {contact.Email ? (
-                                            <a href={`mailto:${contact.Email}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
-                                                {contact.Email}</a>
-                                        ) : (
-                                            "-"
-                                        )}
-                                    </td>
-
-                                    <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "-"}</td>
-
-                                    <td className="px-4 py-3">{<DateDisplay value={contact.Ocdla_Membership_Expiration_Date__c} type="Date" textClassName="text-base" />}</td>
+                                    <th className="px-4 py-3 text-left">Membership Expiration</th>
 
                                 </tr>
-                            ))}
-                        </tbody>
 
-                    </table>
+                            </thead>
+
+                            <tbody>
+
+                                {contacts.map((contact) => (
+                                    <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => handleSelectContact(contact.Id)}>
+
+                                        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                            <CheckBox label="" name="contactIds" value={contact.Id} defaultValue={false} />
+                                        </td>
+
+                                        <td className="px-4 py-3">{contact.Name}</td>
+
+                                        <td className="px-4 py-3">
+                                            {contact.Email ? (
+                                                <a href={`mailto:${contact.Email}`} className="text-blue-600 hover:underline" onClick={(e) => e.stopPropagation()}>
+                                                    {contact.Email}</a>
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </td>
+
+                                        <td className="px-4 py-3">{contact.Ocdla_Member_Status__c || "-"}</td>
+
+                                        <td className="px-4 py-3">{<DateDisplay value={contact.Ocdla_Membership_Expiration_Date__c} type="Date" textClassName="text-base" />}</td>
+
+                                    </tr>
+                                ))}
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <br />
+
+                    <Button label="Test Selection" buttonType="submit" />
 
                 </div>
 
             </div>
 
-        </div>
+        </form>
     );
 }
