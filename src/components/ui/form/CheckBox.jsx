@@ -1,4 +1,4 @@
-export default function CheckBox({ label, name, defaultValue, onChange }) {
+export default function CheckBox({ label, name, value, defaultValue, onChange }) {
     return (
         <div>
             <label className="block text-sm font-semibold mb-2" htmlFor={label}>
@@ -7,6 +7,7 @@ export default function CheckBox({ label, name, defaultValue, onChange }) {
                     type="checkbox"
                     className="checkbox ml-3"
                     name={name}
+                    value={value}
                     defaultChecked={defaultValue}
                     onChange={onChange}
                 />
