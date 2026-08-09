@@ -101,6 +101,7 @@ router.get("/logout", (req, res) => {
     res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie("contact_id", "", { expires: new Date(0) });
 
     res.redirect("/");
 
@@ -149,6 +150,16 @@ router.get("/oauth/api/request", async (req, res) => {
 
     const userId = parseUserId(access_token_data.id);
 
+    const contactId = process.env.SF_CONTACT_ID; // Temporary fix until I get guidance on how to retrieve the contact ID from server
+
+    if (!contactId) {
+        console.error("auth.js: SF_CONTACT_ID is missing from .env");
+
+        return res.status(500).json({
+            error: "Server contact ID is not configured."
+        });
+    }
+
     console.log(
         "Salesforce login response fields:",
         Object.keys(access_token_data)
@@ -170,6 +181,7 @@ router.get("/oauth/api/request", async (req, res) => {
     res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
     res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
     res.cookie("user_id", userId, options);
+    res.cookie("contact_id", contactId, options);
 
     res.redirect("/");
 });

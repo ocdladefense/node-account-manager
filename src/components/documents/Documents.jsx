@@ -1,42 +1,57 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
-import { getFileDataByContact } from './query.js';
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
+// import { useOutletContext } from "react-router-dom";
+// import { getFileDataByContact } from './query.js';
 // import SortableHeader from '../ui/table/SortableHeader.jsx';
-
-const contactId = process.env.SF_CONTACT_ID;
 
 // const { client } = useOutletContext();
 
-// Testing assignments
-const testFile = {
-    id: "file-1",
-    name: "test-document.pdf",
-    size: 245760,
-    type: "pdf",
-    dateCreated: "2026-08-08T12:00:00"
-};
-
-
-
 export default function Documents() {
 
-    const [files, setFiles] = useState([testFile]);
+    const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     // const [sortColumn, setSortColumn] = useState('Filename__c');
-    //  const [sortDirection, setSortDirection] = useState('asc');
+    // const [sortDirection, setSortDirection] = useState('asc');
 
     useEffect(() => {
 
         const fetchFiles = async () => {
-            // Define an express server route that returns a list of files in a given directory in /uploads
+            try {
+                const response = await fetch("/files");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load documents");
+                }
+
+                const data = await response.json();
+
+                setFiles(data);
+            }
+            catch (err) {
+                console.error(err);
+                setError(err);
+            }
+            finally {
+                setLoading(false);
+            }
         };
+
         fetchFiles();
     }, []);
 
-    // Navigate to download endpoint when row is clicked (instead of download button)
+    // Navigate to download endpoint when row is clicked
     const handleRowClick = (file) => {
-        window.location.href = `/download/${contactId}/${file.name}?type=${encodeURIComponent(file.type)}`;
+        window.location.href = `/download/${encodeURIComponent(file.name)}`;
     };
+
+    if (loading) {
+        return <div>Loading documents...</div>;
+    }
+
+    if (error) {
+        return <div>Error loading documents.</div>;
+    }
 
     return (
         <div className="w-full">
@@ -97,6 +112,12 @@ export default function Documents() {
                                 </div>
                             </div>
                         ))}
+
+                        {files.length === 0 && (
+                            <div className="p-4 text-center text-gray-500">
+                                No Documents Found
+                            </div>
+                        )}
                     </div>
 
                 </div>
