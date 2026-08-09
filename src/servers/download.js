@@ -9,7 +9,8 @@ router.get("/download/:filename", (req, res) => {
     const contactId = req.cookies.contact_id;
     const { filename } = req.params;
 
-    if (!contactId) {
+    if (!contactId)
+    {
         return res.status(401).send("Missing contact ID");
     }
 
@@ -18,7 +19,7 @@ router.get("/download/:filename", (req, res) => {
 
     // Use MIME type from Salesforce, fallback to MIMI type using npm package detection,
     // then finally fall back to better safe than sorry method: octet-stream (unknown binary file)
-    const contentType = type || mime.getType(filename) || 'application/octet-stream';
+    const contentType = mime.getType(filePath) || 'application/octet-stream';
 
     res.setHeader('Content-Type', contentType);
     res.download(filePath, filename, (err) => {
