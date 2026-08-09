@@ -1,9 +1,135 @@
 import { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
-import { getFileDataByContact } from './query.js';
-import SortableHeader from '../ui/SortableHeader.jsx';
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
+// import { useOutletContext } from "react-router-dom";
+// import { getFileDataByContact } from './query.js';
+// import SortableHeader from '../ui/table/SortableHeader.jsx';
 
-const contactId = process.env.SF_CONTACT_ID;
+// const { client } = useOutletContext();
+
+export default function Documents() {
+
+    const [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    // const [sortColumn, setSortColumn] = useState('Filename__c');
+    // const [sortDirection, setSortDirection] = useState('asc');
+
+    useEffect(() => {
+
+        const fetchFiles = async () => {
+            try {
+                const response = await fetch("/files");
+
+                if (!response.ok) {
+                    throw new Error("Unable to load documents");
+                }
+
+                const data = await response.json();
+
+                setFiles(data);
+            }
+            catch (err) {
+                console.error(err);
+                setError(err);
+            }
+            finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFiles();
+    }, []);
+
+    // Navigate to download endpoint when row is clicked
+    const handleRowClick = (file) => {
+        window.location.href = `/download/${encodeURIComponent(file.name)}`;
+    };
+
+    if (loading) {
+        return <div>Loading documents...</div>;
+    }
+
+    if (error) {
+        return <div>Error loading documents.</div>;
+    }
+
+    return (
+        <div className="w-full">
+            <div className="container mx-auto px-2 mt-[28px]">
+                <h1 className="text-2xl font-bold text-center mb-6">
+                    Documents
+                </h1>
+
+                <div className="bg-white rounded-lg shadow-sm">
+
+                    {/* Table Header */}
+                    <div className="border-b border-gray-200 p-4">
+                        <div className="grid gap-4 grid-cols-4">
+                            <div className="text-sm font-semibold text-gray-900">
+                                Name
+                            </div>
+
+                            <div className="text-sm font-semibold text-gray-900">
+                                Size
+                            </div>
+
+                            <div className="text-sm font-semibold text-gray-900">
+                                File Type
+                            </div>
+
+                            <div className="text-sm font-semibold text-gray-900">
+                                Date Created
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Table Body */}
+                    <div className="divide-y divide-gray-200">
+                        {files.map((file) => (
+                            <div
+                                key={file.id}
+                                onClick={() => handleRowClick(file)}
+                                className="p-4 hover:bg-gray-50 transition cursor-pointer"
+                            >
+                                <div className="grid gap-4 grid-cols-4">
+
+                                    <div className="text-sm font-medium text-gray-900">
+                                        {file.name}
+                                    </div>
+
+                                    <div className="text-sm text-gray-700">
+                                        {formatFileSize(file.size)}
+                                    </div>
+
+                                    <div className="text-sm text-gray-700">
+                                        {file.type}
+                                    </div>
+
+                                    <div className="text-sm text-gray-700">
+                                        {formatDate(file.dateCreated)}
+                                    </div>
+
+                                </div>
+                            </div>
+                        ))}
+
+                        {files.length === 0 && (
+                            <div className="p-4 text-center text-gray-500">
+                                No Documents Found
+                            </div>
+                        )}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
+
+
+
 
 // Helper function to format bytes to human readable size
 function formatFileSize(bytes) {
@@ -24,131 +150,51 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString();
 }
 
-export default function Documents() {
-    const { client } = useOutletContext();
-    const [files, setFiles] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [sortColumn, setSortColumn] = useState('Filename__c');
-    const [sortDirection, setSortDirection] = useState('asc');
-
-    useEffect(() => {
-        const soql = getFileDataByContact(contactId);
-        console.log('Contact Id:', contactId);
-        const fetchFiles = async () => {
-            try {
-                const resp = await client.query(soql);
-                setFiles(resp.records);
-            } catch (error) {
-                console.error('Documents.jsx: Error fetching files:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchFiles();
-    }, []);
-
-    // Handle column header clicks to sort 
-    const handleColumnClick = (column) => {
-        if (sortColumn === column) {
-            // If same column clicked, toggle sort direction
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-        } else {
-            // If new column clicked, reset to ascending
-            setSortColumn(column);
-            setSortDirection('asc');
-        }
+/*
+useEffect(() => {
+    const soql = getFileDataByContact(contactId);
+    console.log('Contact Id:', contactId);
+    const fetchFiles = async () => {
+        // Define an express server route that returns a list of files in a given directory
     };
+    fetchFiles();
+}, []);
 
-    // Sort files array based on current sort settings. Using spread operator (creates new array by default) to sort through a copy of returned files and leaves original files unchanged
-    const sortedFiles = files ? [...files].sort((a, b) => {
-        // Extract values from both items based on the current sort column
-        let aVal = a[sortColumn];
-        let bVal = b[sortColumn];
+*/
 
-        // Handle different data types
-        if (sortColumn === 'FileSize__c') {
-            // For numbers: convert to actual numbers
-            aVal = Number(aVal);
-            bVal = Number(bVal);
-        } else if (sortColumn === 'CreatedDate') {
-            // For dates: convert to timestamps (milliseconds) so they compare numerically
-            aVal = new Date(aVal).getTime();
-            bVal = new Date(bVal).getTime();
-        } else {
-            // For text: convert to lowercase strings for case-insensitive sorting
-            aVal = String(aVal).toLowerCase();
-            bVal = String(bVal).toLowerCase();
-        }
 
-        // Compare the values and return sort order
-        if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-        if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+/*
+// Sort files array based on current sort settings. Using spread operator (creates new array by default) to sort through a copy of returned files and leaves original files unchanged
+const sortedFiles = files ? [...files].sort((a, b) => {
+    // Extract values from both items based on the current sort column
+    let aVal = a[sortColumn];
+    let bVal = b[sortColumn];
 
-        // If they're equal, return 0 (no change in order). Edge case for duplicate file uploads.
-        return 0;
-    }) : []; // otherwise return empty array so that first react render doesnt errror out if null
+    // Handle different data types
+    if (sortColumn === 'FileSize__c')
+    {
+        // For numbers: convert to actual numbers
+        aVal = Number(aVal);
+        bVal = Number(bVal);
+    } else if (sortColumn === 'CreatedDate')
+    {
+        // For dates: convert to timestamps (milliseconds) so they compare numerically
+        aVal = new Date(aVal).getTime();
+        bVal = new Date(bVal).getTime();
+    } else
+    {
+        // For text: convert to lowercase strings for case-insensitive sorting
+        aVal = String(aVal).toLowerCase();
+        bVal = String(bVal).toLowerCase();
+    }
 
-    // Navigate to download endpoint when row is clicked (instead of download button)
-    const handleRowClick = (file) => {
-        window.location.href = `/download/${contactId}/${file.Filename__c}?type=${encodeURIComponent(file.FileType__c)}`;
-    };
+    // Compare the values and return sort order
+    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
 
-    return (
-        <div className="w-full">
-            <div className="container mx-auto px-2 mt-[28px]">
-                <h1 className="text-2xl font-bold text-center mb-6">Documents</h1>
-                <div className="bg-white rounded-lg shadow-sm">
-                    {/* Table Header */}
-                    <div className="border-b border-gray-200 p-4">
-                        <div className="grid gap-4 grid-cols-4">
+    // If they're equal, return 0 (no change in order). Edge case for duplicate file uploads.
+    return 0;
+}) : []; // otherwise return empty array so that first react render doesnt errror out if null
 
-                            <SortableHeader column="Filename__c" label="Filename" sortColumn={sortColumn} sortDirection={sortDirection} onColumnClick={handleColumnClick} />
-                            <SortableHeader column="FileSize__c" label="File Size" sortColumn={sortColumn} sortDirection={sortDirection} onColumnClick={handleColumnClick} />
-                            <SortableHeader column="FileType__c" label="File Type" sortColumn={sortColumn} sortDirection={sortDirection} onColumnClick={handleColumnClick} />
-                            <SortableHeader column="CreatedDate" label="Date Created" sortColumn={sortColumn} sortDirection={sortDirection} onColumnClick={handleColumnClick} />
-                        </div>
-                    </div>
 
-                    {/* Table Body */}
-                    <div className="divide-y divide-gray-200">
-                        {loading ? (
-                            <div className="p-4 text-center text-gray-500">Loading...</div>
-                        ) : sortedFiles.length > 0 ? (
-                            sortedFiles.map((file) => (
-                                <div
-                                    key={file.Id}
-                                    onClick={() => handleRowClick(file)}
-                                    className="p-4 hover:bg-gray-50 transition cursor-pointer"
-                                >
-                                    <div className="grid gap-4 grid-cols-4">
-                                        {/* Filename */}
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-900">{file.Filename__c}</div>
-                                        </div>
-
-                                        {/* File Size */}
-                                        <div>
-                                            <div className="text-sm text-gray-700">{formatFileSize(file.FileSize__c)}</div>
-                                        </div>
-
-                                        {/* File Type */}
-                                        <div>
-                                            <div className="text-sm text-gray-700">{file.FileType__c}</div>
-                                        </div>
-
-                                        {/* Date Created */}
-                                        <div>
-                                            <div className="text-sm text-gray-700">{formatDate(file.CreatedDate)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-4 text-center text-gray-500">No documents found</div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
+*/
