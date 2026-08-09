@@ -6,24 +6,24 @@ import mime from 'mime';
 const router = express.Router();
 
 router.get("/download/:filename", (req, res) => {
-    const contactId = req.cookies.contact_id;
+    const userId = req.cookies.user_id;
     const { filename } = req.params;
 
-    if (!contactId)
-    {
-        return res.status(401).send("Missing contact ID");
+    if (!userId) {
+        return res.status(401).send("Missing user ID");
     }
 
-    const filePath = path.join("uploads", contactId, filename);
+    const filePath = path.join("uploads", userId, filename);
 
+    const contentType =
+        mime.getType(filePath) || "application/octet-stream";
 
-    // Use MIME type from Salesforce, fallback to MIMI type using npm package detection,
-    // then finally fall back to better safe than sorry method: octet-stream (unknown binary file)
-    const contentType = mime.getType(filePath) || 'application/octet-stream';
+    res.setHeader("Content-Type", contentType);
 
-    res.setHeader('Content-Type', contentType);
     res.download(filePath, filename, (err) => {
-        if (err) console.error("download.js: Download error:", err);
+        if (err) {
+            console.error("download.js: Download error:", err);
+        }
     });
 });
 

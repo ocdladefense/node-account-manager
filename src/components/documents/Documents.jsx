@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
 // import { useOutletContext } from "react-router-dom";
 // import { getFileDataByContact } from './query.js';
 // import SortableHeader from '../ui/table/SortableHeader.jsx';

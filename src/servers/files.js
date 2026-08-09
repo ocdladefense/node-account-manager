@@ -5,16 +5,16 @@ import fs from "fs";
 const router = express.Router();
 
 router.get("/files", (req, res) => {
-    const contactId = req.cookies.contact_id;
+    const userId = req.cookies.user_id;
 
-    if (!contactId) {
+    if (!userId) {
         return res.status(401).json({
-            error: "Missing contact ID"
+            error: "Missing user ID"
         });
     }
 
     const uploadsPath = path.resolve("uploads");
-    const directoryPath = path.resolve(uploadsPath, contactId);
+    const directoryPath = path.resolve(uploadsPath, userId);
 
     if (
         directoryPath !== uploadsPath &&
@@ -45,7 +45,7 @@ router.get("/files", (req, res) => {
                 const stats = fs.statSync(filePath);
 
                 return {
-                    id: path.join(contactId, entry.name),
+                    id: path.join(userId, entry.name),
                     name: entry.name,
                     size: stats.size,
                     type: path.extname(entry.name).slice(1),
