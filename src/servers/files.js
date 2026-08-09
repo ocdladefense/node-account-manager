@@ -3,31 +3,35 @@ import path from "path";
 import fs from "fs";
 
 const router = express.Router();
+const BASE_UPLOADS_DIR = path.resolve("uploads");
 
-router.get("/files", (req, res) => {
-    const userId = req.cookies.user_id;
 
-    if (!userId) {
-        return res.status(401).json({
-            error: "Missing user ID"
-        });
-    }
 
-    const uploadsPath = path.resolve("uploads");
-    const directoryPath = path.resolve(uploadsPath, userId);
+
+router.post("/files", (req, res) => {
+
+    const subpath = req.body.subpath;
+
+    // throw an error if subpath is not a string.
+
+
+    const directoryPath = path.resolve(BASE_UPLOADS_DIR, subpath);
 
     if (
         directoryPath !== uploadsPath &&
         !directoryPath.startsWith(uploadsPath + path.sep)
-    ) {
+    )
+    {
         return res.status(400).json({
             error: "Invalid path"
         });
     }
 
     fs.readdir(directoryPath, { withFileTypes: true }, (err, entries) => {
-        if (err) {
-            if (err.code === "ENOENT") {
+        if (err)
+        {
+            if (err.code === "ENOENT")
+            {
                 return res.json([]);
             }
 

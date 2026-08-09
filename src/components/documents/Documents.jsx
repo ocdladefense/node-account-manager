@@ -16,10 +16,21 @@ export default function Documents() {
     useEffect(() => {
 
         const fetchFiles = async () => {
-            try {
+            try
+            {
+                // Change this to POST request.
+                // Contstruct a body with "subpath" 
+                function resolveSubpath() {
+                    const userId = getCookie("user_id");
+
+                    return userId;
+                }
+
+                // Change to POST.
                 const response = await fetch("/files");
 
-                if (!response.ok) {
+                if (!response.ok)
+                {
                     throw new Error("Unable to load documents");
                 }
 
@@ -27,11 +38,13 @@ export default function Documents() {
 
                 setFiles(data);
             }
-            catch (err) {
+            catch (err)
+            {
                 console.error(err);
                 setError(err);
             }
-            finally {
+            finally
+            {
                 setLoading(false);
             }
         };
@@ -44,11 +57,13 @@ export default function Documents() {
         window.location.href = `/download/${encodeURIComponent(file.name)}`;
     };
 
-    if (loading) {
+    if (loading)
+    {
         return <div>Loading documents...</div>;
     }
 
-    if (error) {
+    if (error)
+    {
         return <div>Error loading documents.</div>;
     }
 
