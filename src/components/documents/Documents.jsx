@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 // import { useOutletContext } from "react-router-dom";
 // import { getFileDataByContact } from './query.js';
 // import SortableHeader from '../ui/table/SortableHeader.jsx';
@@ -16,21 +17,23 @@ export default function Documents() {
     useEffect(() => {
 
         const fetchFiles = async () => {
-            try
-            {
-                // Change this to POST request.
-                // Contstruct a body with "subpath" 
-                function resolveSubpath() {
-                    const userId = getCookie("user_id");
+            try {
 
-                    return userId;
+                const subpath = getCookie("user_id");
+
+                if (!subpath || subpath === "undefined") {
+                    throw new Error("No user ID found.");
                 }
 
-                // Change to POST.
-                const response = await fetch("/files");
+                const response = await fetch("/files", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ subpath })
+                });
 
-                if (!response.ok)
-                {
+                if (!response.ok) {
                     throw new Error("Unable to load documents");
                 }
 
@@ -38,13 +41,11 @@ export default function Documents() {
 
                 setFiles(data);
             }
-            catch (err)
-            {
+            catch (err) {
                 console.error(err);
                 setError(err);
             }
-            finally
-            {
+            finally {
                 setLoading(false);
             }
         };
@@ -57,13 +58,11 @@ export default function Documents() {
         window.location.href = `/download/${encodeURIComponent(file.name)}`;
     };
 
-    if (loading)
-    {
+    if (loading) {
         return <div>Loading documents...</div>;
     }
 
-    if (error)
-    {
+    if (error) {
         return <div>Error loading documents.</div>;
     }
 

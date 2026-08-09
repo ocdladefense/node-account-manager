@@ -13,25 +13,26 @@ router.post("/files", (req, res) => {
     const subpath = req.body.subpath;
 
     // throw an error if subpath is not a string.
-
+    if (typeof subpath !== "string" || subpath.trim() === "") {
+        return res.status(400).json({
+            error: "Invalid subpath"
+        });
+    }
 
     const directoryPath = path.resolve(BASE_UPLOADS_DIR, subpath);
 
     if (
-        directoryPath !== uploadsPath &&
-        !directoryPath.startsWith(uploadsPath + path.sep)
-    )
-    {
+        directoryPath !== BASE_UPLOADS_DIR &&
+        !directoryPath.startsWith(BASE_UPLOADS_DIR + path.sep)
+    ) {
         return res.status(400).json({
             error: "Invalid path"
         });
     }
 
     fs.readdir(directoryPath, { withFileTypes: true }, (err, entries) => {
-        if (err)
-        {
-            if (err.code === "ENOENT")
-            {
+        if (err) {
+            if (err.code === "ENOENT") {
                 return res.json([]);
             }
 
@@ -49,7 +50,7 @@ router.post("/files", (req, res) => {
                 const stats = fs.statSync(filePath);
 
                 return {
-                    id: path.join(userId, entry.name),
+                    id: path.join(subpath, entry.name),
                     name: entry.name,
                     size: stats.size,
                     type: path.extname(entry.name).slice(1),
