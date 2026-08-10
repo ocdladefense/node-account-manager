@@ -6,24 +6,31 @@ import OrderHeader from './OrderHeader.jsx';
 
 // Information about a specific order for an account.
 export default function OrderDetails() {
+
     const { client } = useOutletContext();
     const { orderId } = useParams();
+
     const [orderItems, setOrderItems] = useState(null);
     const [orderHeader, setOrderHeader] = useState(null);
 
     useEffect(() => {
+
         const soqlItems = getOrderItems(orderId);
+
         const fetchOrders = async () => {
             const resp = await client.query(soqlItems);
             setOrderItems(resp.records);
         };
+
         fetchOrders();
 
         const soqlHeader = getOrderHeader(orderId);
+
         const fetchHeader = async () => {
             const resp = await client.query(soqlHeader);
             setOrderHeader(resp.records[0]);
         }
+
         fetchHeader();
 
     }, []);
@@ -41,7 +48,7 @@ export default function OrderDetails() {
 
                         <div className="space-y-8">
                             {orderItems && orderItems.length > 0 ? orderItems.map((item, index) => (
-                                <OrderItem data={item} index={index} />
+                                <OrderItem key={item.Id} data={item} index={index} />
                             )) : 'No products found'}
                         </div>
                     </>
