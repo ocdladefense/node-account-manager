@@ -21,11 +21,11 @@ import Jobs from '../components/jobs/Jobs.jsx';
 import Job from '../components/jobs/Job.jsx';
 import JobForm from '../components/jobs/JobForm.jsx';
 import JobEdit from "../components/jobs/JobEdit.jsx";
+import InvoiceHistory from "../components/invoices/InvoiceHistory.jsx";
 
 import SObject from "../components/contacts/SObject.jsx";
 
-if (process.env.NODE_ENV === 'debug')
-{
+if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
 
@@ -58,6 +58,7 @@ root.render(
                     <Route index element={<Account />} />
                     <Route path="contacts" element={<AccountContacts />} />
                     <Route path="orders" element={<OrderHistory />} />
+                    <Route path="invoices" element={<InvoiceHistory />} />
                 </Route>
                 <Route path="order">
                     <Route path=":orderId" element={<OrderDetails />} />

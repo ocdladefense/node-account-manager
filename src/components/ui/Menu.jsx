@@ -14,6 +14,7 @@ export default function Menu() {
         account: /\/account\/[0-9A-Za-z]+$/,
         contacts: /\/account\/[0-9A-Za-z]+\/contacts/,
         orders: /\/account\/[0-9A-Za-z]+\/orders/,
+        invoices: /\/account\/invoices$/,
         contact: /\/contact\/[0-9A-Za-z]+$/,
         order: /\/order\/[0-9A-Za-z]+$/,
         documents: /\/documents$/,
@@ -55,6 +56,12 @@ export default function Menu() {
                         <a href={`/account/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
                             <TbPackages />
                             Orders
+                        </a>
+                    </li>
+                    <li>
+                        <a href={`/account/invoices`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
+                            <MdDescription />
+                            Invoices
                         </a>
                     </li>
                     <li>
