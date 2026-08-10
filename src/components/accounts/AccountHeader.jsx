@@ -38,7 +38,10 @@ export default function AccountHeader({ name, email, website, phoneNumber, fax, 
                 <div>
                     <p className="text-sm text-gray-500">Phone Number</p>
                     <p className="font-semibold">
-                        {phoneNumber ? formatPhoneNumber(phoneNumber) : "\u00A0"}
+                        <a href={`tel:${phoneNumber}`} className="font-semibold text-blue-600 hover:underline" >
+                            {phoneNumber ? formatPhoneNumber(phoneNumber) : "\u00A0"}
+                        </a>
+
                     </p>
                 </div>
 
@@ -46,7 +49,7 @@ export default function AccountHeader({ name, email, website, phoneNumber, fax, 
                 <div>
                     <p className="text-sm text-gray-500">Fax</p>
                     {fax ? (
-                        <a href={fax} className="font-semibold text-blue-600 hover:underline" >
+                        <a href={`tel:${fax}`} className="font-semibold text-blue-600 hover:underline" >
                             {formatPhoneNumber(fax)}
                         </a>
                     ) : (
