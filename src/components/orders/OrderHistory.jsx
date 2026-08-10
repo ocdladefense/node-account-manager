@@ -81,7 +81,7 @@ export default function AccountOrders() {
                                 <div className="flex justify-end">
                                     <button
                                         onClick={() => handleSelectOrder(order)}
-                                        className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition"
+                                        className="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition cursor-pointer"
                                     >
                                         View Order
                                     </button>
