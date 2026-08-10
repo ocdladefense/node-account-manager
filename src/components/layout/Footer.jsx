@@ -69,7 +69,7 @@ export default function Footer() {
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12 xl:gap-20">
 
                 <div className="flex w-full max-w-md flex-col gap-4 lg:w-[320px] lg:flex-shrink-0">
-                    <a href="/"><img className="h-16" src="/images/logo_ocdla.png" alt="OCDLA Logo" />
+                    <a href="/"><img className="h-16" src="/images/logos/logo.png" alt="OCDLA Logo" />
                     </a>
 
                     <p className="text-xs text-gray-500 space-y-1 font-light">©{new Date().getFullYear()} {siteInfo.organization}</p>
