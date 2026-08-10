@@ -51,18 +51,12 @@ export default function Menu() {
                             Profile
                         </a>
                     </li>
-                    {/* <li>
-                        {/* <a href={`/account/${process.env.SF_ACCOUNT_ID}/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
+                    <li>
+                        <a href={`/account/orders`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) ? active : ''}`}>
                             <TbPackages />
                             Orders
                         </a>
-                    </li> */}
-                    {/* <li>
-                        <a href={`/order/${process.env.SF_ORDER_ID}`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.order) ? active : ''}`}>
-                            <LuPackageOpen />
-                            Order Details
-                        </a>
-                    </li> */}
+                    </li>
                     <li>
                         <a href="/documents" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.documents) ? active : ''}`}>
                             <MdDescription />
