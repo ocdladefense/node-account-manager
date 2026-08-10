@@ -20,7 +20,8 @@ const __dirname = path.dirname(__filename);
  * @returns {string}
  */
 function parseUserId(identityUrl) {
-    if (!identityUrl) {
+    if (!identityUrl)
+    {
         throw new Error(
             "Cannot parse Salesforce user ID: identity URL is missing."
         );
@@ -34,7 +35,8 @@ function parseUserId(identityUrl) {
 
     const userId = pathParts.at(-1); // Grabs the last item, in this case the user ID
 
-    if (!userId || !userId.startsWith("005")) {
+    if (!userId || !userId.startsWith("005"))
+    {
         throw new Error(
             "Salesforce identity URL did not contain a valid user ID."
         );
@@ -42,6 +44,181 @@ function parseUserId(identityUrl) {
 
     return userId;
 }
+
+
+
+
+
+
+
+
+router.get("/login", (req, res) => {
+    const state = "some_state";
+    // const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
+    const loginUrl = `${process.env.SF_OAUTH_SESSION_URL}?client_id=${process.env.SF_OAUTH_SESSION_CLIENT_ID}&redirect_uri=${process.env.SF_OAUTH_SESSION_CALLBACK_URL}&response_type=code&state=${state}`;//&scope=${scopes}`;
+    res.redirect(loginUrl);
+});
+
+
+
+
+
+router.get("/logout", (req, res) => {
+
+    res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
+
+    res.redirect("/");
+
+    // Notify user they have lgged out successfully
+    // Remove cookies for secure account related behavior
+    // Provide a link back to home or login page
+});
+
+
+
+
+
+router.get("/oauth/api/request", async (req, res) => {
+
+    console.log("auth.js: api request: ", req.query);
+
+    const { code } = req.query;
+
+
+    const data = new URLSearchParams({
+        code,
+        client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
+        client_secret: process.env.SF_OAUTH_SESSION_CLIENT_SECRET,
+        redirect_uri: process.env.SF_OAUTH_SESSION_CALLBACK_URL,
+        grant_type: "authorization_code"
+    });
+
+    // Exchange authorization code for access token & id_token.
+    const response = await fetch(process.env.SF_OAUTH_SESSION_TOKEN_URL, {
+        method: "POST",
+        body: data,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+
+    const access_token_data = await response.json();
+
+    if (!response.ok || access_token_data.error)
+    {
+        console.error(
+            "Salesforce OAuth error:",
+            access_token_data.error,
+            access_token_data.error_description
+        );
+
+        return res.status(401).json({
+            error: "Salesforce login failed."
+        });
+    }
+
+    const userId = parseUserId(access_token_data.id);
+
+    console.log(
+        "Salesforce login response fields:",
+        Object.keys(access_token_data)
+    );
+
+    console.log("Salesforce identity values:", {
+        user_id: access_token_data.user_id,
+        id: access_token_data.id,
+        hasIdToken: Boolean(access_token_data.id_token)
+    });
+
+    let options = {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+    };
+
+    let accountId = process.env.SF_ACCOUNT_ID;
+    res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
+    res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
+    res.cookie("user_id", userId, options);
+    res.cookie("account_id", accountId, options);
+
+    res.redirect("/");
+});
+
+
+
+
+router.get("/connect", async (req, res) => {
+
+    const data = new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: process.env.SF_OAUTH_APPLICATION_CLIENT_ID,
+        client_secret: process.env.SF_OAUTH_APPLICATION_CLIENT_SECRET
+    });
+
+    console.log("auth.js: connect route: url params: ", data);
+
+    const tokenEndpoint = process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT;
+    console.log("auth.js: connect route: Token endpoint:", tokenEndpoint);
+
+    // Exchange authorization code for access token & id_token.
+    const resp = await fetch(tokenEndpoint, {
+        method: "POST",
+        body: data,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    });
+
+    const credentials = await resp.json();
+
+    if (credentials.error)
+    {
+        console.error("auth.js: ", credentials.error, credentials.error_description);
+
+
+        let options = {
+            httpOnly: false,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        };
+        res.clearCookie('access_token', options);
+
+        res.clearCookie('instance_url', options);
+
+        res.status(500).send({ error: credentials.error });
+    }
+    else
+    {
+        console.log("auth.js: connect route: credentials: ", credentials);
+        // 2. Set the cookie
+        res.cookie('access_token', credentials.access_token, {
+            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        });
+
+        res.cookie('instance_url', credentials.instance_url, {
+            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
+            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
+            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
+            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
+        });
+
+        console.log("auth.js: connect route: access_token: ", credentials.access_token);
+
+        res.json(credentials);
+    }
+});
+
+
+
+
 
 // Todo, turn this into a POST endpoint.
 router.get("/introspect", async (req, res) => {
@@ -89,154 +266,11 @@ router.get("/introspect", async (req, res) => {
     res.json(userData);
 });
 
-router.get("/login", (req, res) => {
-    const state = "some_state";
-    // const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
-    const loginUrl = `${process.env.SF_OAUTH_SESSION_URL}?client_id=${process.env.SF_OAUTH_SESSION_CLIENT_ID}&redirect_uri=${process.env.SF_OAUTH_SESSION_CALLBACK_URL}&response_type=code&state=${state}`;//&scope=${scopes}`;
-    res.redirect(loginUrl);
-});
-
-router.get("/logout", (req, res) => {
-
-    res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
-    res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
-    res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
-
-    res.redirect("/");
-
-    // Notify user they have lgged out successfully
-    // Remove cookies for secure account related behavior
-    // Provide a link back to home or login page
-});
-
-router.get("/oauth/api/request", async (req, res) => {
-
-    console.log("auth.js: api request: ", req.query);
-
-    const { code } = req.query;
 
 
-    const data = new URLSearchParams({
-        code,
-        client_id: process.env.SF_OAUTH_SESSION_CLIENT_ID,
-        client_secret: process.env.SF_OAUTH_SESSION_CLIENT_SECRET,
-        redirect_uri: process.env.SF_OAUTH_SESSION_CALLBACK_URL,
-        grant_type: "authorization_code"
-    });
-
-    // Exchange authorization code for access token & id_token.
-    const response = await fetch(process.env.SF_OAUTH_SESSION_TOKEN_URL, {
-        method: "POST",
-        body: data,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    });
-
-    const access_token_data = await response.json();
-
-    if (!response.ok || access_token_data.error) {
-        console.error(
-            "Salesforce OAuth error:",
-            access_token_data.error,
-            access_token_data.error_description
-        );
-
-        return res.status(401).json({
-            error: "Salesforce login failed."
-        });
-    }
-
-    const userId = parseUserId(access_token_data.id);
-
-    console.log(
-        "Salesforce login response fields:",
-        Object.keys(access_token_data)
-    );
-
-    console.log("Salesforce identity values:", {
-        user_id: access_token_data.user_id,
-        id: access_token_data.id,
-        hasIdToken: Boolean(access_token_data.id_token)
-    });
-
-    let options = {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-        maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-    };
-
-    res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
-    res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
-    res.cookie("user_id", userId, options);
-
-    res.redirect("/");
-});
-
-router.get("/connect", async (req, res) => {
-
-    const data = new URLSearchParams({
-        grant_type: "client_credentials",
-        client_id: process.env.SF_OAUTH_APPLICATION_CLIENT_ID,
-        client_secret: process.env.SF_OAUTH_APPLICATION_CLIENT_SECRET
-    });
-
-    console.log("auth.js: connect route: url params: ", data);
-
-    const tokenEndpoint = process.env.SF_OAUTH_APPLICATION_TOKEN_ENDPOINT;
-    console.log("auth.js: connect route: Token endpoint:", tokenEndpoint);
-
-    // Exchange authorization code for access token & id_token.
-    const resp = await fetch(tokenEndpoint, {
-        method: "POST",
-        body: data,
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    });
-
-    const credentials = await resp.json();
-
-    if (credentials.error) {
-        console.error("auth.js: ", credentials.error, credentials.error_description);
 
 
-        let options = {
-            httpOnly: false,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-        };
-        res.clearCookie('access_token', options);
-
-        res.clearCookie('instance_url', options);
-
-        res.status(500).send({ error: credentials.error });
-    }
-    else {
-        console.log("auth.js: connect route: credentials: ", credentials);
-        // 2. Set the cookie
-        res.cookie('access_token', credentials.access_token, {
-            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
-            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
-            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-        });
-
-        res.cookie('instance_url', credentials.instance_url, {
-            httpOnly: false,  // Prevents client-side JS (XSS attacks) from reading the cookie
-            secure: process.env.NODE_ENV === 'production', // True for HTTPS, false for local HTTP
-            sameSite: 'lax', // Protects against Cross-Site Request Forgery (CSRF)
-            maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
-        });
-
-        console.log("auth.js: connect route: access_token: ", credentials.access_token);
-
-        res.json(credentials);
-    }
 
 
-});
 
 export default router;
