@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
-import { getOrderHistory } from "../orders/query.js";
+import { getInvoiceHistory } from "./query";
 
-// Information about all orders for an Account using a unique Id
 export default function InvoiceHistory() {
 
     const { client, metadata } = useOutletContext();
@@ -14,7 +13,7 @@ export default function InvoiceHistory() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const soql = getOrderHistory(accountId);
+        const soql = getInvoiceHistory(accountId);
 
         const fetchInvoices = async () => {
             const resp = await client.query(soql);
@@ -35,7 +34,6 @@ export default function InvoiceHistory() {
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
-    // What about other order statuses?
     const getStatusColor = (status) => {
         return status === 'Activated' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     };
@@ -52,7 +50,7 @@ export default function InvoiceHistory() {
                             className="border border-gray-100 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition"
                         >
 
-                            <div className="grid grid-cols-5 gap-4 items-center mb-4">
+                            <div className="grid grid-cols-5 gap-5 items-center mb-4">
 
                                 <div>
                                     <p className="text-sm text-gray-500">
@@ -68,7 +66,7 @@ export default function InvoiceHistory() {
 
                                 <div>
                                     <p className="text-sm text-gray-500">
-                                        Invoice number
+                                        Order number
                                     </p>
 
                                     <p className="text-lg font-semibold">
