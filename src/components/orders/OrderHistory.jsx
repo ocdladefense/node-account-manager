@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { getOrderHistory } from './query.js';
 
 // Information about all orders for an Account using a unique Id
 export default function AccountOrders() {
 
     const { client, metadata } = useOutletContext();
-    const { accountId } = useParams();
+    const accountId = getCookie("account_id");
     const [orders, setOrders] = useState(null);
 
     const navigate = useNavigate();

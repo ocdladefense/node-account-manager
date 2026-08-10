@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useOutletContext } from "react-router-dom";
 import { getAccountQuery } from "./query.js";
 import AccountContacts from "./AccountContacts";
@@ -12,7 +13,7 @@ export default function Account() {
     let { client } = useOutletContext();
     const navigate = useNavigate();
 
-    let { accountId } = useParams();
+    let accountId = getCookie("account_id");
 
     const [account, setAccount] = useState(null);
 

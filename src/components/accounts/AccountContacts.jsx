@@ -4,6 +4,7 @@ import { getAccountContactsQuery } from "./query.js";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 
 
 export default function AccountContacts() {
@@ -12,7 +13,7 @@ export default function AccountContacts() {
 
     const navigate = useNavigate();
 
-    let { accountId } = useParams();
+    let accountId = getCookie("account_id");
 
     const [contacts, setContacts] = useState([]);
 

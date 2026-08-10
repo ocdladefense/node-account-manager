@@ -24,7 +24,8 @@ import JobEdit from "../components/jobs/JobEdit.jsx";
 
 import SObject from "../components/contacts/SObject.jsx";
 
-if (process.env.NODE_ENV === 'debug') {
+if (process.env.NODE_ENV === 'debug')
+{
     setDebugLevel(1);
 }
 
@@ -54,9 +55,9 @@ root.render(
                     <Route index element={<Accounts />} />
                 </Route>
                 <Route path="account">
-                    <Route path=":accountId" element={<Account />} />
-                    <Route path=":accountId/contacts" element={<AccountContacts />} />
-                    <Route path=":accountId/orders" element={<OrderHistory />} />
+                    <Route index element={<Account />} />
+                    <Route path="contacts" element={<AccountContacts />} />
+                    <Route path="orders" element={<OrderHistory />} />
                 </Route>
                 <Route path="order">
                     <Route path=":orderId" element={<OrderDetails />} />
@@ -76,8 +77,8 @@ root.render(
                     <Route index element={<Jobs />} />
                 </Route>
                 <Route path="job">
-                    <Route index element={<Navigate to="/jobs" />} /> 
-                    <Route path="undefined" element={<Navigate to="/jobs"/>} />
+                    <Route index element={<Navigate to="/jobs" />} />
+                    <Route path="undefined" element={<Navigate to="/jobs" />} />
                     <Route path="new" element={<JobForm />} />
                     <Route path=":jobId" element={<Job />} />
                     <Route path=":jobId/edit" element={<JobEdit />} />
