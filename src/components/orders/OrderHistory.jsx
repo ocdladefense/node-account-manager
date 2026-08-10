@@ -41,7 +41,7 @@ export default function AccountOrders() {
 
     return (
         <div className="container mx-auto pl-2 mt-[28px]">
-            <h1 className="text-2xl font-bold text-center mb-6">Order History</h1>
+            <h1 className="text-2xl font-bold mb-6">Order History</h1>
 
             {orders && (
                 <div className="space-y-4">
