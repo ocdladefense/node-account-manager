@@ -47,20 +47,37 @@ export default function AccountOrders() {
                 <div className="space-y-4">
                     {orders.map((order) => (
                         <div key={order.Id} className="border border-gray-100 rounded-lg p-6 bg-white shadow-sm hover:shadow-md transition">
+
+
                             {/* Order Header Row */}
-                            <div className="grid grid-cols-4 gap-4 items-center mb-4">
+                            <div className="grid grid-cols-5 gap-4 items-center mb-4">
+
+                                <div>
+                                    <p className="text-sm text-gray-500">Order Status</p>
+                                    <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(order.Status)}`}>
+                                        {order.Status}
+                                    </span>
+                                </div>
+
+
                                 <div>
                                     <p className="text-sm text-gray-500">Order number</p>
                                     <p className="text-lg font-semibold">{order.OrderNumber}</p>
                                 </div>
+
+
                                 <div>
                                     <p className="text-sm text-gray-500">Date placed</p>
                                     <p className="text-lg font-semibold">{formatDate(order.EffectiveDate)}</p>
                                 </div>
+
+
                                 <div>
                                     <p className="text-sm text-gray-500">Total amount</p>
                                     <p className="text-lg font-semibold">${order.TotalAmount}</p>
                                 </div>
+
+
                                 <div className="flex justify-end">
                                     <button
                                         onClick={() => handleSelectOrder(order)}
@@ -73,11 +90,6 @@ export default function AccountOrders() {
 
                             {/* Status and Details Row */}
                             <div className="flex items-center gap-4 text-sm justify-between">
-                                <div className="flex items-center gap-2">
-                                    <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(order.Status)}`}>
-                                        {order.Status}
-                                    </span>
-                                </div>
                                 {order.Status === 'Activated' && order.FormattedActivatedDate__c && (
                                     <div className="flex items-center gap-2 text-sm">
                                         <p className="text-gray-600">Activated on {order.FormattedActivatedDate__c}</p>
