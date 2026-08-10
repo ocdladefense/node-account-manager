@@ -40,7 +40,7 @@ export default function Menu() {
                         </a>
                     </li>
                     <li>
-                        <a href={`/account/${process.env.SF_ACCOUNT_ID}`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.account) ? active : ""}`}>
+                        <a href="/account" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.account) ? active : ""}`}>
                             <MdAccountBalance />
                             Account
                         </a>
