@@ -34,10 +34,22 @@ export default function AccountContacts() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        e.stopPropagation();
 
         const formData = new FormData(e.currentTarget);
 
         const selectedContactIds = formData.getAll("contactIds");
+
+        fetch("/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                contactIds: selectedContactIds,
+                productId: "01u0a00000Hb09A"
+            })
+        });
 
         console.log("Selected contacts:", selectedContactIds);
     };
