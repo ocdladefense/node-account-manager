@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 // import { useOutletContext } from "react-router-dom";
 // import { getFileDataByContact } from './query.js';
 // import SortableHeader from '../ui/table/SortableHeader.jsx';
@@ -18,7 +18,20 @@ export default function Documents() {
 
         const fetchFiles = async () => {
             try {
-                const response = await fetch("/files");
+
+                const subpath = getCookie("user_id");
+
+                if (!subpath || subpath === "undefined") {
+                    throw new Error("No user ID found.");
+                }
+
+                const response = await fetch("/files", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ subpath })
+                });
 
                 if (!response.ok) {
                     throw new Error("Unable to load documents");

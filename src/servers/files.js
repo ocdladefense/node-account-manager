@@ -3,22 +3,27 @@ import path from "path";
 import fs from "fs";
 
 const router = express.Router();
+const BASE_UPLOADS_DIR = path.resolve("uploads");
 
-router.get("/files", (req, res) => {
-    const contactId = req.cookies.contact_id;
 
-    if (!contactId) {
-        return res.status(401).json({
-            error: "Missing contact ID"
+
+
+router.post("/files", (req, res) => {
+
+    const subpath = req.body.subpath;
+
+    // throw an error if subpath is not a string.
+    if (typeof subpath !== "string" || subpath.trim() === "") {
+        return res.status(400).json({
+            error: "Invalid subpath"
         });
     }
 
-    const uploadsPath = path.resolve("uploads");
-    const directoryPath = path.resolve(uploadsPath, contactId);
+    const directoryPath = path.resolve(BASE_UPLOADS_DIR, subpath);
 
     if (
-        directoryPath !== uploadsPath &&
-        !directoryPath.startsWith(uploadsPath + path.sep)
+        directoryPath !== BASE_UPLOADS_DIR &&
+        !directoryPath.startsWith(BASE_UPLOADS_DIR + path.sep)
     ) {
         return res.status(400).json({
             error: "Invalid path"
@@ -45,7 +50,7 @@ router.get("/files", (req, res) => {
                 const stats = fs.statSync(filePath);
 
                 return {
-                    id: path.join(contactId, entry.name),
+                    id: path.join(subpath, entry.name),
                     name: entry.name,
                     size: stats.size,
                     type: path.extname(entry.name).slice(1),
