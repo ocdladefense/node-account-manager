@@ -4,7 +4,7 @@ import { getAccountContactsQuery } from "./query.js";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
-import DropMenu from "../ui/form/DaisyDropdownMenu.jsx";
+import DropMenu from "../ui/form/DropMenu.jsx";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 
