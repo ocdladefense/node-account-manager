@@ -4,9 +4,25 @@ import { getAccountContactsQuery } from "./query.js";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
+import DropMenu from "../ui/form/DaisyDropdownMenu.jsx";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 
+
+const EVENT_PRODUCTS = [
+    {
+        id: "01t0a000004Ov4FAAS",
+        name: "Winter Conference 2017–Nonmember Lawyer"
+    },
+    {
+        id: "01t0a000005Hc7xAAC",
+        name: "Z is for Zealous 2019–Member Lawyer/Nonlawyer"
+    },
+    {
+        id: "01t5b000005nU4BAAU",
+        name: "VD 2023–Member Lawyer Registration Not Attending Annual Conference"
+    }
+];
 
 export default function AccountContacts() {
 
@@ -21,24 +37,13 @@ export default function AccountContacts() {
 
     const { CreateToast } = useToast();
 
-    const EVENT_PRODUCTS = [
-        {
-            id: "01t0a000004Ov4FAAS",
-            name: "Winter Conference 2017–Nonmember Lawyer"
-        },
-        {
-            id: "01t0a000005Hc7xAAC",
-            name: "Z is for Zealous 2019–Member Lawyer/Nonlawyer"
-        },
-        {
-            id: "01t5b000005nU4BAAU",
-            name: "VD 2023–Member Lawyer Registration Not Attending Annual Conference"
-        }
-    ];
-
     const selectedProduct = EVENT_PRODUCTS.find(
-        (product) => product.id === productId
+        (entry) => entry.id === productId
     );
+
+    const handleProductSelect = (entry) => {
+        setProductId(entry.id);
+    };
 
     useEffect(() => {
         const soql = getAccountContactsQuery(accountId);
@@ -63,9 +68,27 @@ export default function AccountContacts() {
         const formData = new FormData(e.currentTarget);
 
         const selectedContactIds = formData.getAll("contactIds");
-        const productId = formData.get("productId");
+        const selectedProductId = formData.get("productId");
 
         console.log("Selected contacts:", selectedContactIds);
+
+        if (!selectedProductId) {
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Please select an event ticket.
+                </div>
+            );
+            return;
+        }
+
+        if (selectedContactIds.length === 0) {
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Please select at least one contact.
+                </div>
+            );
+            return;
+        }
 
         try {
             const resp = await fetch("/orders", {
@@ -75,7 +98,7 @@ export default function AccountContacts() {
                 },
                 body: JSON.stringify({
                     contactIds: selectedContactIds,
-                    productId: productId
+                    productId: selectedProductId
                 })
             });
 
@@ -181,21 +204,11 @@ export default function AccountContacts() {
 
                     <br />
 
-                    <details className="dropdown">
-                        <summary className="btn m-1">
-                            {selectedProduct ? selectedProduct.name : "Select Event Ticket"}
-                        </summary>
-
-                        <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-80 p-2 shadow-sm">
-                            {EVENT_PRODUCTS.map((product) => (
-                                <li key={product.id}>
-                                    <button type="button" onClick={() => setProductId(product.id)}>
-                                        {product.name}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </details>
+                    <DropMenu
+                        label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
+                        entries={EVENT_PRODUCTS}
+                        handler={handleProductSelect}
+                    />
 
                     <input name="productId" type="hidden" value={productId} />
 
