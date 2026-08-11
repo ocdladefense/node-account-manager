@@ -17,8 +17,28 @@ export default function AccountContacts() {
     let accountId = getCookie("account_id");
 
     const [contacts, setContacts] = useState([]);
+    const [productId, setProductId] = useState("");
 
     const { CreateToast } = useToast();
+
+    const EVENT_PRODUCTS = [
+        {
+            id: "01t0a000004Ov4FAAS",
+            name: "Winter Conference 2017–Nonmember Lawyer"
+        },
+        {
+            id: "01t0a000005Hc7xAAC",
+            name: "Z is for Zealous 2019–Member Lawyer/Nonlawyer"
+        },
+        {
+            id: "01t5b000005nU4BAAU",
+            name: "VD 2023–Member Lawyer Registration Not Attending Annual Conference"
+        }
+    ];
+
+    const selectedProduct = EVENT_PRODUCTS.find(
+        (product) => product.id === productId
+    );
 
     useEffect(() => {
         const soql = getAccountContactsQuery(accountId);
@@ -29,6 +49,7 @@ export default function AccountContacts() {
 
         fetchAccountContacts();
     }, []);
+
 
     const handleSelectContact = (contactId) => {
         navigate(`/contact/${contactId}`);
@@ -42,11 +63,11 @@ export default function AccountContacts() {
         const formData = new FormData(e.currentTarget);
 
         const selectedContactIds = formData.getAll("contactIds");
+        const productId = formData.get("productId");
 
         console.log("Selected contacts:", selectedContactIds);
 
-        try
-        {
+        try {
             const resp = await fetch("/orders", {
                 method: "POST",
                 headers: {
@@ -54,14 +75,13 @@ export default function AccountContacts() {
                 },
                 body: JSON.stringify({
                     contactIds: selectedContactIds,
-                    productId: "01t0a000004OuZRAA0"
+                    productId: productId
                 })
             });
 
             const result = await resp.json();
 
-            if (!resp.ok)
-            {
+            if (!resp.ok) {
                 console.error("Order failed:", result);
 
                 CreateToast(
@@ -80,9 +100,10 @@ export default function AccountContacts() {
             );
 
             console.log("Order created:", result);
+            console.log("Selected contacts:", selectedContactIds);
+            console.log("Selected product:", productId);
 
-        } catch (error)
-        {
+        } catch (error) {
             console.error("Error sending order request:", error);
 
             CreateToast(
@@ -160,7 +181,25 @@ export default function AccountContacts() {
 
                     <br />
 
-                    <Button label="Test Selection" buttonType="submit" />
+                    <details className="dropdown">
+                        <summary className="btn m-1">
+                            {selectedProduct ? selectedProduct.name : "Select Event Ticket"}
+                        </summary>
+
+                        <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-80 p-2 shadow-sm">
+                            {EVENT_PRODUCTS.map((product) => (
+                                <li key={product.id}>
+                                    <button type="button" onClick={() => setProductId(product.id)}>
+                                        {product.name}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </details>
+
+                    <input name="productId" type="hidden" value={productId} />
+
+                    <Button label="Create Order" buttonType="submit" />
 
                 </div>
 
