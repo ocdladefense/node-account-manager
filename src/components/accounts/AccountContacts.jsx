@@ -47,7 +47,7 @@ export default function AccountContacts() {
             },
             body: JSON.stringify({
                 contactIds: selectedContactIds,
-                productId: "01u0a00000Hb09A"
+                productId: "01t0a000004OuZQ"
             })
         });
 
