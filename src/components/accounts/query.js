@@ -46,3 +46,14 @@ export function getAccountContactsQuery(accountId) {
         WHERE AccountId = '${accountId}'
     `;
 }
+
+export function getEventProductsQuery() {
+    return `
+        SELECT Id, Name, CreatedDate
+        FROM Product2
+        WHERE Event__c != null
+        AND IsActive = true
+        ORDER BY CreatedDate DESC
+        LIMIT 5
+    `;
+}

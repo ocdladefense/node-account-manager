@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useOutletContext } from "react-router";
-import { getAccountContactsQuery } from "./query.js";
+import { getAccountContactsQuery, getEventProductsQuery } from "./query.js";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
@@ -8,21 +8,6 @@ import DropMenu from "../ui/form/DropMenu.jsx";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 
-
-const EVENT_PRODUCTS = [
-    {
-        id: "01t0a000004Ov4FAAS",
-        name: "Winter Conference 2017–Nonmember Lawyer"
-    },
-    {
-        id: "01t0a000005Hc7xAAC",
-        name: "Z is for Zealous 2019–Member Lawyer/Nonlawyer"
-    },
-    {
-        id: "01t5b000005nU4BAAU",
-        name: "VD 2023–Member Lawyer Registration Not Attending Annual Conference"
-    }
-];
 
 export default function AccountContacts() {
 
@@ -34,10 +19,11 @@ export default function AccountContacts() {
 
     const [contacts, setContacts] = useState([]);
     const [productId, setProductId] = useState("");
+    const [eventProducts, setEventProducts] = useState([]);
 
     const { CreateToast } = useToast();
 
-    const selectedProduct = EVENT_PRODUCTS.find(
+    const selectedProduct = eventProducts.find(
         (entry) => entry.id === productId
     );
 
@@ -46,13 +32,29 @@ export default function AccountContacts() {
     };
 
     useEffect(() => {
-        const soql = getAccountContactsQuery(accountId);
+
         const fetchAccountContacts = async () => {
+            const soql = getAccountContactsQuery(accountId);
             const resp = await client.query(soql);
+
             setContacts(resp.records);
         };
 
+        const fetchEventProducts = async () => {
+            const soql = getEventProductsQuery();
+            const resp = await client.query(soql);
+
+            const products = resp.records.map((product) => ({
+                id: product.Id,
+                name: product.Name
+            }));
+
+            setEventProducts(products);
+        };
+
         fetchAccountContacts();
+        fetchEventProducts();
+
     }, []);
 
 
@@ -124,7 +126,7 @@ export default function AccountContacts() {
 
             console.log("Order created:", result);
             console.log("Selected contacts:", selectedContactIds);
-            console.log("Selected product:", productId);
+            console.log("Selected product:", selectedProductId);
 
         } catch (error) {
             console.error("Error sending order request:", error);
@@ -206,11 +208,11 @@ export default function AccountContacts() {
 
                     <DropMenu
                         label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
-                        entries={EVENT_PRODUCTS}
+                        entries={eventProducts}
                         handler={handleProductSelect}
                     />
 
-                    <input name="productId" type="hidden" value={productId} />
+                    <input name="productId" type="hidden" value={productId} readOnly />
 
                     <Button label="Create Order" buttonType="submit" />
 
