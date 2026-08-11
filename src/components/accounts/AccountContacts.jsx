@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router";
+import { useNavigate, useOutletContext } from "react-router";
 import { getAccountContactsQuery } from "./query.js";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
+import { useToast } from "../ui/notifications/ToastService.jsx";
 
 
 export default function AccountContacts() {
@@ -16,6 +17,8 @@ export default function AccountContacts() {
     let accountId = getCookie("account_id");
 
     const [contacts, setContacts] = useState([]);
+
+    const { CreateToast } = useToast();
 
     useEffect(() => {
         const soql = getAccountContactsQuery(accountId);
@@ -32,7 +35,7 @@ export default function AccountContacts() {
     };
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -40,20 +43,52 @@ export default function AccountContacts() {
 
         const selectedContactIds = formData.getAll("contactIds");
 
-        fetch("/orders", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                contactIds: selectedContactIds,
-                productId: "01u0a00000Hb09A"
-            })
-        });
-
         console.log("Selected contacts:", selectedContactIds);
-    };
 
+        try {
+            const resp = await fetch("/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contactIds: selectedContactIds,
+                    productId: "01t0a000004OuZRAA0"
+                })
+            });
+
+            const result = await resp.json();
+
+            if (!resp.ok) {
+                console.error("Order failed:", result);
+
+                CreateToast(
+                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                        {result.error || "Order could not be created."}
+                    </div>
+                );
+
+                return;
+            }
+
+            CreateToast(
+                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Order created successfully.
+                </div>
+            );
+
+            console.log("Order created:", result);
+
+        } catch (error) {
+            console.error("Error sending order request:", error);
+
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Unable to contact the server.
+                </div>
+            );
+        }
+    };
 
 
     return (
