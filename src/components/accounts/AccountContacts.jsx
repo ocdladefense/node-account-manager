@@ -5,6 +5,8 @@ import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
 import DropMenu from "../ui/form/DropMenu.jsx";
+import useModal from '../hooks/useModal.js';
+import Modal from '../ui/Modal.jsx';
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast } from "../ui/notifications/ToastService.jsx";
 
@@ -12,24 +14,41 @@ import { useToast } from "../ui/notifications/ToastService.jsx";
 export default function AccountContacts() {
 
     let { client } = useOutletContext();
-
     const navigate = useNavigate();
-
+    const { isOpen, modalContent, openModal, closeModal } = useModal();
     let accountId = getCookie("account_id");
-
     const [contacts, setContacts] = useState([]);
     const [productId, setProductId] = useState("");
     const [eventProducts, setEventProducts] = useState([]);
-
     const { CreateToast } = useToast();
-
     const selectedProduct = eventProducts.find(
         (entry) => entry.id === productId
     );
 
-    const handleProductSelect = (entry) => {
-        setProductId(entry.id);
+
+
+    const openCustomModal = () => {
+        let eventName = "2026 Sunny Climate";
+        let attendeeCount = "5";
+
+        openModal(
+            <div>
+                <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
+                <p>Proceed with registration for {eventName}?  You will register {attendeeCount} attendees.</p>
+                <br />
+                <DropMenu
+                    label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
+                    entries={eventProducts}
+                    handler={function(entry) { setProductId(entry.id); document.activeElement.blur(); }}
+                />
+                <Button label="Register" buttonType="submit" action={createHandler(CreateToast)} />
+                <Button label="Cancel" buttonType="button" action={closeModal} />
+            </div>
+        );
     };
+
+
+
 
     useEffect(() => {
 
@@ -58,94 +77,14 @@ export default function AccountContacts() {
     }, []);
 
 
-    const handleSelectContact = (contactId) => {
-        navigate(`/contact/${contactId}`);
-    };
-
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const formData = new FormData(e.currentTarget);
-
-        const selectedContactIds = formData.getAll("contactIds");
-        const selectedProductId = formData.get("productId");
-
-        console.log("Selected contacts:", selectedContactIds);
-
-        if (!selectedProductId) {
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Please select an event ticket.
-                </div>
-            );
-            return;
-        }
-
-        if (selectedContactIds.length === 0) {
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Please select at least one contact.
-                </div>
-            );
-            return;
-        }
-
-        try {
-            const resp = await fetch("/orders", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    contactIds: selectedContactIds,
-                    productId: selectedProductId
-                })
-            });
-
-            const result = await resp.json();
-
-            if (!resp.ok) {
-                console.error("Order failed:", result);
-
-                CreateToast(
-                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                        {result.error || "Order could not be created."}
-                    </div>
-                );
-
-                return;
-            }
-
-            CreateToast(
-                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Order created successfully.
-                </div>
-            );
-
-            console.log("Order created:", result);
-            console.log("Selected contacts:", selectedContactIds);
-            console.log("Selected product:", selectedProductId);
-
-        } catch (error) {
-            console.error("Error sending order request:", error);
-
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Unable to contact the server.
-                </div>
-            );
-        }
-    };
 
 
     return (
 
-        <form onSubmit={handleSubmit}>
+        <form id="batch-registration" onSubmit={e => { e.preventDefault(); e.stopPropagation(); openCustomModal("My Modal"); console.log("hello"); }}>
 
             <div className="w-full">
-
+                <Modal isOpen={isOpen} content={modalContent} onClose={closeModal} defaultButtons={false} />
                 <div className="container mx-auto px-6 mt-[28px]">
 
                     <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
@@ -175,7 +114,7 @@ export default function AccountContacts() {
                             <tbody>
 
                                 {contacts.map((contact) => (
-                                    <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => handleSelectContact(contact.Id)}>
+                                    <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => navigate(`/contact/${contact.Id}`)}>
 
                                         <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                                             <CheckBox label="" name="contactIds" value={contact.Id} defaultValue={false} />
@@ -206,15 +145,12 @@ export default function AccountContacts() {
 
                     <br />
 
-                    <DropMenu
-                        label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
-                        entries={eventProducts}
-                        handler={handleProductSelect}
-                    />
+
 
                     <input name="productId" type="hidden" value={productId} readOnly />
 
-                    <Button label="Create Order" buttonType="submit" />
+                    <Button label="Register" buttonType="submit" />
+                    <Button label="Renew Membership" buttonType="submit" />
 
                 </div>
 
@@ -222,4 +158,96 @@ export default function AccountContacts() {
 
         </form>
     );
+}
+
+
+
+
+/**
+ * 
+ * @param {Event} e 
+ * @returns 
+ */
+function createHandler(CreateToast) {
+
+    return async function handleSubmit(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const formData = new FormData(document.getElementById("batch-registration"));
+
+        const selectedContactIds = formData.getAll("contactIds");
+        const selectedProductId = formData.get("productId");
+
+        console.log("Selected contacts:", selectedContactIds);
+
+        if (!selectedProductId)
+        {
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Please select an event ticket.
+                </div>
+            );
+            return;
+        }
+
+        if (selectedContactIds.length === 0)
+        {
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Please select at least one contact.
+                </div>
+            );
+            return;
+        }
+
+        try
+        {
+            const resp = await fetch("/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contactIds: selectedContactIds,
+                    productId: selectedProductId
+                })
+            });
+
+            const result = await resp.json();
+
+            if (!resp.ok)
+            {
+                console.error("Order failed:", result);
+
+                CreateToast(
+                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                        {result.error || "Order could not be created."}
+                    </div>
+                );
+
+                return;
+            }
+
+            CreateToast(
+                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Order created successfully.
+                </div>
+            );
+
+            console.log("Order created:", result);
+            console.log("Selected contacts:", selectedContactIds);
+            console.log("Selected product:", selectedProductId);
+
+        } catch (error)
+        {
+            console.error("Error sending order request:", error);
+
+            CreateToast(
+                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                    Unable to contact the server.
+                </div>
+            );
+        }
+    };
 }
