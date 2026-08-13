@@ -75,7 +75,7 @@ export default function AccountContacts() {
 
     return (
 
-        <form id="batch-registration" onSubmit={createHandler(CreateToast, closeModal)}>
+        <form id="batch-registration" onSubmit={createHandler(CreateToast, closeModal, navigate)}>
 
             <div className="w-full">
 
@@ -185,7 +185,7 @@ export default function AccountContacts() {
  * @param {Event} e 
  * @returns 
  */
-function createHandler(CreateToast, closeModal) {
+function createHandler(CreateToast, closeModal, navigate) {
 
     return async function handleSubmit(e) {
         e.preventDefault();
@@ -249,6 +249,8 @@ function createHandler(CreateToast, closeModal) {
             );
 
             closeModal();
+
+            navigate(`/order/${result.order.id}`);
 
             console.log("Order created:", result);
             console.log("Selected contacts:", selectedContactIds);

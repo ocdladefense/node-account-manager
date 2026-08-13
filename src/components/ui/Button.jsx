@@ -1,7 +1,7 @@
-export default function Button({ label, className = "", buttonType = "button", action, ...props }) {
+export default function Button({ label, className = "", buttonType = "button", action, form }) {
     return (
         <button
-            {...props}
+            form={form}
             type={buttonType}
             onClick={action}
             className={`px-[24px] py-[8px] rounded-sm mx-[10px] w-[200px] bg-[rgba(87,120,230,1)] text-white hover:bg-[rgba(35,75,207,1)]`}
