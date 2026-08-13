@@ -15,7 +15,7 @@ export default function AccountContacts() {
 
     let { client } = useOutletContext();
     const navigate = useNavigate();
-    const { isOpen, modalContent, openModal, closeModal } = useModal();
+    const { isOpen, openModal, closeModal } = useModal();
     let accountId = getCookie("account_id");
     const [contacts, setContacts] = useState([]);
     const [productId, setProductId] = useState("");
@@ -24,27 +24,21 @@ export default function AccountContacts() {
     const selectedProduct = eventProducts.find(
         (entry) => entry.id === productId
     );
+    const [attendeeCount, setAttendeeCount] = useState(0);
 
 
 
     const openCustomModal = () => {
-        let eventName = "2026 Sunny Climate";
-        let attendeeCount = "5";
 
-        openModal(
-            <div>
-                <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
-                <p>Proceed with registration for {eventName}?  You will register {attendeeCount} attendees.</p>
-                <br />
-                <DropMenu
-                    label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
-                    entries={eventProducts}
-                    handler={function(entry) { setProductId(entry.id); document.activeElement.blur(); }}
-                />
-                <Button label="Register" buttonType="submit" action={createHandler(CreateToast)} />
-                <Button label="Cancel" buttonType="button" action={closeModal} />
-            </div>
+        const formData = new FormData(
+            document.getElementById("batch-registration")
         );
+
+        const selectedContactIds = formData.getAll("contactIds");
+
+        setAttendeeCount(selectedContactIds.length);
+
+        openModal();
     };
 
 
@@ -81,10 +75,33 @@ export default function AccountContacts() {
 
     return (
 
-        <form id="batch-registration" onSubmit={e => { e.preventDefault(); e.stopPropagation(); openCustomModal("My Modal"); console.log("hello"); }}>
+        <form id="batch-registration" onSubmit={createHandler(CreateToast, closeModal)}>
 
             <div className="w-full">
-                <Modal isOpen={isOpen} content={modalContent} onClose={closeModal} defaultButtons={false} />
+
+                {/*-------------------- START OF MODAL SECTION -------------------- */}
+                <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
+                    content={
+                        <div>
+                            <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
+                            <p>
+                                {selectedProduct
+                                    ? `Proceed with registration for "${selectedProduct.name}"? You will register ${attendeeCount} attendee(s).`
+                                    : `Please select an event ticket.`}
+                            </p>
+                            <br />
+                            <DropMenu
+                                label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
+                                entries={eventProducts}
+                                handler={(entry) => setProductId(entry.id)}
+                            />
+                            <Button label="Register" buttonType="submit" form="batch-registration" />
+                            <Button label="Cancel" buttonType="button" action={closeModal} />
+                        </div>
+                    }
+                />
+                {/*-------------------- END OF MODAL SECTION -------------------- */}
+
                 <div className="container mx-auto px-6 mt-[28px]">
 
                     <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
@@ -149,8 +166,8 @@ export default function AccountContacts() {
 
                     <input name="productId" type="hidden" value={productId} readOnly />
 
-                    <Button label="Register" buttonType="submit" />
-                    <Button label="Renew Membership" buttonType="submit" />
+                    <Button label="Register" buttonType="button" action={openCustomModal} />
+                    <Button label="Renew Membership" buttonType="button" />
 
                 </div>
 
@@ -168,7 +185,7 @@ export default function AccountContacts() {
  * @param {Event} e 
  * @returns 
  */
-function createHandler(CreateToast) {
+function createHandler(CreateToast, closeModal) {
 
     return async function handleSubmit(e) {
         e.preventDefault();
@@ -181,8 +198,7 @@ function createHandler(CreateToast) {
 
         console.log("Selected contacts:", selectedContactIds);
 
-        if (!selectedProductId)
-        {
+        if (!selectedProductId) {
             CreateToast(
                 <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
                     Please select an event ticket.
@@ -191,8 +207,7 @@ function createHandler(CreateToast) {
             return;
         }
 
-        if (selectedContactIds.length === 0)
-        {
+        if (selectedContactIds.length === 0) {
             CreateToast(
                 <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
                     Please select at least one contact.
@@ -201,8 +216,7 @@ function createHandler(CreateToast) {
             return;
         }
 
-        try
-        {
+        try {
             const resp = await fetch("/orders", {
                 method: "POST",
                 headers: {
@@ -216,8 +230,7 @@ function createHandler(CreateToast) {
 
             const result = await resp.json();
 
-            if (!resp.ok)
-            {
+            if (!resp.ok) {
                 console.error("Order failed:", result);
 
                 CreateToast(
@@ -235,12 +248,13 @@ function createHandler(CreateToast) {
                 </div>
             );
 
+            closeModal();
+
             console.log("Order created:", result);
             console.log("Selected contacts:", selectedContactIds);
             console.log("Selected product:", selectedProductId);
 
-        } catch (error)
-        {
+        } catch (error) {
             console.error("Error sending order request:", error);
 
             CreateToast(
