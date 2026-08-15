@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { getOrderHistory } from './query.js';
+import DateDisplay from "../ui/DateDisplay.jsx";
 
 // Information about all orders for an Account using a unique Id
 export default function AccountOrders() {
@@ -26,12 +27,6 @@ export default function AccountOrders() {
     const handleSelectOrder = (order) => {
         // Pass the order.Id as the orderId param in the route
         navigate(`/order/${order.Id}`, { state: { order } });
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
     // What about other order statuses?
@@ -66,10 +61,14 @@ export default function AccountOrders() {
                                 </div>
 
 
-                                <div>
-                                    <p className="text-sm text-gray-500">Date placed</p>
-                                    <p className="text-lg font-semibold">{formatDate(order.EffectiveDate)}</p>
-                                </div>
+                                <DateDisplay
+                                    label="Date placed"
+                                    value={order.EffectiveDate}
+                                    type="Date"
+                                    labelClassName="text-sm text-gray-500 font-normal"
+                                    textClassName="text-lg font-semibold"
+                                    month="short"
+                                />
 
 
                                 <div>

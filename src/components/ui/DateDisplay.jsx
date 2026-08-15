@@ -1,5 +1,13 @@
 
-export default function DateDisplay({ label, value, type, textClassName = "text-xl" }) {
+export default function DateDisplay({
+    label,
+    value,
+    type,
+    textClassName = "text-xl",
+    labelClassName = "text-xl block text-sm font-semibold mb-2",
+    month = "long"
+}) {
+
     let formattedData;
     const formatDateTime = (dateString) => {
         const date = new Date(dateString);
@@ -19,7 +27,7 @@ export default function DateDisplay({ label, value, type, textClassName = "text-
 
         return date.toLocaleDateString("en-US", {
             year: "numeric",
-            month: "long",
+            month: month,
             day: "numeric",
         });
     };
@@ -45,7 +53,7 @@ export default function DateDisplay({ label, value, type, textClassName = "text-
     return (
         <div>
             <div className="gap-1 rounded">
-                <label className="text-xl block text-sm font-semibold mb-2">{label}</label>
+                <label className={labelClassName}>{label}</label>
                 <p className={textClassName}>{formattedData}</p>
             </div>
         </div>
