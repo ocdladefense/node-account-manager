@@ -67,7 +67,7 @@ export default function AccountOrders() {
                                     type="Date"
                                     labelClassName="text-sm text-gray-500 font-normal"
                                     textClassName="text-lg font-semibold"
-                                    month="short"
+                                    month="long"
                                 />
 
 

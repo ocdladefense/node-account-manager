@@ -21,7 +21,7 @@ export default function OrderHeader({ orderNumber, orderDate, totalDate, status 
                     type="Date"
                     labelClassName="text-sm text-gray-500 font-normal"
                     textClassName="text-lg font-semibold"
-                    month="short"
+                    month="long"
                 />
 
                 <div>

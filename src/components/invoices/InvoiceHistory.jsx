@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { getInvoiceHistory } from "./query";
+import DateDisplay from "../ui/DateDisplay";
 
 export default function InvoiceHistory() {
 
@@ -74,15 +75,14 @@ export default function InvoiceHistory() {
                                     </p>
                                 </div>
 
-                                <div>
-                                    <p className="text-sm text-gray-500">
-                                        Date placed
-                                    </p>
-
-                                    <p className="text-lg font-semibold">
-                                        {formatDate(invoice.EffectiveDate)}
-                                    </p>
-                                </div>
+                                <DateDisplay
+                                    label="Date placed"
+                                    value={invoice.EffectiveDate}
+                                    type="Date"
+                                    labelClassName="text-sm text-gray-500 font-normal"
+                                    textClassName="text-lg font-semibold"
+                                    month="long"
+                                />
 
                                 <div>
                                     <p className="text-sm text-gray-500">

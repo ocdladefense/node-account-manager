@@ -8,5 +8,5 @@ export function getInvoiceHistory(accountId) {
         FormattedActivatedDate__c
     FROM Order 
     WHERE AccountId = '${accountId}'
-    AND PostingEntity__c = 'Invoice'`;
+    AND Status != 'Posted Payment'`;
 }
