@@ -250,7 +250,7 @@ function createHandler(CreateToast, closeModal, navigate) {
 
             closeModal();
 
-            navigate(`/order/${result.order.id}`);
+            navigate(`/invoice/${result.order.id}`);
 
             console.log("Order created:", result);
             console.log("Selected contacts:", selectedContactIds);
