@@ -39,7 +39,7 @@ export default function ToastProvider({ children }) {
     return (
         <ToastContext.Provider value={{ CreateToast, CloseToast, UpdateToast }}>
             {children}
-            <div className="space-y-2 fixed bottom-4 right-4">
+            <div className="space-y-2 fixed bottom-4 right-4 z-[200]">
                 {toasts.sort((a, b) => parseInt(a.id) - parseInt(b.id)).map(({ id, component }) => (
                     <div key={id} className="relative">
                         <button onClick={() => CloseToast(id)} className="absolute top-2 right-2 p-1 rounded-lg  bg-gray-200/20 text-gray-800/60">

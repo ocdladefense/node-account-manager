@@ -11,16 +11,14 @@ export default function Modal({ isOpen, onClose, confirmAction, content, externa
 
     useEffect(() => {
         // Append the external DOM node to the container after the component mounts
-        if (containerRef.current && externalNode)
-        {
+        if (containerRef.current && externalNode) {
             containerRef.current.appendChild(externalNode);
         }
 
         // Optional cleanup function to remove the node when the component unmounts
         return () => {
             return;
-            if (containerRef.current && externalNode)
-            {
+            if (containerRef.current && externalNode) {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -32,7 +30,13 @@ export default function Modal({ isOpen, onClose, confirmAction, content, externa
                 {content}
                 <div ref={containerRef} />
                 <div>
-                    {defaultButtons !== false && <button onClick={onClose} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>}
+                    {defaultButtons && (
+                        <div>
+                            <button type="button" onClick={onClose} className="bg-gray-300 px-4 py-2 rounded" >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
                     {/*<button onClick={confirmAction} className="bg-green-600 text-white px-4 py-2 rounded">Confirm</button>*/}
                 </div>
             </div>
