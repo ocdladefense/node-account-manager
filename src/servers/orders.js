@@ -11,8 +11,7 @@ const router = express.Router();
  */
 router.post("/orders", async (req, res) => {
 
-    try
-    {
+    try {
 
         const contactIds = req.body.contactIds;
         const productId = req.body.productId;
@@ -22,8 +21,7 @@ router.post("/orders", async (req, res) => {
 
 
         // Make sure array isn't empty
-        if (!Array.isArray(contactIds) || contactIds.length === 0)
-        {
+        if (!Array.isArray(contactIds) || contactIds.length === 0) {
             return res.status(400).json({
                 error: "At least one contact must be selected."
             });
@@ -31,8 +29,7 @@ router.post("/orders", async (req, res) => {
 
 
         // Make sure we have a product ID
-        if (!productId)
-        {
+        if (!productId) {
             return res.status(400).json({
                 error: "A product must be selected."
             });
@@ -63,8 +60,7 @@ router.post("/orders", async (req, res) => {
 
 
         // Make sure we found a Pricebook entry for the product
-        if (!pricebookEntry)
-        {
+        if (!pricebookEntry) {
             return res.status(404).json({
                 error: "No PricebookEntry found for product.",
                 productId: productId
@@ -80,15 +76,15 @@ router.post("/orders", async (req, res) => {
             AccountId: req.cookies.account_id,
             EffectiveDate: new Date().toISOString().split('T')[0],
             Status: "Draft",
-            Pricebook2Id: pricebookEntry.Pricebook2Id
+            Pricebook2Id: pricebookEntry.Pricebook2Id,
+            PostingEntity__c: "Invoice"
         };
 
         const resp = await client.create("Order", orderRecord);
 
         const orderResult = await resp.json();
 
-        if (!resp.ok)
-        {
+        if (!resp.ok) {
             console.error("ORDER CREATION FAILED:", orderResult);
 
             return res.status(resp.status).json({
@@ -99,8 +95,7 @@ router.post("/orders", async (req, res) => {
 
         const orderItemResults = [];
 
-        for (const contactId of contactIds)
-        {
+        for (const contactId of contactIds) {
 
             const orderItemRecord = {
                 OrderId: orderResult.id,
@@ -114,8 +109,7 @@ router.post("/orders", async (req, res) => {
             const itemResult = await itemResp.json();
 
             // Make sure each order item was successful
-            if (!itemResp.ok)
-            {
+            if (!itemResp.ok) {
                 console.error("ORDER ITEM CREATION FAILED:", itemResult);
 
                 return res.status(itemResp.status).json({
@@ -138,8 +132,7 @@ router.post("/orders", async (req, res) => {
             orderItems: orderItemResults
         });
 
-    } catch (error)
-    {
+    } catch (error) {
         console.error("ORDER ROUTE ERROR:", error);
 
         return res.status(500).json({

@@ -5,8 +5,11 @@ export function getOrderHistory(accountId) {
         EffectiveDate,
         TotalAmount,
         Status,
+        StatusCode,
         FormattedActivatedDate__c
-    FROM Order WHERE AccountId = '${accountId}'`;
+    FROM Order 
+    WHERE AccountId = '${accountId}'
+    AND StatusCode = 'Activated'`;
 }
 
 
