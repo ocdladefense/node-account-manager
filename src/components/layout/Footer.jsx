@@ -65,7 +65,7 @@ export default function Footer() {
 
 
     return (
-        <footer className="w-full border-t border-gray-300 pt-8 pb-4 lg:pt-12 lg:pb-6">
+        <footer className="w-full border-t border-gray-300 mt-4 pt-8 pb-4 lg:pt-12 lg:pb-6">
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-8 lg:flex-row lg:items-start lg:justify-between lg:gap-12 xl:gap-20">
 
                 <div className="flex w-full max-w-md flex-col gap-4 lg:w-[320px] lg:flex-shrink-0">
