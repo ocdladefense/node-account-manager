@@ -21,77 +21,20 @@ const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
  * @returns {React.JSX.Element} The FileUpload component.
  *
  */
-export function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, afterUpload }) {
+export function FileUpload({ label = "File Upload", name = "file-upload", accepting = "", preview = false, multiple = false, applicationId = null, onChange }) {
     const [filePreview, setFilePreview] = useState(null);
     const [uploaded, setUploaded] = useState(0);
     const { CreateToast, UpdateToast } = useToast();
 
-    const defaultPreview = (e) => {
+    const onChangeFunction = (e) => {
+        if (onChange)onChange(e); // run function from param
+
+        // file preview
         const file = e.target.files[0];
         if (!file) return;
         const imgUrl = URL.createObjectURL(file);
         setFilePreview(imgUrl);
     };
-
-    const startUploads = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-
-        // CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-        //     File uploaded successfully.
-        // </div>);
-        const input = document.getElementById(name);
-
-        const files = [...input.files];
-
-        let toastIds = files.map((file) => CreateToast(
-            <div className="bg-yellow-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                {file.name} upload started.
-            </div>
-        ));
-        //console.log("toastIds: ", toastIds);
-        let updaterFunctions = toastIds.map((id) => {
-            let fn = function(percentage, file) {
-                UpdateToast(id,
-                    <div className="bg-yellow-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                        {file.name} {percentage}% uploaded successfully.
-                    </div>
-                );
-            };
-            return fn;
-        });
-        //console.log("updaterFunctions:", updaterFunctions);
-
-
-        files.map((file, index) => uploadFileToServer(file, applicationId, updaterFunctions[index]).then(() => {
-            UpdateToast(toastIds[index],
-                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    {file.name} uploaded successfully.
-                </div>
-            );
-            afterUpload?.(name)
-        })
-            .catch((e) => {
-                console.error("Error Message:", e);
-
-                const message =
-                    e?.message ||
-                    e?.statusText ||
-                    "Something went wrong."
-
-                UpdateToast(toastIds[index],
-                    <div className="bg-red-500 text-white px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-
-                        Error uploading: {file.name}
-                        Error: {message}
-                    </div>
-                );
-
-            }
-            )
-        );
-    }
 
     return (
         <div >
@@ -102,26 +45,13 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
                     id={name}
                     type="file"
                     accept={accepting}
-                    onChange={defaultPreview}
+                    onChange={onChangeFunction}
                     className="file-input file-input-bordered w-full"
                     multiple={multiple}
                 />
 
                 {filePreview && preview === true && <img src={filePreview} className="w-50 h-75 rounded-sm" />}
 
-                {(true || multiple === true) &&
-                    <>
-                        <div className="mt-4">
-                            <progress
-                                className="progress progress-primary w-full"
-                                value={uploaded}
-                                max="100"
-                            />
-
-                            <p>{uploaded}%</p>
-                        </div>
-                    </>
-                }
             </div>
         </div>
 
