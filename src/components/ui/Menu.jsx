@@ -7,6 +7,7 @@ import { LuPackageOpen } from "react-icons/lu";
 import { TbPackages } from "react-icons/tb";
 import { MdDescription, MdCloudUpload } from "react-icons/md";
 import { FaBriefcase } from "react-icons/fa";
+import { SlEnvolopeLetter } from "react-icons/sl";
 
 export default function Menu() {
     const location = useLocation();
@@ -78,7 +79,7 @@ export default function Menu() {
                         <a href="/account/invoices"
                             className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.invoices) || currentPath.match(routePatterns.invoice)
                                 ? active : ''}`}>
-                            <MdDescription />
+                            <SlEnvolopeLetter />
                             Invoices
                         </a>
                     </li>
