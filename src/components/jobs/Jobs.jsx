@@ -139,7 +139,7 @@ export default function Jobs() {
 
             <Button action={handleUppload} label="Uppload a Job +" buttonType="button" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-6">
+            <div className="grid lg:grid-cols-2 grid-cols-1 gap-3 my-6">
                 {/* Text filter */}
                 <label className="flex flex-col">
                     <span className="font-semibold">
