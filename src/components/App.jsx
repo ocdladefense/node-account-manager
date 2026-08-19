@@ -74,8 +74,14 @@ export default function App() {
 
     useEffect(() => {
         async function fn() {
-            client = await getApiClient();
-            setAppReady(true);
+            try {
+                client = await getApiClient();
+                setAppReady(true);
+            } catch (err) {
+                // User is not logged in: log softly and let LoginPrompt render
+                console.log("Auth notice:", err.message);
+                setAppReady(false);
+            }
         }
         fn();
     }, []);
