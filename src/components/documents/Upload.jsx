@@ -15,7 +15,6 @@ export default function Upload() {
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
     const [canUpload, setCanUpload] = useState(false);
-    console.log("show upload button: ", canUpload);
 
     const DOCUMENT_UPLOAD_APP_ID = 2;
 
