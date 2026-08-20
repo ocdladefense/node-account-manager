@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
-// import { useOutletContext } from "react-router-dom";
-// import { getFileDataByContact } from './query.js';
-// import SortableHeader from '../ui/table/SortableHeader.jsx';
-
-// const { client } = useOutletContext();
 
 export default function Documents() {
 
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // const [sortColumn, setSortColumn] = useState('Filename__c');
-    // const [sortDirection, setSortDirection] = useState('asc');
 
     useEffect(() => {
 
