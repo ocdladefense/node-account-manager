@@ -4,7 +4,7 @@ export default function Button({ label, className = "", buttonType = "button", a
             form={form}
             type={buttonType}
             onClick={action}
-            className={`px-[24px] py-[8px] rounded-sm mx-[10px] w-[200px] bg-[rgba(87,120,230,1)] text-white hover:bg-[rgba(35,75,207,1)]`}
+            className={`px-6 py-2 rounded-sm mx-2.5 w-50 bg-[rgba(87,120,230,1)] text-white hover:bg-[rgba(35,75,207,1)]`}
         >
             {label}
         </button>
@@ -20,7 +20,7 @@ export function CautionButton({ label, className = " ", buttonType = "button", i
         <button
             type={buttonType}
             onClick={action}
-            className={`px-[24px] w-[200px] py-[8px] rounded-sm mx-[10px] text-white ${variantColor}`}
+            className={`px-6 w-50 py-2 rounded-sm mx-2.5 text-white ${variantColor}`}
         >
             {label}
         </button>
@@ -32,7 +32,7 @@ export function BackButton({ label, className = " ", buttonType = "button", acti
         <button
             type={buttonType}
             onClick={action}
-            className="px-[24px] w-[100px] py-[4px] rounded-md bg-white text-black cursor-pointer border border-black"
+            className="px-6 w-25 py-1 rounded-md bg-white text-black cursor-pointer border border-black"
 
         >
             {label}
