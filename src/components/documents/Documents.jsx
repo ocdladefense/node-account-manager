@@ -87,7 +87,7 @@ export default function Documents() {
 
                     {/* Table Header */}
                     <div className="border-b border-gray-200 p-4">
-                        <div className="grid gap-4 grid-cols-4">
+                        <div className="grid gap-4 grid-cols-5">
                             <div className="text-sm font-semibold text-gray-900">
                                 Name
                             </div>
@@ -103,6 +103,7 @@ export default function Documents() {
                             <div className="text-sm font-semibold text-gray-900">
                                 Date Created
                             </div>
+                            <div></div>
                         </div>
                     </div>
 
@@ -113,7 +114,7 @@ export default function Documents() {
                                 key={file.id}
                                 className="p-4 hover:bg-gray-50 transition cursor-pointer"
                             >
-                                <div className="grid gap-4 grid-cols-4">
+                                <div className="grid gap-4 grid-cols-5">
 
                                     <div className="text-sm font-medium text-blue-700" onClick={() => handleRowClick(file)}>
                                         {file.name}
@@ -131,9 +132,11 @@ export default function Documents() {
                                         {formatDate(file.dateCreated)}
                                     </div>
 
-                                    <div className="text-sm text-gray-700">
-                                        <CautionButton label="delete" action={() => {handleDeleteFile(file)}} />
-                                    </div>
+                                    <CautionButton 
+                                        className="rounded-md bg-red-600 text-black cursor-pointer border border-black"
+                                        label="delete" 
+                                        action={() => {handleDeleteFile(file)}} 
+                                    />
                                 </div>
                             </div>
                         ))}
