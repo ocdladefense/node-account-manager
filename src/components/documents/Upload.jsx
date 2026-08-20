@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
-import { useToast } from "../ui/notifications/ToastService.jsx";
-import { Toast } from "../ui/notifications/Toast.jsx";
+import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
 
 import Button from "../ui/Button.jsx";
 
@@ -15,6 +14,7 @@ export default function Upload() {
     const { client } = useOutletContext();
     const { CreateToast, UpdateToast } = useToast();
     const [canUpload, setCanUpload] = useState(false);
+    console.log("show upload button: ", canUpload);
 
     const DOCUMENT_UPLOAD_APP_ID = 2;
 
