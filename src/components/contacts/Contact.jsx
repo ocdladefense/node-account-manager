@@ -29,14 +29,17 @@ export default function Contact() {
             const contactQuery = getContactQuery(contactId);
 
 
-            try {
+            try
+            {
                 setLoading(true);
                 const response = await client.query(contactQuery);
                 setContact(response.records[0]);
-            } catch (err) {
+            } catch (err)
+            {
                 setError(err);
                 console.error("Error fetching contact:", err);
-            } finally {
+            } finally
+            {
                 setLoading(false);
             }
         }
@@ -54,13 +57,10 @@ export default function Contact() {
         navigate(`/contact/${contactId}/expert`, { state: { contact } });
     };
 
-    const handleBack = () => {
-        navigate(`/account/${contact.AccountId}`);
-    };
+
 
     const normalActions = {
-        "edit": { action: handleEdit, buttonType: "button", label: "Edit Contact" },
-        "back": { action: handleBack, buttonType: "button", label: "Back" }
+        "edit": { action: handleEdit, buttonType: "button", label: "Edit Contact" }
     };
     const conditionalActions = {
         "edit-expert": { action: handleEditExpert, buttonType: "button", label: "Edit Expert Witness" }
@@ -112,8 +112,8 @@ export default function Contact() {
                     {/* Organization */}
                     <Section cols={3}>
                         <Info label="Organization:" value={contact.Ocdla_Organization__c} />
-                        <Phone label="Work Phone:" value={contact.OrderApi__Work_Phone__c} privacy={false} />
-                        <Email label="Work Email:" value={contact.OrderApi__Work_Email__c} privacy={false} />
+                        <Phone label="Work Phone:" value={contact.Phone} privacy={false} />
+                        <Email label="Work Email:" value={contact.Email} privacy={false} />
                     </Section>
 
 
