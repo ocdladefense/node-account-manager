@@ -74,10 +74,12 @@ export default function App() {
 
     useEffect(() => {
         async function fn() {
-            try {
+            try
+            {
                 client = await getApiClient();
                 setAppReady(true);
-            } catch (err) {
+            } catch (err)
+            {
                 // User is not logged in: log softly and let LoginPrompt render
                 console.log("Auth notice:", err.message);
                 setAppReady(false);
@@ -91,7 +93,7 @@ export default function App() {
         <ToastProvider>
             <div className="mx-auto">
                 <Header loggedIn={false} />
-                <div className='flex w-full lg:mt-[60px]'>
+                <div className='flex w-full lg:mt-[60px]' style={{ minHeight: "calc(100vh - 60px)" }}>
                     <Menu className="flex-1" />
                     {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
                 </div>
