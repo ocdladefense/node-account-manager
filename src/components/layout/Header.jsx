@@ -95,31 +95,4 @@ export default function Header() {
 
         </header>
     );
-
-
-    // return (
-    //     <header className="w-full mb-0 py-1 px-[10px] fixed top-0 right-0 z-50 bg-white border-b border-gray-300">
-    //         <nav>
-    //             <ul className="inline-block" style={{ float: "right" }}>
-
-    //                 <li style={{ verticalAlign: "middle" }} className="inline-block">
-    //                     <a href="/">
-    //                         <img className="sm:w-[75px] lg:w-[150px] bg-white" style={{ display: "inline-block", verticalAlign: "middle" }} src="/images/logos/logo.png" />
-    //                     </a>
-    //                 </li>
-
-    //                 <MenuTop items={items} />
-
-    //                 <li style={{ float: "right" }} className={`hidden phone:hidden tablet:inline-block`}>
-    //                     <Hamburger />
-    //                 </li>
-    //             </ul>
-
-    //             <ul id="mobile-menu" className="text-slate-50 block hidden min-h-[100vh] pt-[15vh]">
-    //                 <MenuMobile items={items} />
-    //             </ul>
-    //         </nav>
-
-    //     </header>
-    // );
 }
