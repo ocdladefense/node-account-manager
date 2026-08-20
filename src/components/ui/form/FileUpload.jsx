@@ -188,14 +188,6 @@ export async function deleteFile(filePath, isDirectory = false, recursive = fals
 
     const result = await response.json();
 
-    if (result.success)
-    {
-        //console.log("Deleted: ", filePath);
-    } else
-    {
-        //console.log("Failed to delete: ", result.error);
-    }
-
     return result;
 }
 
