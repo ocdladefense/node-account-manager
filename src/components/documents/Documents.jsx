@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
+import { CautionButton } from "../ui/Button"
+import { deleteFile } from "../ui/form/FileUpload.jsx";
+import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
 
 export default function Documents() {
 
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { CreateToast, UpdateToast } = useToast();
 
     useEffect(() => {
 
@@ -51,6 +55,19 @@ export default function Documents() {
         window.location.href = `/download/${encodeURIComponent(file.name)}`;
     };
 
+    const handleDeleteFile = async (file) => {
+        const filePath = `/${getCookie("user_id")}/${file.name}`;
+        const result = await deleteFile(filePath);
+
+        if (result.error){
+            CreateToast(Toast(`Delete Error: ` + result.error));
+        } 
+        else {
+            CreateToast(Toast(file.name + " Deleted."));
+            setFiles(files.filter(item => item !== file));
+        }
+    }
+
     if (loading) {
         return <div>Loading documents...</div>;
     }
@@ -61,7 +78,7 @@ export default function Documents() {
 
     return (
         <div className="w-full">
-            <div className="container mx-auto px-2 mt-[28px]">
+            <div className="container mx-auto px-2 mt-7">
                 <h1 className="text-2xl font-bold text-center mb-6">
                     Documents
                 </h1>
@@ -94,12 +111,11 @@ export default function Documents() {
                         {files.map((file) => (
                             <div
                                 key={file.id}
-                                onClick={() => handleRowClick(file)}
                                 className="p-4 hover:bg-gray-50 transition cursor-pointer"
                             >
                                 <div className="grid gap-4 grid-cols-4">
 
-                                    <div className="text-sm font-medium text-gray-900">
+                                    <div className="text-sm font-medium text-blue-700" onClick={() => handleRowClick(file)}>
                                         {file.name}
                                     </div>
 
@@ -115,6 +131,9 @@ export default function Documents() {
                                         {formatDate(file.dateCreated)}
                                     </div>
 
+                                    <div className="text-sm text-gray-700">
+                                        <CautionButton label="delete" action={() => {handleDeleteFile(file)}} />
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -131,10 +150,6 @@ export default function Documents() {
         </div>
     );
 }
-
-
-
-
 
 
 // Helper function to format bytes to human readable size
