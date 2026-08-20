@@ -23,7 +23,7 @@ export default function Upload() {
 
         let message = "no response from server";
 
-        if(uploadResult) message = (uploadResult.error ? "Error uploading " : "Uploaded ") + file.originalname;
+        if(uploadResult) message = (uploadResult.error ? "Error uploading " : "Uploaded ") + file.name;
 
         let toast = Toast(message);
         CreateToast(toast);

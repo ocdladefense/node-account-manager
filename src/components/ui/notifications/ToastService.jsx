@@ -17,7 +17,7 @@ export function Toast(Message, className = "", useDefaultSyle = true) {
     else styles = className;
 
     return (
-        <div className="{styles}">
+        <div className={styles}>
             {Message}
         </div>
     );
