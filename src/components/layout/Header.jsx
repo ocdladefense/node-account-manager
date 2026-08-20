@@ -21,13 +21,15 @@ export default function Header() {
     const userInitial = user.initial || user.name?.charAt(0).toUpperCase() || "?";
 
     const handleAuth = () => {
-        if (!userId) {
+        if (!userId)
+        {
             window.location.href = "/login";
         }
     };
 
     const handleLogout = () => {
-        if (!userId) {
+        if (!userId)
+        {
             window.location.href = "/logout";
         }
     };
@@ -36,6 +38,9 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-white">
             <div className="mx-auto flex max-w-7xl justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+                <label htmlFor="my-drawer-3" className="btn drawer-button md:hidden text-sm w-20">
+                    Menu
+                </label>
                 <a href="/" className="flex items-center">
                     <img className="h-8 w-auto sm:h-10 lg:h-12" src="/images/logos/logo.png" alt="Logo for OCDLA" />
                 </a>
