@@ -1,18 +1,15 @@
 import { useState, useEffect } from "react";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
-// import { useOutletContext } from "react-router-dom";
-// import { getFileDataByContact } from './query.js';
-// import SortableHeader from '../ui/table/SortableHeader.jsx';
-
-// const { client } = useOutletContext();
+import { CautionButton } from "../ui/Button"
+import { deleteFile } from "../ui/form/FileUpload.jsx";
+import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
 
 export default function Documents() {
 
     const [files, setFiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    // const [sortColumn, setSortColumn] = useState('Filename__c');
-    // const [sortDirection, setSortDirection] = useState('asc');
+    const { CreateToast, UpdateToast } = useToast();
 
     useEffect(() => {
 
@@ -58,6 +55,19 @@ export default function Documents() {
         window.location.href = `/download/${encodeURIComponent(file.name)}`;
     };
 
+    const handleDeleteFile = async (file) => {
+        const filePath = `/${getCookie("user_id")}/${file.name}`;
+        const result = await deleteFile(filePath);
+
+        if (result.error){
+            CreateToast(Toast(`Delete Error: ` + result.error));
+        } 
+        else {
+            CreateToast(Toast(file.name + " Deleted."));
+            setFiles(files.filter(item => item !== file));
+        }
+    }
+
     if (loading) {
         return <div>Loading documents...</div>;
     }
@@ -68,7 +78,7 @@ export default function Documents() {
 
     return (
         <div className="w-full">
-            <div className="container mx-auto px-2 mt-[28px]">
+            <div className="container mx-auto px-2 mt-7">
                 <h1 className="text-2xl font-bold text-center mb-6">
                     Documents
                 </h1>
@@ -77,7 +87,7 @@ export default function Documents() {
 
                     {/* Table Header */}
                     <div className="border-b border-gray-200 p-4">
-                        <div className="grid gap-4 grid-cols-4">
+                        <div className="grid gap-4 grid-cols-5">
                             <div className="text-sm font-semibold text-gray-900">
                                 Name
                             </div>
@@ -93,6 +103,7 @@ export default function Documents() {
                             <div className="text-sm font-semibold text-gray-900">
                                 Date Created
                             </div>
+                            <div></div>
                         </div>
                     </div>
 
@@ -101,12 +112,11 @@ export default function Documents() {
                         {files.map((file) => (
                             <div
                                 key={file.id}
-                                onClick={() => handleRowClick(file)}
                                 className="p-4 hover:bg-gray-50 transition cursor-pointer"
                             >
-                                <div className="grid gap-4 grid-cols-4">
+                                <div className="grid gap-4 grid-cols-5">
 
-                                    <div className="text-sm font-medium text-gray-900">
+                                    <div className="text-sm font-medium text-blue-700" onClick={() => handleRowClick(file)}>
                                         {file.name}
                                     </div>
 
@@ -122,6 +132,11 @@ export default function Documents() {
                                         {formatDate(file.dateCreated)}
                                     </div>
 
+                                    <CautionButton 
+                                        className="rounded-md bg-red-600 text-black cursor-pointer border border-black"
+                                        label="delete" 
+                                        action={() => {handleDeleteFile(file)}} 
+                                    />
                                 </div>
                             </div>
                         ))}
@@ -138,10 +153,6 @@ export default function Documents() {
         </div>
     );
 }
-
-
-
-
 
 
 // Helper function to format bytes to human readable size
@@ -162,52 +173,3 @@ function formatDate(dateString) {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString();
 }
-
-/*
-useEffect(() => {
-    const soql = getFileDataByContact(contactId);
-    console.log('Contact Id:', contactId);
-    const fetchFiles = async () => {
-        // Define an express server route that returns a list of files in a given directory
-    };
-    fetchFiles();
-}, []);
-
-*/
-
-
-/*
-// Sort files array based on current sort settings. Using spread operator (creates new array by default) to sort through a copy of returned files and leaves original files unchanged
-const sortedFiles = files ? [...files].sort((a, b) => {
-    // Extract values from both items based on the current sort column
-    let aVal = a[sortColumn];
-    let bVal = b[sortColumn];
-
-    // Handle different data types
-    if (sortColumn === 'FileSize__c')
-    {
-        // For numbers: convert to actual numbers
-        aVal = Number(aVal);
-        bVal = Number(bVal);
-    } else if (sortColumn === 'CreatedDate')
-    {
-        // For dates: convert to timestamps (milliseconds) so they compare numerically
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-    } else
-    {
-        // For text: convert to lowercase strings for case-insensitive sorting
-        aVal = String(aVal).toLowerCase();
-        bVal = String(bVal).toLowerCase();
-    }
-
-    // Compare the values and return sort order
-    if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
-    if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
-
-    // If they're equal, return 0 (no change in order). Edge case for duplicate file uploads.
-    return 0;
-}) : []; // otherwise return empty array so that first react render doesnt errror out if null
-
-
-*/

@@ -29,9 +29,7 @@ export default function Menu() {
     return (
         <div className="drawer md:drawer-open" style={{ width: "auto" }}>
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
-            <label htmlFor="my-drawer-3" className="btn drawer-button md:hidden text-sm w-20">
-                Menu
-            </label>
+
 
 
             <div className="drawer-side">

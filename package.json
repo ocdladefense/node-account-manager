@@ -21,7 +21,7 @@
         "lint-fix": "eslint --fix src/**",
         "git-reset": "git reset --soft HEAD~1",
         "git-force": "git push origin +main --force",
-        "build-start-server":"webpack --config webpack.config.js --mode development && nodemon src/servers/app.js"
+        "build-start-server": "webpack --config webpack.config.js --mode development && nodemon src/servers/app.js"
     },
     "author": "José Bernal",
     "license": "ISC",
@@ -29,6 +29,7 @@
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
         "@googlemaps/google-maps-services-js": "^3.4.2",
+        "@headlessui/react": "^2.2.10",
         "@local/jsx": "file:dev_modules/@local/jsx",
         "@ocdla/global-components": "file:dev_modules/@local/global-components",
         "@ocdla/lib-geo": "file:dev_modules/@ocdla/lib-geo",

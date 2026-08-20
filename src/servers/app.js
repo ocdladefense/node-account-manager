@@ -69,23 +69,6 @@ app.use("/", orderRoutes);
 
 
 
-// app.post('/jobs/upload', (req, res) => {
-//     // Handle the job posting data and file upload here
-//     console.log("app.js: Received job posting data:", req.body);
-//     // You can save the job posting data to your database here
-//     // Save the job as a record with two properties: title and salary.
-
-//     // save the job.
-
-
-//     const jobId = createUniqueAlphanumericId(16);
-
-//     res.json({ success: true, jobId });
-// });
-
-
-
-
 
 // Define a route to serve index.html
 app.get('/', (req, res) => {
