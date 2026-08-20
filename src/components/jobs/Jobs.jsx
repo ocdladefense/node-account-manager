@@ -137,7 +137,7 @@ export default function Jobs() {
             </h1>
             <br />
 
-            <Button action={handleUppload} label="Uppload a Job +" buttonType="button" />
+            <Button action={handleUppload} label="Upload a Job +" buttonType="button" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 my-6">
                 {/* Text filter */}
