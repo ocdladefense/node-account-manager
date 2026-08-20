@@ -6,6 +6,7 @@ import { RiContactsBook2Line } from "react-icons/ri";
 import { LuPackageOpen } from "react-icons/lu";
 import { TbPackages } from "react-icons/tb";
 import { MdDescription, MdCloudUpload } from "react-icons/md";
+import { IoIosHammer } from "react-icons/io";
 
 export default function Menu() {
     const location = useLocation();
@@ -113,6 +114,7 @@ export default function Menu() {
                     </li>     Restore commented out href links!!!! */}
                     <li>
                         <a href="/jobs" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.jobs) ? active : ''}`}>
+                            <IoIosHammer />
                             Jobs
                         </a>
                     </li>
