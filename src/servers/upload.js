@@ -111,15 +111,20 @@ const upload = multer({
     }
 });
 
-function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif|pdf/;
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype);
+//moved outside of checkFileType so that it does not run everytime a document is uploaded
+const allowedFileTypes = ["jpeg", "jpg", "png", "gif", "pdf", "odt", "docx"];
+const fileTypeMap = allowedFileTypes.map(str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')) // Escape special regex characters so they are treated as literal text 
+const fileTypeRegex = new RegExp(fileTypeMap.join('|'));
 
-    if (mimetype && extname) {
+function checkFileType(file, cb) {
+
+    const extname = fileTypeRegex.test(path.extname(file.originalname).toLowerCase());
+    //const mimetype = fileTypeRegex.test(file.mimetype);
+
+    if (extname /* && mimetype */) { 
         return cb(null, true);
     } else {
-        cb('Error: Images only! (jpeg, jpg, png, gif)');
+        cb(`Error: only (${allowedFileTypes.toString()}) file types are allowed. "${path.extname(file.originalname).toLowerCase()}" files are not allowed.`);
     }
 
 }
