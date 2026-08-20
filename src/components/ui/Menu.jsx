@@ -34,7 +34,7 @@ export default function Menu() {
 
             <div className="drawer-side">
                 <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 min-h-full w-80 p-4">
+                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-r-lg">
 
 
                     {/* Sidebar content here */}
@@ -76,7 +76,7 @@ export default function Menu() {
                         <a href="/account/invoices"
                             className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.invoices) || currentPath.match(routePatterns.invoice)
                                 ? active : ''}`}>
-                            <MdDescription />
+                            <SlEnvolopeLetter />
                             Invoices
                         </a>
                     </li>
