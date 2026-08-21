@@ -133,7 +133,6 @@ export default function Documents() {
                                     </div>
 
                                     <CautionButton 
-                                        className="rounded-md bg-red-600 text-black cursor-pointer border border-black"
                                         label="delete" 
                                         action={() => {handleDeleteFile(file)}} 
                                     />
