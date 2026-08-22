@@ -21,6 +21,7 @@ import downloadRoutes from './download.js';
 import filesRoutes from "./files.js";
 import orderRoutes from "./orders.js";
 import fs from 'fs';
+import accountContactsRoutes from "./accountContacts.js";
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -37,8 +38,7 @@ const ALPHANUMERIC_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 function createUniqueAlphanumericId(length = 16) {
     let id = '';
 
-    while (id.length < length)
-    {
+    while (id.length < length) {
         id += ALPHANUMERIC_CHARS[crypto.randomInt(0, ALPHANUMERIC_CHARS.length)];
     }
 
@@ -64,7 +64,7 @@ app.use('/', uploadRoutes);
 app.use('/', downloadRoutes);
 app.use("/", filesRoutes);
 app.use("/", orderRoutes);
-
+app.use("/", accountContactsRoutes);
 
 
 
@@ -89,19 +89,16 @@ app.delete("/delete", (req, res) => {
     const uploadsDir = path.join(process.cwd(), "uploads");
     const absolutePath = path.join(uploadsDir, filePath);
 
-    if (!absolutePath.startsWith(uploadsDir))
-    {
+    if (!absolutePath.startsWith(uploadsDir)) {
         return res.status(400).json({
             success: false,
             error: "Invalid path"
         });
     }
 
-    if (isDirectory)
-    {
+    if (isDirectory) {
         fs.rm(absolutePath, rmdirOptions, err => {
-            if (err)
-            {
+            if (err) {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -114,11 +111,9 @@ app.delete("/delete", (req, res) => {
         });
     }
 
-    else
-    {
+    else {
         fs.unlink(absolutePath, err => {
-            if (err)
-            {
+            if (err) {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -133,8 +128,7 @@ app.delete("/delete", (req, res) => {
         let dirPath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
         const files = fs.readdirSync(dirPath);
 
-        if (files.length == 0)
-        {
+        if (files.length == 0) {
             fs.rmdir(dirPath, () => { });
         }
     }
