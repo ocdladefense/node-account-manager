@@ -55,7 +55,8 @@ router.get("/api/account/contacts", async (req, res) => {
             SELECT
                 Id,
                 Name,
-                CreatedDate
+                CreatedDate,
+                Event__r.Start_Date__c
             FROM Product2
             WHERE Event__c != null
             AND IsActive = true
@@ -96,7 +97,8 @@ router.get("/api/account/contacts", async (req, res) => {
         // store only the necessary properties of events
         const eventProducts = productsResponse.records.map((product) => ({
             id: product.Id,
-            name: product.Name
+            name: product.Name,
+            date: product.Event__r?.Start_Date__c ?? null
         }));
 
         return res.json({

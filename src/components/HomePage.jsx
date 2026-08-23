@@ -5,9 +5,39 @@ import { getCookie } from '@ocdla/salesforce/CookieUtils';
 
 export default function HomePage() {
 
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     let { client } = useOutletContext();
     let [contacts, setContacts] = useState([]);
     let userId = getCookie("user_id");
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const resp = await fetch("/api/account/contacts");
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve events."
+                    );
+                }
+
+                setEvents(data.eventProducts);
+
+            } catch (error) {
+                console.error("Error fetching events:", error);
+                setError(error);
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEvents();
+    }, []);
 
 
     return (
@@ -23,35 +53,30 @@ export default function HomePage() {
 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mt-8">
-                    <div className="card w-96 bg-base-100 card-md shadow-sm">
-                        <div className="card-body">
-                            <h2 className="card-title">Medium Card</h2>
-                            <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                            <div className="justify-end card-actions">
-                                <button className="btn btn-primary">Register</button>
-                            </div>
-                        </div>
-                    </div>
+                    {events.map((event) => (
+                        <div key={event.id} className="card w-96 bg-base-100 card-md shadow-sm">
+                            <div className="card-body">
+                                <h2 className="card-title">
+                                    {event.name}
+                                </h2>
 
-                    <div className="card w-96 bg-base-100 card-md shadow-sm">
-                        <div className="card-body">
-                            <h2 className="card-title">Medium Card</h2>
-                            <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                            <div className="justify-end card-actions">
-                                <button className="btn btn-primary">Register</button>
-                            </div>
-                        </div>
-                    </div>
+                                {event.date ? (
+                                    <DateDisplay label="Event Date:" value={event.date} type="DateTime" />
+                                ) : (
+                                    <p>Date not available</p>
+                                )}
 
-                    <div className="card w-96 bg-base-100 card-md shadow-sm">
-                        <div className="card-body">
-                            <h2 className="card-title">Medium Card</h2>
-                            <p>A card component has a figure, a body part, and inside body there are title and actions parts</p>
-                            <div className="justify-end card-actions">
-                                <button className="btn btn-primary">Register</button>
+                                <div className="justify-end card-actions">
+                                    <button
+                                        className="btn btn-primary"
+                                        type="button"
+                                    >
+                                        Register
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ))}
                 </div>
 
                 <h1 className="mt-8 text-2xl font-bold mb-4">Add to your membership</h1>
