@@ -131,9 +131,11 @@ export default function Jobs() {
 
     return (
         <div className="container mx-auto px-2 mt-7">
-            {/* */}
+            <h1 className="text-2xl font-bold mb-6">
+                Active Jobs
+            </h1>
             <h1 className="card-title">
-                Showing {displayedJobs.length} of {jobs.length} active jobs.
+                Showing {displayedJobs.length} of {jobs.length}.
             </h1>
             <br />
 

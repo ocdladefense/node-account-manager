@@ -44,14 +44,19 @@ export default function Upload() {
     
 
     return (
-        <form onSubmit={handleSubmit} className="foobar">
-            <div className="w-full">
-                <div className="container mx-auto px-2 mt-7">
-                    <FileUpload label="Upload Documents" name="uploadDocuments" multiple={true} applicationId={DOCUMENT_UPLOAD_APP_ID} onChange={() => setCanUpload(true)}/>
-                </div>
+        <div className="container mx-auto px-2 mt-7 flex-col">
+            <h1 className="text-2xl font-bold mb-6">
+                Upload Documents
+            </h1>
+            <form onSubmit={handleSubmit} className="">
+                <div className="w-full">
+                    <div className="container mx-auto px-2 mt-7">
+                        <FileUpload label="" name="uploadDocuments" multiple={true} applicationId={DOCUMENT_UPLOAD_APP_ID} onChange={() => setCanUpload(true)}/>
+                    </div>
 
-                {canUpload &&<Button label="Upload" buttonType="submit" />}
-            </div>
-        </form>
+                    {canUpload &&<Button label="Upload" buttonType="submit" />}
+                </div>
+            </form>
+        </div>
     )
 };

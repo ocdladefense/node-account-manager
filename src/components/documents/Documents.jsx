@@ -79,7 +79,7 @@ export default function Documents() {
     return (
         <div className="w-full">
             <div className="container mx-auto px-2 mt-7">
-                <h1 className="text-2xl font-bold text-center mb-6">
+                <h1 className="text-2xl font-bold mb-6">
                     Documents
                 </h1>
 
