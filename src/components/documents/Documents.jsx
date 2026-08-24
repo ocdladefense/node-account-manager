@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { CautionButton } from "../ui/Button"
 import { deleteFile } from "../ui/form/FileUpload.jsx";
-import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
+import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 export default function Documents() {
 
@@ -60,10 +60,10 @@ export default function Documents() {
         const result = await deleteFile(filePath);
 
         if (result.error){
-            CreateToast(Toast(`Delete Error: ` + result.error));
+            CreateToast(NewToast(`Delete Error: ` + result.error));
         } 
         else {
-            CreateToast(Toast(file.name + " Deleted."));
+            CreateToast(NewToast(file.name + " Deleted."));
             setFiles(files.filter(item => item !== file));
         }
     }
@@ -79,7 +79,7 @@ export default function Documents() {
     return (
         <div className="w-full">
             <div className="container mx-auto px-2 mt-7">
-                <h1 className="text-2xl font-bold text-center mb-6">
+                <h1 className="text-2xl font-bold mb-6">
                     Documents
                 </h1>
 
@@ -133,7 +133,6 @@ export default function Documents() {
                                     </div>
 
                                     <CautionButton 
-                                        className="rounded-md bg-red-600 text-black cursor-pointer border border-black"
                                         label="delete" 
                                         action={() => {handleDeleteFile(file)}} 
                                     />

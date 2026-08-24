@@ -8,7 +8,7 @@ import DropMenu from "../ui/form/DropMenu.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
-import { useToast } from "../ui/notifications/ToastService.jsx";
+import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 
 export default function AccountContacts() {
@@ -199,20 +199,12 @@ function createHandler(CreateToast, closeModal, navigate) {
         console.log("Selected contacts:", selectedContactIds);
 
         if (!selectedProductId) {
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Please select an event ticket.
-                </div>
-            );
+            CreateToast(NewToast("Please select an event ticket."));
             return;
         }
 
         if (selectedContactIds.length === 0) {
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Please select at least one contact.
-                </div>
-            );
+            CreateToast(NewToast("Please select at least one contact."));
             return;
         }
 
@@ -233,20 +225,12 @@ function createHandler(CreateToast, closeModal, navigate) {
             if (!resp.ok) {
                 console.error("Order failed:", result);
 
-                CreateToast(
-                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                        {result.error || "Order could not be created."}
-                    </div>
-                );
+                CreateToast(NewToast(result.error || "Order could not be created."));
 
                 return;
             }
 
-            CreateToast(
-                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Order created successfully.
-                </div>
-            );
+            CreateToast(NewToast("Order created successfully."));
 
             closeModal();
 
@@ -259,11 +243,7 @@ function createHandler(CreateToast, closeModal, navigate) {
         } catch (error) {
             console.error("Error sending order request:", error);
 
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Unable to contact the server.
-                </div>
-            );
+            CreateToast(NewToast("Unable to contact the server."));
         }
     };
 }

@@ -1,7 +1,7 @@
 import { FileUpload, uploadFileToServer, deleteFile, FileView } from "../ui/form/FileUpload.jsx";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useToast } from "../ui/notifications/ToastService.jsx";
+import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 import TextInput from "../ui/form/TextInput.jsx";
 import DateInput from "../ui/form/DateInput.jsx";
 import Button from "../ui/Button.jsx";
@@ -102,9 +102,7 @@ export default function JobForm({ job = {}, onCancel = null }) {
             })
         }
 
-        CreateToast(<div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-            {job.Id ? "Changes saved" : "Job Posted"}
-        </div>);
+        CreateToast(NewToast(job.Id ? "Changes saved" : "Job Posted"));
 
         navigate(`/job/${jobId}`);
     };

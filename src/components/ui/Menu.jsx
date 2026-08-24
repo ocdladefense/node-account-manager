@@ -7,6 +7,7 @@ import { LuPackageOpen } from "react-icons/lu";
 import { TbPackages } from "react-icons/tb";
 import { MdDescription, MdCloudUpload } from "react-icons/md";
 import { IoIosHammer } from "react-icons/io";
+import { SlEnvolopeLetter } from "react-icons/sl";
 
 export default function Menu() {
     const location = useLocation();
@@ -34,7 +35,7 @@ export default function Menu() {
 
             <div className="drawer-side">
                 <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-r-lg">
+                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-lg">
 
 
                     {/* Sidebar content here */}

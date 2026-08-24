@@ -11,7 +11,7 @@ export default ToastContext;
  * @param {boolean} [useDefaultSyle=true] if the toast should use the default style in addition to user provided style
  * @returns {React.JSX.Element} Toast
  */
-export function Toast(Message, className = "", useDefaultSyle = true) {
+export function NewToast(Message, className = "", useDefaultSyle = true) {
     let styles;
     if (useDefaultSyle) styles = "bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg" + className;
     else styles = className;

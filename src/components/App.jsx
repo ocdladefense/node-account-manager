@@ -91,9 +91,9 @@ export default function App() {
 
     return (
         <ToastProvider>
-            <div className="mx-auto">
+            <div className="mx-auto" style = {{maxWidth: 2000}}>
                 <Header loggedIn={false} />
-                <div className='flex w-full lg:mt-[60px]' style={{ minHeight: "calc(100vh - 60px)" }}>
+                <div className='flex w-full lg:mt-15' style={{ minHeight: "calc(100vh - 60px)" }}>
                     <Menu className="flex-1" />
                     {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
                 </div>
