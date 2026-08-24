@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { FileUpload, uploadFileToServer } from "../ui/form/FileUpload.jsx";
-import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
+import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 import Button from "../ui/Button.jsx";
 
@@ -25,7 +25,7 @@ export default function Upload() {
 
         if(uploadResult) message = (uploadResult.error ? "Error uploading " : "Uploaded ") + file.name;
 
-        let toast = Toast(message);
+        let toast = NewToast(message);
         CreateToast(toast);
     }
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { CautionButton } from "../ui/Button"
 import { deleteFile } from "../ui/form/FileUpload.jsx";
-import { useToast, Toast } from "../ui/notifications/ToastService.jsx";
+import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 export default function Documents() {
 
@@ -60,10 +60,10 @@ export default function Documents() {
         const result = await deleteFile(filePath);
 
         if (result.error){
-            CreateToast(Toast(`Delete Error: ` + result.error));
+            CreateToast(NewToast(`Delete Error: ` + result.error));
         } 
         else {
-            CreateToast(Toast(file.name + " Deleted."));
+            CreateToast(NewToast(file.name + " Deleted."));
             setFiles(files.filter(item => item !== file));
         }
     }
