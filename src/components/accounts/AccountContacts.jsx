@@ -68,7 +68,7 @@ export default function AccountContacts() {
         fetchContacts();
     }, []);
 
-
+    // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
             try {
