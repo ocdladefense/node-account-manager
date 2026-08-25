@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { getAccountContactsQuery } from './accounts/query';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import Card from './ui/Card';
-import EventCard from './ui/EventCard';
+// import EventCard from './ui/EventCard';
 
 export default function HomePage() {
 
