@@ -3,21 +3,38 @@ import MenuTop from "../navigation/MenuTop";
 import MenuMobile from "../navigation/MenuMobile";
 import Hamburger from "../navigation/Hamburger";
 import Button from "../ui/Button";
+import { useState, useEffect } from "react";
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
+import { IoPersonOutline } from "react-icons/io5";
+import { getContactQuery } from "../contacts/query";
 
 
-function Dropdown({ user, userInitial, onLogout }) {
+
+function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
+
     return (
         <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="group flex items-center gap-3 rounded-full p-1 transition-colors hover:bg-gray-100 focus:outline-none sm:rounded-lg sm:px-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(87,120,230,1)] font-semibold text-white sm:h-10 sm:w-10 lg:h-12 lg:w-12">
-                    {userInitial}
+                <div
+                    className={`flex h-8 w-8 items-center justify-center rounded-full sm:h-10 sm:w-10 lg:h-12 lg:w-12
+                        ${loggedIn
+                            ? "bg-[rgba(87,120,230,1)] text-white font-semibold"
+                            : "border border-gray-700 bg-white"
+                        }`}
+                >
+                    {loggedIn ? (
+                        <span>{userInitial}</span>
+                    ) : (
+                        <IoPersonOutline className=" text-gray-800 h-5 w-5 sm:h-6 sm:w-6 lg:h-7 lg:w-7" />
+                    )}
                 </div>
 
-                <span className="hidden text-xl font-medium text-gray-700 sm:inline-block">
-                    {user.name}
-                </span>
+                {loggedIn && (
+                    <span className="hidden text-xl font-medium text-gray-700 sm:inline-block">
+                        {userName}
+                    </span>
+                )}
 
                 <svg
                     viewBox="0 0 20 20"
@@ -34,16 +51,33 @@ function Dropdown({ user, userInitial, onLogout }) {
             >
                 <div className="py-1">
                     <MenuItem>
-                        <a href="/profile" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                        <a href="/account" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
                             Profile
                         </a>
                     </MenuItem>
                 </div>
                 <div className="py-1">
                     <MenuItem>
-                        <button type="button" onClick={onLogout} className="block w-full px-4 py-2 text-left text-sm text-red-600 data-focus:bg-gray-100">
-                            Log Out
-                        </button>
+                        {loggedIn ?
+                            (
+                                <button
+                                    type="button"
+                                    onClick={onLogout}
+                                    className="block w-full px-4 py-2 text-left text-sm text-red-600 data-focus:bg-gray-100">
+                                    Log Out
+                                </button>
+                            )
+                            :
+                            (
+                                <button
+                                    type="button"
+                                    onClick={onAuth}
+                                    className="block w-full px-4 py-2 text-left text-sm font-semibold text-gray-900 transition-colors data-focus:bg-gray-100 data-focus:text-gray-900">
+                                    Log In
+                                </button>
+                            )
+                        }
+
                     </MenuItem>
                 </div>
             </MenuItems>
@@ -52,19 +86,31 @@ function Dropdown({ user, userInitial, onLogout }) {
 }
 
 
-export default function Header() {
+export default function Header({ client }) {
 
     const userId = getCookie("user_id");
     const loggedIn = Boolean(userId);
 
-    // Hardcoded for now (swap with contact data from API later)
-    const user = {
-        name: "Jackie Rael",
-        initial: "J",
-        // avatarUrl: null, // for future photo support
-    };
+    const [user, setUser] = useState(null);
 
-    const userInitial = user.initial || user.name?.charAt(0).toUpperCase() || "?";
+    useEffect(() => {
+        if (!userId || !client) return;
+
+        async function fetchUser() {
+            try {
+                const userQuery = `SELECT Id, Name, FirstName, LastName FROM User WHERE Id = '${userId}' LIMIT 1`;
+                const response = await client.query(userQuery);
+
+                if (response?.records?.length > 0) {
+                    setUser(response.records[0]);
+                }
+            } catch (err) {
+                console.error("Error fetching user in Header:", err);
+            }
+        }
+
+        fetchUser();
+    }, [userId, client]);
 
     const handleAuth = () => {
         if (!userId) {
@@ -76,6 +122,8 @@ export default function Header() {
         window.location.href = "/logout";
     };
 
+    const userInitial = user?.Name?.charAt(0) || user?.Name?.charAt(0)?.toUpperCase() || "?";
+    const userName = user?.Name || "";
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-white">
@@ -88,11 +136,15 @@ export default function Header() {
                 </a>
 
                 <nav className="flex items-center gap-4">
-                    {!loggedIn ?
-                        (<Button label={"Log In"} action={handleAuth} />) : (<Dropdown user={user} userInitial={userInitial} onLogout={handleLogout} />)}
+                    <Dropdown
+                        loggedIn={loggedIn}
+                        userName={userName}
+                        userInitial={userInitial}
+                        onAuth={handleAuth}
+                        onLogout={handleLogout}
+                    />
                 </nav>
             </div>
-
         </header>
     );
 }
