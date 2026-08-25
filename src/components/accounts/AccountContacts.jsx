@@ -6,7 +6,6 @@ import DateDisplay from "../ui/DateDisplay.jsx";
 import DropMenu from "../ui/form/DropMenu.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
-import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 

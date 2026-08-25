@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from "react-router-dom";
-import { getCookie } from '@ocdla/salesforce/CookieUtils';
-import EventCard  from '../ui/EventCard';
+import EventCard from '../ui/EventCard';
 
 export function EventsWidget() {
-    
-    let { client } = useOutletContext();
-    let [contacts, setContacts] = useState([]);
-    let userId = getCookie("user_id");
+
+
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
