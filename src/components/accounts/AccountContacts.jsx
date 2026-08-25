@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router";
-import { getAccountContactsQuery, getEventProductsQuery } from "./query.js";
+import { useNavigate } from "react-router";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
@@ -13,17 +12,18 @@ import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 export default function AccountContacts() {
 
-    let { client } = useOutletContext();
     const navigate = useNavigate();
     const { isOpen, openModal, closeModal } = useModal();
-    let accountId = getCookie("account_id");
+
     const [contacts, setContacts] = useState([]);
     const [productId, setProductId] = useState("");
     const [eventProducts, setEventProducts] = useState([]);
     const { CreateToast } = useToast();
+
     const selectedProduct = eventProducts.find(
         (entry) => entry.id === productId
     );
+
     const [attendeeCount, setAttendeeCount] = useState(0);
 
 
@@ -43,31 +43,55 @@ export default function AccountContacts() {
 
 
 
+    useEffect(() => {
+        const fetchContacts = async () => {
+            try {
+                const resp = await fetch("/api/query/account-contacts");
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve account contacts."
+                    );
+                }
+
+                setContacts(data.records);
+
+            } catch (error) {
+                console.error(
+                    "Error fetching account contacts:",
+                    error
+                );
+            }
+        };
+
+        fetchContacts();
+    }, []);
+
 
     useEffect(() => {
-
-        const fetchAccountContacts = async () => {
-            const soql = getAccountContactsQuery(accountId);
-            const resp = await client.query(soql);
-
-            setContacts(resp.records);
-        };
-
         const fetchEventProducts = async () => {
-            const soql = getEventProductsQuery();
-            const resp = await client.query(soql);
+            try {
+                const resp = await fetch("/api/query/event-products");
+                const data = await resp.json();
 
-            const products = resp.records.map((product) => ({
-                id: product.Id,
-                name: product.Name
-            }));
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve event products."
+                    );
+                }
 
-            setEventProducts(products);
+                setEventProducts(data.records);
+
+            } catch (error) {
+                console.error(
+                    "Error fetching event products:",
+                    error
+                );
+            }
         };
 
-        fetchAccountContacts();
         fetchEventProducts();
-
     }, []);
 
 
