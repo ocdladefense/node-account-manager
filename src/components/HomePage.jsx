@@ -1,15 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useOutletContext } from "react-router-dom";
-import { getCookie } from '@ocdla/salesforce/CookieUtils';
-import { getAccountContactsQuery } from './accounts/query';
 import { SubscriptionsWidget } from './dashboard/SubscriptionsWidget';
 import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
 
 export default function HomePage() {
-
-
-
 
     return (
         <div className="w-full">
