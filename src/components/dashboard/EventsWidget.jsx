@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
-import { EventCard } from '../ui/EventCard.jsx';
+import EventCard  from '../ui/EventCard';
 
 export function EventsWidget() {
     
