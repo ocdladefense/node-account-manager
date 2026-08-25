@@ -9,11 +9,12 @@ export default function HomePage() {
             <div className="container mx-auto px-2 mt-7">
                 <h1 className="text-2xl font-bold mb-4">Welcome to OCDLA!</h1>
 
-                <StatusWidget></StatusWidget>
+                <StatusWidget/>
 
-                <EventsWidget></EventsWidget>
+                <EventsWidget/>
 
-                <SubscriptionsWidget></SubscriptionsWidget>
+                <SubscriptionsWidget/>
+                
             </div>
         </div>
     )
