@@ -45,7 +45,7 @@ export default function AccountContacts() {
     useEffect(() => {
         const fetchContacts = async () => {
             try {
-                const resp = await fetch("/api/account/contacts");
+                const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
                 if (!resp.ok) {
@@ -54,7 +54,7 @@ export default function AccountContacts() {
                     );
                 }
 
-                setContacts(data.contacts);
+                setContacts(data.records);
 
             } catch (error) {
                 console.error(
@@ -71,7 +71,7 @@ export default function AccountContacts() {
     useEffect(() => {
         const fetchEventProducts = async () => {
             try {
-                const resp = await fetch("/api/event-products");
+                const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
                 if (!resp.ok) {
@@ -80,7 +80,7 @@ export default function AccountContacts() {
                     );
                 }
 
-                setEventProducts(data.eventProducts);
+                setEventProducts(data.records);
 
             } catch (error) {
                 console.error(

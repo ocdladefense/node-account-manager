@@ -21,8 +21,7 @@ import downloadRoutes from './download.js';
 import filesRoutes from "./files.js";
 import orderRoutes from "./orders.js";
 import fs from 'fs';
-import accountContactsRoutes from "./accountContacts.js";
-import eventProductsRoutes from "./eventProducts.js";
+import queryRoutes from "./query.js";
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -63,10 +62,9 @@ app.use('/', districtRoutes);
 app.use('/', legislatorsRoutes);
 app.use('/', uploadRoutes);
 app.use('/', downloadRoutes);
-app.use("/", filesRoutes);
-app.use("/", orderRoutes);
-app.use("/", accountContactsRoutes);
-app.use("/", eventProductsRoutes);
+app.use('/', filesRoutes);
+app.use('/', orderRoutes);
+app.use('/', queryRoutes);
 
 
 
