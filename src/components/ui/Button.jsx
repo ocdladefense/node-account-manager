@@ -1,10 +1,10 @@
-export default function Button({ label, className = "", buttonType = "button", action, form }) {
+export default function Button({ label, size = "px-6 py-2 w-50", className = "", buttonType = "button", action, form }) {
     return (
         <button
             form={form}
             type={buttonType}
             onClick={action}
-            className={`px-6 py-2 rounded-sm mx-2.5 w-50 bg-[rgba(87,120,230,1)] text-white hover:bg-[rgba(35,75,207,1)]`}
+            className={` rounded-sm mx-2.5 bg-[rgba(87,120,230,1)] text-white hover:bg-[rgba(35,75,207,1)] ${size}`}
         >
             {label}
         </button>
