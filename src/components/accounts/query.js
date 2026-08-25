@@ -49,7 +49,11 @@ export function getAccountContactsQuery(accountId) {
 
 export function getEventProductsQuery() {
     return `
-        SELECT Id, Name, CreatedDate
+        SELECT
+            Id,
+            Name,
+            CreatedDate,
+            Event__r.Start_Date__c
         FROM Product2
         WHERE Event__c != null
         AND IsActive = true
@@ -57,3 +61,4 @@ export function getEventProductsQuery() {
         LIMIT 5
     `;
 }
+
