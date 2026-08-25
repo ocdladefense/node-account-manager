@@ -79,7 +79,7 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-white">
-            <div className="mx-auto flex max-w-7xl justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+            <div className="flex justify-between px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
                 <label htmlFor="my-drawer-3" className="btn drawer-button md:hidden text-sm w-20">
                     Menu
                 </label>
