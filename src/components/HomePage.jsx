@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { getAccountContactsQuery } from './accounts/query';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
+import DateDisplay from './ui/DateDisplay';
 
 export default function HomePage() {
 
@@ -16,7 +17,7 @@ export default function HomePage() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const resp = await fetch("/api/account/contacts");
+                const resp = await fetch("/api/event-products");
                 const data = await resp.json();
 
                 if (!resp.ok) {
@@ -64,6 +65,12 @@ export default function HomePage() {
                                     <DateDisplay label="Event Date:" value={event.date} type="DateTime" />
                                 ) : (
                                     <p>Date not available</p>
+                                )}
+
+                                {event.description && (
+                                    <p>
+                                        {event.description}
+                                    </p>
                                 )}
 
                                 <div className="justify-end card-actions">

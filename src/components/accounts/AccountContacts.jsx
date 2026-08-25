@@ -42,23 +42,19 @@ export default function AccountContacts() {
 
 
 
-    // new useEffect utlizing the new endpoint in accountContacts.js
     useEffect(() => {
-
-        const fetchAccountData = async () => {
+        const fetchContacts = async () => {
             try {
                 const resp = await fetch("/api/account/contacts");
-
                 const data = await resp.json();
 
                 if (!resp.ok) {
                     throw new Error(
-                        data.error || "Unable to retrieve account data."
+                        data.error || "Unable to retrieve account contacts."
                     );
                 }
 
                 setContacts(data.contacts);
-                setEventProducts(data.eventProducts);
 
             } catch (error) {
                 console.error(
@@ -68,8 +64,33 @@ export default function AccountContacts() {
             }
         };
 
-        fetchAccountData();
+        fetchContacts();
+    }, []);
 
+
+    useEffect(() => {
+        const fetchEventProducts = async () => {
+            try {
+                const resp = await fetch("/api/event-products");
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve event products."
+                    );
+                }
+
+                setEventProducts(data.eventProducts);
+
+            } catch (error) {
+                console.error(
+                    "Error fetching event products:",
+                    error
+                );
+            }
+        };
+
+        fetchEventProducts();
     }, []);
 
 

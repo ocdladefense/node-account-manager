@@ -22,6 +22,7 @@ import filesRoutes from "./files.js";
 import orderRoutes from "./orders.js";
 import fs from 'fs';
 import accountContactsRoutes from "./accountContacts.js";
+import eventProductsRoutes from "./eventProducts.js";
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -65,6 +66,7 @@ app.use('/', downloadRoutes);
 app.use("/", filesRoutes);
 app.use("/", orderRoutes);
 app.use("/", accountContactsRoutes);
+app.use("/", eventProductsRoutes);
 
 
 
