@@ -13,19 +13,25 @@ router.post("/orders", async (req, res) => {
 
     try {
 
-        const contactIds = req.body.contactIds;
+        let contactIds = req.body.contactIds;
         const productId = req.body.productId;
+
+        // If no contacts were sent in the request, use the logged-in user's contact ID.
+        if (!Array.isArray(contactIds) || contactIds.length === 0) {
+
+            const contactId = req.cookies.contact_id;
+
+            if (!contactId) {
+                return res.status(401).json({
+                    error: "No contact found for the logged-in user."
+                });
+            }
+
+            contactIds = [contactId];
+        }
 
         console.log("CONTACT IDS:", contactIds);
         console.log("PRODUCT ID:", productId);
-
-
-        // Make sure array isn't empty
-        if (!Array.isArray(contactIds) || contactIds.length === 0) {
-            return res.status(400).json({
-                error: "At least one contact must be selected."
-            });
-        }
 
 
         // Make sure we have a product ID

@@ -47,12 +47,14 @@ function parseUserId(identityUrl) {
 
 async function getContactId(instanceUrl, accessToken, userId) {
 
-    const query = `SELECT ContactId FROM User WHERE Id = '${userId}'`;
+    // retrieve the logged-in user
+    const userQuery =
+        `SELECT Id, ContactId, Email FROM User WHERE Id = '${userId}'`;
 
-    const response = await fetch(
+    const userResponse = await fetch(
         instanceUrl +
         "/services/data/v60.0/query?q=" +
-        encodeURIComponent(query),
+        encodeURIComponent(userQuery),
         {
             method: "GET",
             headers: {
@@ -62,9 +64,59 @@ async function getContactId(instanceUrl, accessToken, userId) {
         }
     );
 
-    const data = await response.json();
+    const userData = await userResponse.json();
 
-    return data.records?.[0]?.ContactId;
+    if (!userResponse.ok) {
+        throw new Error("Unable to retrieve Salesforce User.");
+    }
+
+    const user = userData.records?.[0];
+
+    if (!user) {
+        return null;
+    }
+
+    // if Salesforce already provides ContactId, use it
+    if (user.ContactId) {
+        return user.ContactId;
+    }
+
+    // Otherwise, try to locate the Contact by email
+    if (!user.Email) {
+        return null;
+    }
+
+    const contactQuery =
+        `SELECT Id FROM Contact WHERE Email = '${user.Email}' LIMIT 2`;
+
+    const contactResponse = await fetch(
+        instanceUrl +
+        "/services/data/v60.0/query?q=" +
+        encodeURIComponent(contactQuery),
+        {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Accept": "application/json"
+            }
+        }
+    );
+
+    const contactData = await contactResponse.json();
+
+    if (!contactResponse.ok) {
+        throw new Error("Unable to retrieve Salesforce Contact.");
+    }
+
+    if (contactData.records.length !== 1) {
+        console.warn(
+            `Expected one Contact for ${user.Email}, found ${contactData.records.length}.`
+        );
+
+        return null;
+    }
+
+    return contactData.records[0].Id;
 }
 
 
@@ -86,16 +138,13 @@ router.get("/login", (req, res) => {
 
 router.get("/logout", (req, res) => {
 
-    res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
-    res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
-    res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie("instance_url", "", { expires: new Date(0) });
+    res.cookie("access_token", "", { expires: new Date(0) });
+    res.cookie("user_id", "", { expires: new Date(0) });
+    res.cookie("account_id", "", { expires: new Date(0) });
     res.cookie("contact_id", "", { expires: new Date(0) });
 
     res.redirect("/");
-
-    // Notify user they have lgged out successfully
-    // Remove cookies for secure account related behavior
-    // Provide a link back to home or login page
 });
 
 
@@ -148,6 +197,8 @@ router.get("/oauth/api/request", async (req, res) => {
         userId
     );
 
+    console.log("CONTACT ID FROM USER:", contactId);
+
     console.log(
         "Salesforce login response fields:",
         Object.keys(access_token_data)
@@ -167,11 +218,22 @@ router.get("/oauth/api/request", async (req, res) => {
     };
 
     let accountId = process.env.SF_ACCOUNT_ID;
-    res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
-    res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
+
+    res.cookie("instance_url", access_token_data.instance_url, options);
+    res.cookie("access_token", access_token_data.access_token, options);
     res.cookie("user_id", userId, options);
     res.cookie("account_id", accountId, options);
-    res.cookie("contact_id", contactId, options);
+
+    if (contactId) {
+        res.cookie("contact_id", contactId, options);
+    }
+    else {
+        res.cookie("contact_id", "", { expires: new Date(0) });
+
+        console.warn(
+            `Salesforce User ${userId} does not have a ContactId.`
+        );
+    }
 
     res.redirect("/");
 });
@@ -276,20 +338,16 @@ router.get("/introspect", async (req, res) => {
 
     const userId = parseUserId(data.sub);
 
-    const query = `SELECT ContactId FROM User WHERE Id = '${userId}'`;
+    const contactId = await getContactId(
+        instance_url,
+        access_token,
+        userId
+    );
 
-    const userResponse = await fetch(instance_url + "/services/data/v56.0/query?q=" + encodeURIComponent(query), {
-        method: "GET",
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-            'Accept': 'application/json'
-        }
+    res.json({
+        userId,
+        contactId
     });
-
-    const userData = await userResponse.json();
-    console.log("auth.js: introspect route: fetch userData: ", userData);
-
-    res.json(userData);
 });
 
 
