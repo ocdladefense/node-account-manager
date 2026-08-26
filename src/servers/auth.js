@@ -20,8 +20,7 @@ const __dirname = path.dirname(__filename);
  * @returns {string}
  */
 function parseUserId(identityUrl) {
-    if (!identityUrl)
-    {
+    if (!identityUrl) {
         throw new Error(
             "Cannot parse Salesforce user ID: identity URL is missing."
         );
@@ -35,8 +34,7 @@ function parseUserId(identityUrl) {
 
     const userId = pathParts.at(-1); // Grabs the last item, in this case the user ID
 
-    if (!userId || !userId.startsWith("005"))
-    {
+    if (!userId || !userId.startsWith("005")) {
         throw new Error(
             "Salesforce identity URL did not contain a valid user ID."
         );
@@ -45,6 +43,29 @@ function parseUserId(identityUrl) {
     return userId;
 }
 
+
+
+async function getContactId(instanceUrl, accessToken, userId) {
+
+    const query = `SELECT ContactId FROM User WHERE Id = '${userId}'`;
+
+    const response = await fetch(
+        instanceUrl +
+        "/services/data/v60.0/query?q=" +
+        encodeURIComponent(query),
+        {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${accessToken}`,
+                "Accept": "application/json"
+            }
+        }
+    );
+
+    const data = await response.json();
+
+    return data.records?.[0]?.ContactId;
+}
 
 
 
@@ -68,6 +89,7 @@ router.get("/logout", (req, res) => {
     res.cookie('instance_url', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.cookie('access_token', '', { expires: new Date(0) }); // Setting expiration to epoch
     res.cookie('user_id', '', { expires: new Date(0) }); // Setting expiration to epoch
+    res.cookie("contact_id", "", { expires: new Date(0) });
 
     res.redirect("/");
 
@@ -106,8 +128,7 @@ router.get("/oauth/api/request", async (req, res) => {
 
     const access_token_data = await response.json();
 
-    if (!response.ok || access_token_data.error)
-    {
+    if (!response.ok || access_token_data.error) {
         console.error(
             "Salesforce OAuth error:",
             access_token_data.error,
@@ -120,6 +141,12 @@ router.get("/oauth/api/request", async (req, res) => {
     }
 
     const userId = parseUserId(access_token_data.id);
+
+    const contactId = await getContactId(
+        access_token_data.instance_url,
+        access_token_data.access_token,
+        userId
+    );
 
     console.log(
         "Salesforce login response fields:",
@@ -144,6 +171,7 @@ router.get("/oauth/api/request", async (req, res) => {
     res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
     res.cookie("user_id", userId, options);
     res.cookie("account_id", accountId, options);
+    res.cookie("contact_id", contactId, options);
 
     res.redirect("/");
 });
@@ -175,8 +203,7 @@ router.get("/connect", async (req, res) => {
 
     const credentials = await resp.json();
 
-    if (credentials.error)
-    {
+    if (credentials.error) {
         console.error("auth.js: ", credentials.error, credentials.error_description);
 
 
@@ -192,8 +219,7 @@ router.get("/connect", async (req, res) => {
 
         res.status(500).send({ error: credentials.error });
     }
-    else
-    {
+    else {
         console.log("auth.js: connect route: credentials: ", credentials);
         // 2. Set the cookie
         res.cookie('access_token', credentials.access_token, {
