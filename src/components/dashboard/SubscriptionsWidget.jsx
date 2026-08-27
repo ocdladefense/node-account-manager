@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from "react-router-dom";
-import { getCookie } from '@ocdla/salesforce/CookieUtils';
-import Card  from "../ui/Card";
+import { useNavigate } from "react-router-dom";
+import Button from "../ui/Button";
+
+// things i might need later
+// import { useOutletContext } from "react-router-dom";
+// import { getCookie } from '@ocdla/salesforce/CookieUtils';
+// let { client } = useOutletContext();
+// let [contacts, setContacts] = useState([]);
+// let userId = getCookie("user_id");
 
 export function SubscriptionsWidget(){
     
-    let { client } = useOutletContext();
-    let [contacts, setContacts] = useState([]);
-    let userId = getCookie("user_id");
 
     return(
         <div>
@@ -15,12 +18,12 @@ export function SubscriptionsWidget(){
 
             <div className="flex flex-wrap gap-6 mt-6">
 
-                <Card
+                <SubscriptionCard
                     title="Medium Card" description="A card component has a figure, a body part, and inside body there are title and actions parts"
                     actions={<button className="btn btn-primary">Subscribe</button>}
                 />
 
-                <Card
+                <SubscriptionCard
                     title="Medium Card" description="A card component has a figure, a body part, and inside body there are title and actions parts"
                     actions={<button className="btn btn-primary">Subscribe</button>}
                 />
@@ -28,4 +31,42 @@ export function SubscriptionsWidget(){
             </div>
         </div >
     )
+}
+
+/**
+ * 
+ * @param {object} subscription - an object containing information about the subscription including title, description, price, id, and a link
+ * @param {boolean} isOwned - if the subscription is owned by the currently logged in user
+ * @param {string} className - html classNames to be used with tailwind for to style the object 
+ * @returns {html}
+ */
+
+function SubscriptionCard({ subscription, isOwned = false , className = '' }) {
+
+    const title = subscription.title;
+    const description = subscription.title;
+
+    const handleSubmit = () => {
+        if (isOwned) {window.open(subscription.link)}
+        else {}//create order
+    };
+
+    const getMoreInfo = () => {
+        useNavigate(`product/${subscription.id}`)
+    };
+
+    return (
+        <div className={`card bg-base-100 card-md shadow-sm w-96 ${className}`}>
+            <div className="card-body">
+
+                <h2 className="card-title">{title}</h2>
+
+                <p>{description}</p>
+
+                <Button label="More Information" action={link}/>
+                <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} />
+
+            </div>
+        </div>
+    );
 }
