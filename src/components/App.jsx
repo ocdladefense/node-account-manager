@@ -70,17 +70,17 @@ async function getApiClient() {
  */
 export default function App() {
 
+    const [client, setClient] = useState(null);
     const [appReady, setAppReady] = useState(false);
 
     useEffect(() => {
         async function fn() {
-            try
-            {
-                client = await getApiClient();
+            try {
+                const apiClient = await getApiClient();
+
+                setClient(apiClient);
                 setAppReady(true);
-            } catch (err)
-            {
-                // User is not logged in: log softly and let LoginPrompt render
+            } catch (err) {
                 console.log("Auth notice:", err.message);
                 setAppReady(false);
             }
@@ -92,7 +92,7 @@ export default function App() {
     return (
         <ToastProvider>
             <div className="mx-auto" style = {{maxWidth: 2000}}>
-                <Header loggedIn={false} />
+                <Header client={client} />
                 <div className='flex w-full lg:mt-15' style={{ minHeight: "calc(100vh - 60px)" }}>
                     <Menu className="flex-1" />
                     {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}

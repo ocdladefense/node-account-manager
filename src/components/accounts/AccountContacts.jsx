@@ -6,6 +6,7 @@ import DateDisplay from "../ui/DateDisplay.jsx";
 import DropMenu from "../ui/form/DropMenu.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
+import { getCookie } from "@ocdla/salesforce/CookieUtils";
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 
 
@@ -44,11 +45,13 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -56,7 +59,8 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -70,11 +74,13 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -82,7 +88,8 @@ export default function AccountContacts() {
 
                 setEventProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -125,7 +132,7 @@ export default function AccountContacts() {
                 />
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 
-                <div className="container mx-auto px-6 mt-[28px]">
+                <div className="container mx-auto px-6 mt-7">
 
                     <h1 className="text-2xl font-bold mb-4">Members ({contacts.length})</h1>
 
@@ -221,17 +228,20 @@ function createHandler(CreateToast, closeModal, navigate) {
 
         console.log("Selected contacts:", selectedContactIds);
 
-        if (!selectedProductId) {
+        if (!selectedProductId)
+        {
             CreateToast(NewToast("Please select an event ticket."));
             return;
         }
 
-        if (selectedContactIds.length === 0) {
+        if (selectedContactIds.length === 0)
+        {
             CreateToast(NewToast("Please select at least one contact."));
             return;
         }
 
-        try {
+        try
+        {
             const resp = await fetch("/orders", {
                 method: "POST",
                 headers: {
@@ -245,7 +255,8 @@ function createHandler(CreateToast, closeModal, navigate) {
 
             const result = await resp.json();
 
-            if (!resp.ok) {
+            if (!resp.ok)
+            {
                 console.error("Order failed:", result);
 
                 CreateToast(NewToast(result.error || "Order could not be created."));
@@ -263,7 +274,8 @@ function createHandler(CreateToast, closeModal, navigate) {
             console.log("Selected contacts:", selectedContactIds);
             console.log("Selected product:", selectedProductId);
 
-        } catch (error) {
+        } catch (error)
+        {
             console.error("Error sending order request:", error);
 
             CreateToast(NewToast("Unable to contact the server."));
