@@ -41,7 +41,7 @@ export default function OrderDetails() {
 
     return (
         <div className="w-full">
-            <div className="container mx-auto px-2 mt-[28px]">
+            <div className="container mx-auto px-2 mt-7">
                 {orderHeader && (
                     <>
                         <OrderHeader orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={orderHeader.Status} />

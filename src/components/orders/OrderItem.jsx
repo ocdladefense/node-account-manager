@@ -2,7 +2,7 @@ import Label from "../ui/Label.jsx"
 
 export default function OrderItem({ index, data }) {
     return (
-        <div className="relative border border-gray-100 rounded-lg bg-white shadow-sm hover:shadow-md transition p-[25px]">
+        <div className="relative border border-gray-100 rounded-lg bg-white shadow-sm hover:shadow-md transition p-6.25">
             {/* First Row: Product Summary */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-2 border-b border-gray-200" style={{ gridTemplateColumns: "2fr 1fr 1fr 1fr" }}>
                 <Label data={(index + 1).toString().padStart(4, "0")} prefix="#" />

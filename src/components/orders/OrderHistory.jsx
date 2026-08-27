@@ -35,7 +35,7 @@ export default function AccountOrders() {
     };
 
     return (
-        <div className="container mx-auto pl-2 mt-[28px]">
+        <div className="container mx-auto pl-2 mt-7">
             <h1 className="text-2xl font-bold mb-6">Order History</h1>
 
             {orders && (
