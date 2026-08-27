@@ -15,7 +15,7 @@
     {
       "label": "watch-js",
       "type": "shell",
-      "command": "npm run watch:js",
+      "command": "npm run build && npm run watch:js",
       "problemMatcher": [],
       "presentation": {
         "panel": "dedicated",
