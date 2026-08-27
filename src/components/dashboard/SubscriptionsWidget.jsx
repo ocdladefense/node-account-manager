@@ -36,23 +36,23 @@ export function SubscriptionsWidget(){
 /**
  * 
  * @param {object} subscription - an object containing information about the subscription including title, description, price, id, and a link
- * @param {boolean} isOwned - if the subscription is owned by the currently logged in user
- * @param {string} className - html classNames to be used with tailwind for to style the object 
+ * @param {boolean} [isOwned] - if the subscription is owned by the currently logged in user
+ * @param {string} [className] - html classNames to be used with tailwind for to style the object 
  * @returns {html}
  */
 
-function SubscriptionCard({ subscription, isOwned = false , className = '' }) {
+function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
 
-    const title = subscription.title;
-    const description = subscription.title;
+    const title = subscription.title || "no title";
+    const description = subscription.description || "no description";
 
     const handleSubmit = () => {
-        if (isOwned) {window.open(subscription.link)}
+        if (isOwned) {window.open(subscription.link || "")}
         else {}//create order
     };
 
     const getMoreInfo = () => {
-        useNavigate(`product/${subscription.id}`)
+        useNavigate(`product/${subscription.id || "undefined"}`)
     };
 
     return (
@@ -63,7 +63,7 @@ function SubscriptionCard({ subscription, isOwned = false , className = '' }) {
 
                 <p>{description}</p>
 
-                <Button label="More Information" action={link}/>
+                <Button label="More Information" action={getMoreInfo}/>
                 <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} />
 
             </div>
