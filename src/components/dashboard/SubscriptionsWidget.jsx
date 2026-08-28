@@ -9,8 +9,45 @@ import Button from "../ui/Button";
 // let [contacts, setContacts] = useState([]);
 // let userId = getCookie("user_id");
 
+
+/*
+TODO:
+1. add products to sandbox
+2. flag products as "IsAddOn__c" in and put in same product family
+3. query products for those two properties
+4. ask joseph what how his buttons work and modal work flow
+5. subscribe button "does what joseph's buttons do"
+*/
+
 export function SubscriptionsWidget(){
     
+    const getSubscriptions = () => {
+        return [
+            {
+                title:"test",
+                description:"test description",
+                price:49.99,
+                id:"abc123",
+                link:"https://google.com"
+            },
+            {
+                title: "test2",
+                description: "test description2",
+                price: 499.99,
+                id: "def456",
+                link: "https://google.com"
+            },
+            {}
+        ];
+    }
+
+    const getOwnedSubs = () => {
+
+        return ["abc123"];
+    }
+
+    const subscriptions = getSubscriptions(); 
+    const owned = getOwnedSubs();
 
     return(
         <div>
@@ -18,15 +55,14 @@ export function SubscriptionsWidget(){
 
             <div className="flex flex-wrap gap-6 mt-6">
 
-                <SubscriptionCard
-                    title="Medium Card" description="A card component has a figure, a body part, and inside body there are title and actions parts"
-                    actions={<button className="btn btn-primary">Subscribe</button>}
-                />
-
-                <SubscriptionCard
-                    title="Medium Card" description="A card component has a figure, a body part, and inside body there are title and actions parts"
-                    actions={<button className="btn btn-primary">Subscribe</button>}
-                />
+                {
+                    subscriptions.map(
+                        (sub) => {
+                            const isOwned = owned.includes(sub.id);
+                            return <SubscriptionCard key={sub.id} subscription={sub} isOwned={isOwned} />
+                        }
+                    )
+                }
 
             </div>
         </div >
@@ -42,9 +78,8 @@ export function SubscriptionsWidget(){
  */
 
 function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
-
-    const title = subscription.title || "no title";
-    const description = subscription.description || "no description";
+    const title = subscription.title || "Error: no title";
+    const description = subscription.description || "Error: no description";
 
     const handleSubmit = () => {
         if (isOwned) {window.open(subscription.link || "")}
@@ -63,8 +98,8 @@ function SubscriptionCard({ subscription={}, isOwned = false , className = '' })
 
                 <p>{description}</p>
 
-                <Button label="More Information" action={getMoreInfo}/>
-                <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} />
+                {subscription.id && <Button label="More Information" action={getMoreInfo}/> }
+                {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} /> }
 
             </div>
         </div>
