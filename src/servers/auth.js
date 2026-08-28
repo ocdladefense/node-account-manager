@@ -3,9 +3,14 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
+
+
 const router = express.Router(); // Create a new router instance
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
 
 
 // ---!!!--- CHECK THIS FILE FOR ANY NECESSARY SANITIZATION ---!!!---
@@ -20,7 +25,8 @@ const __dirname = path.dirname(__filename);
  * @returns {string}
  */
 function parseUserId(identityUrl) {
-    if (!identityUrl) {
+    if (!identityUrl)
+    {
         throw new Error(
             "Cannot parse Salesforce user ID: identity URL is missing."
         );
@@ -34,7 +40,8 @@ function parseUserId(identityUrl) {
 
     const userId = pathParts.at(-1); // Grabs the last item, in this case the user ID
 
-    if (!userId || !userId.startsWith("005")) {
+    if (!userId || !userId.startsWith("005"))
+    {
         throw new Error(
             "Salesforce identity URL did not contain a valid user ID."
         );
@@ -66,23 +73,27 @@ async function getContactId(instanceUrl, accessToken, userId) {
 
     const userData = await userResponse.json();
 
-    if (!userResponse.ok) {
+    if (!userResponse.ok)
+    {
         throw new Error("Unable to retrieve Salesforce User.");
     }
 
     const user = userData.records?.[0];
 
-    if (!user) {
+    if (!user)
+    {
         return null;
     }
 
     // if Salesforce already provides ContactId, use it
-    if (user.ContactId) {
+    if (user.ContactId)
+    {
         return user.ContactId;
     }
 
     // Otherwise, try to locate the Contact by email
-    if (!user.Email) {
+    if (!user.Email)
+    {
         return null;
     }
 
@@ -104,11 +115,13 @@ async function getContactId(instanceUrl, accessToken, userId) {
 
     const contactData = await contactResponse.json();
 
-    if (!contactResponse.ok) {
+    if (!contactResponse.ok)
+    {
         throw new Error("Unable to retrieve Salesforce Contact.");
     }
 
-    if (contactData.records.length !== 1) {
+    if (contactData.records.length !== 1)
+    {
         console.warn(
             `Expected one Contact for ${user.Email}, found ${contactData.records.length}.`
         );
@@ -177,7 +190,8 @@ router.get("/oauth/api/request", async (req, res) => {
 
     const access_token_data = await response.json();
 
-    if (!response.ok || access_token_data.error) {
+    if (!response.ok || access_token_data.error)
+    {
         console.error(
             "Salesforce OAuth error:",
             access_token_data.error,
@@ -191,25 +205,6 @@ router.get("/oauth/api/request", async (req, res) => {
 
     const userId = parseUserId(access_token_data.id);
 
-    const contactId = await getContactId(
-        access_token_data.instance_url,
-        access_token_data.access_token,
-        userId
-    );
-
-    console.log("CONTACT ID FROM USER:", contactId);
-
-    console.log(
-        "Salesforce login response fields:",
-        Object.keys(access_token_data)
-    );
-
-    console.log("Salesforce identity values:", {
-        user_id: access_token_data.user_id,
-        id: access_token_data.id,
-        hasIdToken: Boolean(access_token_data.id_token)
-    });
-
     let options = {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
@@ -217,17 +212,34 @@ router.get("/oauth/api/request", async (req, res) => {
         maxAge: 86400000  // Cookie expiry time in milliseconds (e.g., 1 hour)
     };
 
-    let accountId = process.env.SF_ACCOUNT_ID;
 
-    res.cookie("instance_url", access_token_data.instance_url, options);
-    res.cookie("access_token", access_token_data.access_token, options);
+    const client = new SalesforceRestApi(
+        access_token_data.instance_url,
+        access_token_data.access_token
+    );
+
+    let query = `SELECT ContactId, Contact.AccountId FROM User WHERE Id = '${userId}'`;
+
+    const resp = await client.query(query);
+
+    let record = resp.records[0];
+
+    let contactId = record.ContactId;
+
+    let accountId = record.Contact.AccountId;
+
+    res.cookie('instance_url', access_token_data.instance_url, options); // Cookie expires in 24 hours
+    res.cookie('access_token', access_token_data.access_token, options); // Cookie expires in 24 hours
     res.cookie("user_id", userId, options);
     res.cookie("account_id", accountId, options);
+    res.cookie("contact_id", contactId, options);
 
-    if (contactId) {
+    if (contactId)
+    {
         res.cookie("contact_id", contactId, options);
     }
-    else {
+    else
+    {
         res.cookie("contact_id", "", { expires: new Date(0) });
 
         console.warn(
@@ -265,7 +277,8 @@ router.get("/connect", async (req, res) => {
 
     const credentials = await resp.json();
 
-    if (credentials.error) {
+    if (credentials.error)
+    {
         console.error("auth.js: ", credentials.error, credentials.error_description);
 
 
@@ -281,7 +294,8 @@ router.get("/connect", async (req, res) => {
 
         res.status(500).send({ error: credentials.error });
     }
-    else {
+    else
+    {
         console.log("auth.js: connect route: credentials: ", credentials);
         // 2. Set the cookie
         res.cookie('access_token', credentials.access_token, {
