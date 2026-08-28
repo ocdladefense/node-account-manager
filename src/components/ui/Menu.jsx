@@ -56,7 +56,7 @@ export default function Menu() {
 
 
                     <li>
-                        <a href={`/contact/${process.env.SF_CONTACT_ID}`} className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.contact) ? active : ''}`}>
+                        <a href="/contact" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.contact) ? active : ''}`}>
                             <VscAccount />
                             Profile
                         </a>

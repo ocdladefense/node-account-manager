@@ -11,6 +11,7 @@ import DateDisplay from "../ui/DateDisplay.jsx";
 import Button from "../ui/Button.jsx";
 import Actions from "../ui/Actions.jsx";
 import Section from "../ui/Section.jsx";
+import { getCookie } from "@ocdla/salesforce/CookieUtils.js";
 
 
 export default function Contact() {
@@ -18,7 +19,9 @@ export default function Contact() {
     const { client } = useOutletContext();
     const navigate = useNavigate();
 
-    const { contactId } = useParams();
+    let { contactId } = useParams();
+
+    contactId = contactId || getCookie('contact_id');
 
     const [contact, setContact] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -29,17 +32,14 @@ export default function Contact() {
             const contactQuery = getContactQuery(contactId);
 
 
-            try
-            {
+            try {
                 setLoading(true);
                 const response = await client.query(contactQuery);
                 setContact(response.records[0]);
-            } catch (err)
-            {
+            } catch (err) {
                 setError(err);
                 console.error("Error fetching contact:", err);
-            } finally
-            {
+            } finally {
                 setLoading(false);
             }
         }
