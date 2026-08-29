@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import Button from "../ui/Button.jsx";
 import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
-import DropMenu from "../ui/form/DropMenu.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
@@ -19,21 +18,9 @@ export default function AccountContacts() {
     const [selectedContactIds, setSelectedContactIds] = useState([]);
     const { CreateToast } = useToast();
 
-
-
-
     const openCustomModal = () => {
-
-        const formData = new FormData(
-            document.getElementById("select-contacts")
-        );
-
-        setSelectedContactIds(formData.getAll("contactIds"));
-
         openModal();
     };
-
-
 
     useEffect(() => {
         const fetchContacts = async () => {
