@@ -70,10 +70,10 @@ export function getActiveBadges(member) {
     const addonBadges = [];
 
     const PRIMARY_BADGE_IMAGES = {
-        regular: '../../images/badges/regularBadge.svg',
-        lifetime: '../../images/badges/lifetimeBadge.svg',
-        sustaining: '../../images/badges/sustainingBadge.svg',
-        academic: '../../images/badges/academicBadge.svg',
+        regular: '../../images/badges/RegularBadge.svg',
+        lifetime: '../../images/badges/LifetimeBadge.svg',
+        sustaining: '../../images/badges/SustainingBadge.svg',
+        academic: '../../images/badges/AcademicBadge.svg',
     };
 
     const isLifetime = member.membershipType.toLowerCase() === 'lifetime';
@@ -91,7 +91,7 @@ export function getActiveBadges(member) {
         if (member.hasBooksOnline) {
             addonBadges.push({
                 id: 'books-online',
-                imageSrc: '../../images/badges/booksOnlineBadge.svg',
+                imageSrc: '../../images/badges/BooksOnlineBadge.svg',
                 type: 'addon',
             });
         }
@@ -99,7 +99,7 @@ export function getActiveBadges(member) {
         if (member.hasClePass) {
             addonBadges.push({
                 id: 'cle-pass',
-                imageSrc: '../../images/badges/cleBadge.svg',
+                imageSrc: '../../images/badges/CLEBadge.svg',
                 type: 'addon',
             });
         }
@@ -107,7 +107,7 @@ export function getActiveBadges(member) {
         if (member.hasCriminalFormBook) {
             addonBadges.push({
                 id: 'criminal-form-book',
-                imageSrc: '../../images/badges/clfbBadge.svg',
+                imageSrc: '../../images/badges/CLFBBadge.svg',
                 type: 'addon',
             });
         }
