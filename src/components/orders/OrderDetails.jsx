@@ -13,6 +13,8 @@ export default function OrderDetails() {
     const [orderItems, setOrderItems] = useState(null);
     const [orderHeader, setOrderHeader] = useState(null);
 
+    const displayStatus = orderHeader?.Status === "Draft" ? "Unpaid" : orderHeader?.Status;
+
     useEffect(() => {
 
         const soqlItems = getOrderItems(orderId);
@@ -44,7 +46,7 @@ export default function OrderDetails() {
             <div className="container mx-auto px-2 mt-7">
                 {orderHeader && (
                     <>
-                        <OrderHeader orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={orderHeader.Status} />
+                        <OrderHeader orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={displayStatus} />
 
                         <div className="space-y-8">
                             {orderItems && orderItems.length > 0 ? orderItems.map((item, index) => (

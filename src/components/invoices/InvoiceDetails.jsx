@@ -36,12 +36,17 @@ export default function InvoiceDetails() {
 
     }, []);
 
+    const displayStatus =
+        invoice?.Status === "Draft"
+            ? "Unpaid"
+            : invoice?.Status;
+
     return (
         <div className="container mx-auto px-2 mt-[28px]">
 
             {invoice && (
                 <>
-                    <InvoiceHeader invoiceNumber={invoice.OrderNumber} invoiceDate={invoice.EffectiveDate} totalAmount={invoice.TotalAmount} status={invoice.Status} />
+                    <InvoiceHeader invoiceNumber={invoice.OrderNumber} invoiceDate={invoice.EffectiveDate} totalAmount={invoice.TotalAmount} status={displayStatus} />
 
                     <div className="space-y-8">
                         {invoiceItems && invoiceItems.length > 0 ? invoiceItems.map((item, index) => (
