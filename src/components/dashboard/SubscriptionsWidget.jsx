@@ -24,26 +24,34 @@ export function SubscriptionsWidget(){
     const getSubscriptions = () => {
         return [
             {
-                title:"test",
-                description:"test description",
-                price:49.99,
-                id:"abc123",
-                link:"https://google.com"
+                title:"Books Online",
+                description:"books online membership addon",
+                price:123.45,
+                id:"ADDON-BO",
+                link:"https://bon.ocdla.org"
             },
             {
-                title: "test2",
-                description: "test description2",
-                price: 499.99,
-                id: "def456",
-                link: "https://google.com"
+                title: "Continuing Legal Education media player",
+                description: "continuing legal education membership addon",
+                price: 123.45,
+                id: "ADDON-CLE",
+                link: "https://media.ocdla.org"
             },
-            {}
+            {
+                title: "Criminal Law Form Book",
+                description: "Criminal Law Form Book membership addon",
+                price: 123.45,
+                id: "ADDON-CLFB",
+                link: "https://bondev.ocdla.org/formbook/1"
+            }
         ];
     }
 
     const getOwnedSubs = () => {
-
-        return ["abc123"];
+        return [
+            "ADDON-BO",
+            "ADDON-CLFB"
+        ];
     }
 
     const subscriptions = getSubscriptions(); 
@@ -80,6 +88,7 @@ export function SubscriptionsWidget(){
 function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
     const title = subscription.title || "Error: no title";
     const description = subscription.description || "Error: no description";
+    const price = subscription.price || "";
 
     const handleSubmit = () => {
         if (isOwned) {window.open(subscription.link || "")}
@@ -97,6 +106,7 @@ function SubscriptionCard({ subscription={}, isOwned = false , className = '' })
                 <h2 className="card-title">{title}</h2>
 
                 <p>{description}</p>
+                <p>${price}</p>
 
                 {subscription.id && <Button label="More Information" action={getMoreInfo}/> }
                 {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} /> }
