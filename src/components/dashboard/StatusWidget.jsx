@@ -70,10 +70,10 @@ export function getActiveBadges(member) {
     const addonBadges = [];
 
     const PRIMARY_BADGE_IMAGES = {
-        regular: '../../images/badges/RegularBadge.svg',
-        lifetime: '../../images/badges/LifetimeBadge.svg',
-        sustaining: '../../images/badges/SustainingBadge.svg',
-        academic: '../../images/badges/AcademicBadge.svg',
+        regular: '../../images/badges/regularBadge.svg',
+        lifetime: '../../images/badges/lifetimeBadge.svg',
+        sustaining: '../../images/badges/sustainingBadge.svg',
+        academic: '../../images/badges/academicBadge.svg',
     };
 
     const isLifetime = member.membershipType.toLowerCase() === 'lifetime';
@@ -91,7 +91,7 @@ export function getActiveBadges(member) {
         if (member.hasBooksOnline) {
             addonBadges.push({
                 id: 'books-online',
-                imageSrc: '../../images/badges/BooksOnlineBadge.svg',
+                imageSrc: '../../images/badges/booksOnlineBadge.svg',
                 type: 'addon',
             });
         }
@@ -99,7 +99,7 @@ export function getActiveBadges(member) {
         if (member.hasClePass) {
             addonBadges.push({
                 id: 'cle-pass',
-                imageSrc: '../../images/badges/CLEBadge.svg',
+                imageSrc: '../../images/badges/cleBadge.svg',
                 type: 'addon',
             });
         }
@@ -107,7 +107,7 @@ export function getActiveBadges(member) {
         if (member.hasCriminalFormBook) {
             addonBadges.push({
                 id: 'criminal-form-book',
-                imageSrc: '../../images/badges/CLFBBadge.svg',
+                imageSrc: '../../images/badges/clfbBadge.svg',
                 type: 'addon',
             });
         }
@@ -155,46 +155,46 @@ export function StatusWidget() {
 
     return (
         <div className="flex flex-col items-start justify-start p-6 text-left">
-            {/* Single Horizontal Row for All Badges (Scaled 2x Larger) */}
             {(primaryBadge || addonBadges.length > 0) && (
-                <div className="flex flex-row items-center justify-start gap-6 mb-6">
-                    {/* Primary Hero Badge (Extra Large) */}
+                <div className="flex flex-row items-end justify-start gap-1.5 mb-4">
                     {primaryBadge && (
                         <div className="flex items-center justify-center">
                             <img
                                 src={primaryBadge.imageSrc}
                                 alt={primaryBadge.id}
-                                className="w-64 h-64 md:w-72 md:h-72 object-contain"
+                                className="w-48 h-48 md:w-56 md:h-56 object-contain"
                             />
                         </div>
                     )}
 
-                    {/* Add-on Badges (Scaled Up to Match Proportion) */}
-                    {addonBadges.map((badge) => (
-                        <div key={badge.id} className="flex items-center justify-center">
-                            <img
-                                src={badge.imageSrc}
-                                alt={badge.id}
-                                className="w-28 h-28 md:w-32 md:h-32 object-contain"
-                            />
+                    {addonBadges.length > 0 && (
+                        <div className="flex flex-row items-center gap-1.5 pb-4 ">
+                            {addonBadges.map((badge) => (
+                                <div key={badge.id} className="flex items-center justify-center">
+                                    <img
+                                        src={badge.imageSrc}
+                                        alt={badge.id}
+                                        className="w-16 h-16 md:w-20 md:h-20 object-contain"
+                                    />
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    )}
                 </div>
             )}
 
-            {/* Member Full Name */}
             {displayName && (
                 <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-1 text-left">
                     {displayName}
                 </h2>
             )}
 
-            {/* Time Left */}
             <p className="text-sm font-medium text-gray-600 text-left">
                 {timeRemainingText}
             </p>
         </div>
     );
+
 }
 
 
