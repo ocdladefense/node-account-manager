@@ -13,8 +13,9 @@ router.post("/orders", async (req, res) => {
 
     try {
 
-        let contactIds = req.body.contactIds;
+        let contactIds = req.body.contactIds.split(",");
         const productId = req.body.productId;
+        const paymentTypeId = req.body.paymentTypeId;
 
         // If no contacts were sent in the request, use the logged-in user's contact ID.
         if (!Array.isArray(contactIds) || contactIds.length === 0) {
@@ -78,13 +79,18 @@ router.post("/orders", async (req, res) => {
 
         // Test Order Record
         let orderRecord = {
-            Name: "Foobar 4",
             AccountId: req.cookies.account_id,
             EffectiveDate: new Date().toISOString().split('T')[0],
             Status: "Draft",
             Pricebook2Id: pricebookEntry.Pricebook2Id,
-            PostingEntity__c: "Invoice"
         };
+
+        if (paymentTypeId == "invoice") {
+            orderRecord.PostingEntity__c = "Invoice";
+        }
+        else {
+            // orderRecord.Status = "Posted Payment";
+        }
 
         const resp = await client.create("Order", orderRecord);
 

@@ -17,9 +17,9 @@ export default function DropMenu({ label, entries = [], handler }) {
 
             <ul className="menu dropdown-content bg-base-100 rounded-box z-1 w-80 p-2 shadow-sm">
                 {entries.map((entry) => (
-                    <li key={entry.id}>
+                    <li key={entry.Id}>
                         <button type="button" onClick={() => handleSelection(entry)}>
-                            {entry.name}
+                            {entry.Name}
                         </button>
                     </li>
                 ))}

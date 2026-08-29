@@ -16,12 +16,33 @@ export default function AccountContacts() {
     const { isOpen, openModal, closeModal } = useModal();
 
     const [contacts, setContacts] = useState([]);
+    const [selectedContactIds, setSelectedContactIds] = useState([]);
     const [productId, setProductId] = useState("");
+    const [paymentTypeId, setPaymentTypeId] = useState("");
     const [eventProducts, setEventProducts] = useState([]);
     const { CreateToast } = useToast();
 
+    let paymentTypes = [
+        {
+            Name: "Visa 1234",
+            Id: "1234"
+        },
+        {
+            Name: "MasterCard 5678",
+            Id: "5678"
+        },
+        {
+            Name: "Invoice",
+            Id: "invoice"
+        }
+    ];
+
     const selectedProduct = eventProducts.find(
-        (entry) => entry.id === productId
+        (entry) => entry.Id === productId
+    );
+
+    const selectedPaymentType = paymentTypes.find(
+        (entry) => entry.Id === paymentTypeId
     );
 
     const [attendeeCount, setAttendeeCount] = useState(0);
@@ -45,13 +66,11 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -59,8 +78,7 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -74,13 +92,11 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -88,8 +104,7 @@ export default function AccountContacts() {
 
                 setEventProducts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -101,6 +116,17 @@ export default function AccountContacts() {
     }, []);
 
 
+    const handleCheckboxChange = (event) => {
+        const { value, checked } = event.target;
+
+        if (checked) {
+            // Add the value to the array if checked
+            setSelectedContactIds([...selectedContactIds, value]);
+        } else {
+            // Filter out the value from the array if unchecked
+            setSelectedContactIds(selectedContactIds.filter((item) => item !== value));
+        }
+    };
 
 
     return (
@@ -116,15 +142,21 @@ export default function AccountContacts() {
                             <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
                             <p>
                                 {selectedProduct
-                                    ? `Proceed with registration for "${selectedProduct.name}"? You will register ${attendeeCount} attendee(s).`
+                                    ? `Proceed with registration for "${selectedProduct.Name}"? You will register ${attendeeCount} attendee(s).`
                                     : `Please select an event ticket.`}
                             </p>
                             <br />
                             <DropMenu
-                                label={selectedProduct ? selectedProduct.name : "Select Event Ticket"}
+                                label={selectedProduct ? selectedProduct.Name : "Select Event Ticket"}
                                 entries={eventProducts}
-                                handler={(entry) => setProductId(entry.id)}
+                                handler={(entry) => setProductId(entry.Id)}
                             />
+                            <DropMenu
+                                label={selectedPaymentType ? selectedPaymentType.Name : "Select Payment Type"}
+                                entries={paymentTypes}
+                                handler={(entry) => setPaymentTypeId(entry.Id)}
+                            />
+
                             <Button label="Register" buttonType="submit" form="batch-registration" />
                             <Button label="Cancel" buttonType="button" action={closeModal} />
                         </div>
@@ -164,7 +196,7 @@ export default function AccountContacts() {
                                     <tr key={contact.Id} className="border-b cursor-pointer hover:bg-gray-100" onClick={() => navigate(`/contact/${contact.Id}`)}>
 
                                         <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                                            <CheckBox label="" name="contactIds" value={contact.Id} defaultValue={false} />
+                                            <CheckBox label="" name="contactId" value={contact.Id} defaultValue={false} onChange={handleCheckboxChange} />
                                         </td>
 
                                         <td className="px-4 py-3">{contact.Name}</td>
@@ -193,8 +225,12 @@ export default function AccountContacts() {
                     <br />
 
 
+                    <input name="contactIds" type="hidden" value={selectedContactIds} readOnly />
 
                     <input name="productId" type="hidden" value={productId} readOnly />
+
+                    <input name="paymentTypeId" type="hidden" value={paymentTypeId} readOnly />
+
 
                     <Button label="Register" buttonType="button" action={openCustomModal} />
                     <Button label="Renew Membership" buttonType="button" />
@@ -223,40 +259,32 @@ function createHandler(CreateToast, closeModal, navigate) {
 
         const formData = new FormData(document.getElementById("batch-registration"));
 
-        const selectedContactIds = formData.getAll("contactIds");
-        const selectedProductId = formData.get("productId");
+        // if (!selectedProductId) {
+        //     CreateToast(NewToast("Please select an event ticket."));
+        //     return;
+        // }
 
-        console.log("Selected contacts:", selectedContactIds);
+        // if (selectedContactIds.length === 0) {
+        //     CreateToast(NewToast("Please select at least one contact."));
+        //     return;
+        // }
 
-        if (!selectedProductId)
-        {
-            CreateToast(NewToast("Please select an event ticket."));
-            return;
-        }
 
-        if (selectedContactIds.length === 0)
-        {
-            CreateToast(NewToast("Please select at least one contact."));
-            return;
-        }
+        formData.delete("contactId");
+        const plainObject = Object.fromEntries(formData);
 
-        try
-        {
+        try {
             const resp = await fetch("/orders", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    contactIds: selectedContactIds,
-                    productId: selectedProductId
-                })
+                body: JSON.stringify(plainObject)
             });
 
             const result = await resp.json();
 
-            if (!resp.ok)
-            {
+            if (!resp.ok) {
                 console.error("Order failed:", result);
 
                 CreateToast(NewToast(result.error || "Order could not be created."));
@@ -270,12 +298,7 @@ function createHandler(CreateToast, closeModal, navigate) {
 
             navigate(`/invoice/${result.order.id}`);
 
-            console.log("Order created:", result);
-            console.log("Selected contacts:", selectedContactIds);
-            console.log("Selected product:", selectedProductId);
-
-        } catch (error)
-        {
+        } catch (error) {
             console.error("Error sending order request:", error);
 
             CreateToast(NewToast("Unable to contact the server."));
