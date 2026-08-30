@@ -13,7 +13,7 @@ export default function AccountContacts() {
 
     const navigate = useNavigate();
     const { isOpen, openModal, closeModal } = useModal();
-
+    const [products, setProducts] = useState([]);
     const [contacts, setContacts] = useState([]);
     const [selectedContactIds, setSelectedContactIds] = useState([]);
     const { CreateToast } = useToast();
@@ -21,6 +21,39 @@ export default function AccountContacts() {
     const openCustomModal = () => {
         openModal();
     };
+
+
+
+    // This fetch is for populating the drop down menu for the registration modal.
+    useEffect(() => {
+        const fetchEventProducts = async () => {
+            try
+            {
+                const resp = await fetch("/api/query/event-products");
+                const data = await resp.json();
+
+                if (!resp.ok)
+                {
+                    throw new Error(
+                        data.error || "Unable to retrieve event products."
+                    );
+                }
+
+                setProducts(data.records);
+
+            } catch (error)
+            {
+                console.error(
+                    "Error fetching event products:",
+                    error
+                );
+            }
+        };
+
+        fetchEventProducts();
+    }, []);
+
+
 
     useEffect(() => {
         const fetchContacts = async () => {
@@ -77,7 +110,7 @@ export default function AccountContacts() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
 
-                            <OrderConfirmationProductSelect contactIds={selectedContactIds} source="event" onComplete={(postingEntity, orderId) => {
+                            <OrderConfirmationProductSelect contactIds={selectedContactIds} products={products} source="event" onComplete={(postingEntity, orderId) => {
 
                                 let orderType = postingEntity === "Invoice" ? "invoice" : "order";
                                 CreateToast(NewToast("Order created successfully."));

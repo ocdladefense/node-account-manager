@@ -3,10 +3,9 @@ import { useState, useEffect } from "react";
 
 
 
-export default function OrderConfirmationProductSelect({ contactIds, source, onComplete, onError, label, defaultProduct }) {
+export default function OrderConfirmationProductSelect({ contactIds, products, source, onComplete, onError, label, defaultProduct }) {
 
     const [paymentTypeId, setPaymentTypeId] = useState("");
-    const [eventProducts, setEventProducts] = useState([]);
     const [productId, setProductId] = useState("");
     const [contactCount, setContactCount] = useState(contactIds.length);
 
@@ -30,38 +29,9 @@ export default function OrderConfirmationProductSelect({ contactIds, source, onC
         (entry) => entry.Id === paymentTypeId
     );
 
-    const selectedProduct = eventProducts.find(
+    const selectedProduct = products.find(
         (entry) => entry.Id === productId
     );
-
-    // This fetch is for populating the drop down menu for the registration modal.
-    useEffect(() => {
-        const fetchEventProducts = async () => {
-            try
-            {
-                const resp = await fetch("/api/query/event-products");
-                const data = await resp.json();
-
-                if (!resp.ok)
-                {
-                    throw new Error(
-                        data.error || "Unable to retrieve event products."
-                    );
-                }
-
-                setEventProducts(data.records);
-
-            } catch (error)
-            {
-                console.error(
-                    "Error fetching event products:",
-                    error
-                );
-            }
-        };
-
-        fetchEventProducts();
-    }, []);
 
 
 
@@ -93,7 +63,7 @@ export default function OrderConfirmationProductSelect({ contactIds, source, onC
 
                 <DropMenu
                     label={selectedProduct ? selectedProduct.Name : "Select Event Ticket"}
-                    entries={eventProducts}
+                    entries={products}
                     handler={(entry) => setProductId(entry.Id)}
                 />
 

@@ -1,13 +1,7 @@
 import DropMenu from "../ui/form/DropMenu";
 import { useState } from "react";
 
-export default function OrderConfirmation({
-    product,
-    contactId,
-    source,
-    onComplete,
-    onError
-}) {
+export default function OrderConfirmation({ contactIds, products, source, onComplete, onError }) {
     const [paymentTypeId, setPaymentTypeId] = useState("");
 
     const paymentTypes = [
@@ -34,13 +28,13 @@ export default function OrderConfirmation({
             <div>
                 {source === "event" && (
                     <p>
-                        Proceed with registration for "{product?.Name}"?
+                        Proceed with registration for "{products[0]?.Name}"?
                     </p>
                 )}
 
                 {source === "subscription" && (
                     <p>
-                        Would you like to purchase "{product?.Name}"?
+                        Would you like to purchase "{products[0]?.Name}"?
                     </p>
                 )}
 
@@ -63,8 +57,8 @@ export default function OrderConfirmation({
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                contactIds: contactId,
-                productId: product.Id,
+                contactIds: contactIds,
+                productId: products[0].Id,
                 paymentTypeId: paymentTypeId
             })
         });

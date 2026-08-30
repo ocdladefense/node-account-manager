@@ -19,7 +19,7 @@ export default function HomePage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedSource, setSelectedSource] = useState(null);
 
-    const openProductConfirmation = (product, source) => {
+    const openOrderConfirmation = (product, source) => {
         setSelectedProduct(product);
         setSelectedSource(source);
         openModal();
@@ -35,12 +35,12 @@ export default function HomePage() {
                 <StatusWidget />
 
                 <EventsWidget registerHandler={(product) =>
-                    openProductConfirmation(product, "event")
+                    openOrderConfirmation(product, "event")
                 }
                 />
 
                 <SubscriptionsWidget subscribeHandler={(product) =>
-                    openProductConfirmation(product, "subscription")
+                    openOrderConfirmation(product, "subscription")
                 }
                 />
 
@@ -49,8 +49,8 @@ export default function HomePage() {
                     content={selectedProduct && (
                         <div>
                             <OrderConfirmation
-                                product={selectedProduct}
-                                contactId={contactId}
+                                products={[selectedProduct]}
+                                contactIds={[contactId]}
                                 source={selectedSource}
                                 onComplete={(orderType, orderId) => {
                                     CreateToast(
