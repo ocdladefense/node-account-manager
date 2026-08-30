@@ -25,8 +25,7 @@ export default function HomePage() {
         openModal();
     };
 
-    let contactId = getCookie("contact_id");
-    let selectedContactIds = [contactId];
+    const contactId = getCookie("contact_id");
 
     return (
         <div className="w-full">
@@ -51,7 +50,7 @@ export default function HomePage() {
                         <div>
                             <OrderConfirmationSingleProduct
                                 product={selectedProduct}
-                                contactIds={selectedContactIds}
+                                contactId={contactId}
                                 source={selectedSource}
                                 onComplete={(orderType, orderId) => {
                                     CreateToast(
@@ -62,7 +61,11 @@ export default function HomePage() {
 
                                     navigate(`/${orderType}/${orderId}`);
                                 }}
-                                onError={(error) => CreateToast(NewToast(error))}
+                                onError={(error) => CreateToast(
+                                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
+                                        {error}
+                                    </div>
+                                )}
                             />
 
                             <Button label={selectedSource === "event" ? "Register" : "Subscribe"} buttonType="submit" form="single-product-order" />

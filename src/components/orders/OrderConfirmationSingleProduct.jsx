@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function OrderConfirmationSingleProduct({
     product,
-    contactIds,
+    contactId,
     source,
     onComplete,
     onError
@@ -57,16 +57,16 @@ export default function OrderConfirmationSingleProduct({
         e.preventDefault();
         e.stopPropagation();
 
-        const formData = new FormData(document.getElementById("batch-registration"));
-
-        const plainObject = Object.fromEntries(formData);
-
         const resp = await fetch("/orders", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(plainObject)
+            body: JSON.stringify({
+                contactIds: contactId,
+                productId: product.Id,
+                paymentTypeId: paymentTypeId
+            })
         });
 
         const result = await resp.json();
@@ -74,10 +74,13 @@ export default function OrderConfirmationSingleProduct({
         if (!resp.ok) {
             console.error("Order failed:", result);
 
-            onError(result.error || "Order could not be created.");
+            onError(
+                result.error || "Order could not be created."
+            );
+
             return;
         }
 
         onComplete("invoice", result.order.id);
-    };
+    }
 }
