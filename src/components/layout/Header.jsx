@@ -15,7 +15,7 @@ function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
 
     return (
         <Menu as="div" className="relative inline-block text-left">
-            <MenuButton className="group flex items-center gap-3 rounded-full p-1 transition-colors hover:bg-gray-100 focus:outline-none sm:rounded-lg sm:px-2">
+            <MenuButton className="group flex cursor-pointer items-center gap-3 rounded-full p-1 transition-colors hover:bg-gray-100 focus:outline-none sm:rounded-lg sm:px-2">
                 <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full sm:h-10 sm:w-10 lg:h-12 lg:w-12
                         ${loggedIn
@@ -49,13 +49,42 @@ function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
                 transition
                 className="absolute right-0 z-50 mt-2 w-48 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 transition duration-100 ease-out focus:outline-none data-closed:scale-95 data-closed:opacity-0"
             >
-                <div className="py-1">
-                    <MenuItem>
-                        <a href="/account" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
-                            Profile
-                        </a>
-                    </MenuItem>
-                </div>
+                {loggedIn &&
+                    <div className="py-1">
+                        <MenuItem>
+                            <a href="/account" className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                                Profile
+                            </a>
+                        </MenuItem>
+
+                        <MenuItem>
+                            <a href="https://lod.ocdla.org/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                                Library of defense
+                            </a>
+                        </MenuItem>
+
+                        <MenuItem>
+                            <a href="https://bon.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                                Books Online
+                            </a>
+                        </MenuItem>
+
+                        <MenuItem>
+                            <a href="/https://media.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                                Videos
+                            </a>
+                        </MenuItem>
+
+                        <MenuItem>
+                            <a href="/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                                Criminal Law Form Book
+                            </a>
+                        </MenuItem>
+
+                    </div>
+
+                }
+
                 <div className="py-1">
                     <MenuItem>
                         {loggedIn ?
@@ -63,7 +92,7 @@ function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
                                 <button
                                     type="button"
                                     onClick={onLogout}
-                                    className="block w-full px-4 py-2 text-left text-sm text-red-600 data-focus:bg-gray-100">
+                                    className="block w-full cursor-pointer px-4 py-2 text-left text-sm text-red-600 data-focus:bg-gray-100">
                                     Log Out
                                 </button>
                             )
@@ -72,7 +101,7 @@ function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
                                 <button
                                     type="button"
                                     onClick={onAuth}
-                                    className="block w-full px-4 py-2 text-left text-sm font-semibold text-gray-900 transition-colors data-focus:bg-gray-100 data-focus:text-gray-900">
+                                    className="block w-full cursor-pointer px-4 py-2 text-left text-sm font-semibold text-gray-900 transition-colors data-focus:bg-gray-100 data-focus:text-gray-900">
                                     Log In
                                 </button>
                             )
