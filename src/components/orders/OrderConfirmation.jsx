@@ -1,7 +1,7 @@
 import DropMenu from "../ui/form/DropMenu";
 import { useState } from "react";
 
-export default function OrderConfirmationSingleProduct({
+export default function OrderConfirmation({
     product,
     contactId,
     source,
@@ -71,7 +71,8 @@ export default function OrderConfirmationSingleProduct({
 
         const result = await resp.json();
 
-        if (!resp.ok) {
+        if (!resp.ok)
+        {
             console.error("Order failed:", result);
 
             onError(

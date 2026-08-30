@@ -3,7 +3,7 @@ import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
 import Modal from './ui/Modal';
 import useModal from './hooks/useModal';
-import OrderConfirmationSingleProduct from './orders/OrderConfirmationSingleProduct';
+import OrderConfirmation from './orders/OrderConfirmation';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { useNavigate } from "react-router-dom";
 import { useToast, NewToast } from "./ui/notifications/ToastService";
@@ -48,7 +48,7 @@ export default function HomePage() {
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
                     content={selectedProduct && (
                         <div>
-                            <OrderConfirmationSingleProduct
+                            <OrderConfirmation
                                 product={selectedProduct}
                                 contactId={contactId}
                                 source={selectedSource}

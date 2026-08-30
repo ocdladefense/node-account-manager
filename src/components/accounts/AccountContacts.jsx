@@ -24,11 +24,13 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -36,7 +38,8 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -51,10 +54,12 @@ export default function AccountContacts() {
     const handleCheckboxChange = (event) => {
         const { value, checked } = event.target;
 
-        if (checked) {
+        if (checked)
+        {
             // Add the value to the array if checked
             setSelectedContactIds([...selectedContactIds, value]);
-        } else {
+        } else
+        {
             // Filter out the value from the array if unchecked
             setSelectedContactIds(selectedContactIds.filter((item) => item !== value));
         }
@@ -72,7 +77,9 @@ export default function AccountContacts() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
 
-                            <OrderConfirmationProductSelect contactIds={selectedContactIds} source="event" onComplete={(orderType, orderId) => {
+                            <OrderConfirmationProductSelect contactIds={selectedContactIds} source="event" onComplete={(postingEntity, orderId) => {
+
+                                let orderType = postingEntity === "Invoice" ? "invoice" : "order";
                                 CreateToast(NewToast("Order created successfully."));
 
                                 closeModal();

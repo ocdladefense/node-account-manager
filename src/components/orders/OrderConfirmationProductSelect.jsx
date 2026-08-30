@@ -37,11 +37,13 @@ export default function OrderConfirmationProductSelect({ contactIds, source, onC
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -49,7 +51,8 @@ export default function OrderConfirmationProductSelect({ contactIds, source, onC
 
                 setEventProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -122,14 +125,15 @@ export default function OrderConfirmationProductSelect({ contactIds, source, onC
 
         const result = await resp.json();
 
-        if (!resp.ok) {
+        if (!resp.ok)
+        {
             console.error("Order failed:", result);
 
             onError(result.error || "Order could not be created.");
             return;
         }
 
-        onComplete("invoice", result.order.id);
+        onComplete(result.postingEntity, result.order.id);
     };
 }
 
