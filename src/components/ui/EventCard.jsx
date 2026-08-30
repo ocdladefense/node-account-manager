@@ -3,17 +3,11 @@ import Button from "./Button.jsx";
 
 export default function EventCard({ event, registerHandler }) {
 
-    const shortDescription = event.description
+    const shortDescription = event.Description__c
         ?.split(/(?<=[.!?])\s+/)
         .slice(0, 2)
         .join(" ");
 
-    const handleRegister = () => {
-        registerHandler({
-            Id: event.id,
-            Name: event.name
-        });
-    };
 
     return (
         <div className="card bg-base-100 card-md shadow-sm w-96">
@@ -21,12 +15,12 @@ export default function EventCard({ event, registerHandler }) {
             <div className="card-body">
 
                 <h2 className="card-title">
-                    {event.name}
+                    {event.Name}
                 </h2>
 
-                {event.date && (
+                {event.Start_Date__c && (
                     <DateDisplay
-                        value={event.date}
+                        value={event.Start_Date__c}
                         type="Date"
                         textClassName="text-base"
                     />
@@ -41,7 +35,7 @@ export default function EventCard({ event, registerHandler }) {
                     <Button
                         label="Register"
                         buttonType="button"
-                        action={handleRegister}
+                        action={() => registerHandler({ Id: event.Id, Name: event.Name }, "event")}
                     />
 
                 </div>

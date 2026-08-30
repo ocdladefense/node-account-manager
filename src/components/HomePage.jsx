@@ -3,12 +3,14 @@ import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
 import Modal from './ui/Modal';
 import useModal from './hooks/useModal';
-import OrderConfirmation from './orders/OrderConfirmation';
+import OrderConfirmationProductSelect from './orders/OrderConfirmationProductSelect';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { useNavigate } from "react-router-dom";
 import { useToast, NewToast } from "./ui/notifications/ToastService";
-import { useState } from 'react';
+import { useState, useEffect } from "react";
 import Button from './ui/Button';
+
+
 
 export default function HomePage() {
 
@@ -18,9 +20,57 @@ export default function HomePage() {
 
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [selectedSource, setSelectedSource] = useState(null);
+    const [products, setProducts] = useState([]);
+    const [queryType, setQueryType] = useState(null);
+
+
+
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const resp = await fetch("/api/query/event-products");
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve event products."
+                    );
+                }
+
+                setProducts(data.records);
+
+            } catch (error) {
+                console.error(
+                    "Error fetching event products:",
+                    error
+                );
+            }
+        };
+
+        if (null == queryType) return;
+        fetchProducts();
+    }, [queryType]);
+
+
+
+
 
     const openOrderConfirmation = (product, source) => {
-        setSelectedProduct(product);
+        setProducts([product]);
+        setSelectedSource(source);
+        openModal();
+    };
+
+
+
+
+    const openOrderConfirmationForEvent = (event, source) => {
+
+        // Get a List of products (tickets)
+        setQueryType("event");
+        // Also set the controlling query parameter
+
         setSelectedSource(source);
         openModal();
     };
@@ -34,10 +84,7 @@ export default function HomePage() {
 
                 <StatusWidget />
 
-                <EventsWidget registerHandler={(product) =>
-                    openOrderConfirmation(product, "event")
-                }
-                />
+                <EventsWidget registerHandler={openOrderConfirmationForEvent} />
 
                 <SubscriptionsWidget subscribeHandler={(product) =>
                     openOrderConfirmation(product, "subscription")
@@ -46,10 +93,10 @@ export default function HomePage() {
 
                 {/*-------------------- START OF MODAL SECTION -------------------- */}
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
-                    content={selectedProduct && (
+                    content={
                         <div>
-                            <OrderConfirmation
-                                products={[selectedProduct]}
+                            <OrderConfirmationProductSelect
+                                products={products}
                                 contactIds={[contactId]}
                                 source={selectedSource}
                                 onComplete={(orderType, orderId) => {
@@ -68,11 +115,11 @@ export default function HomePage() {
                                 )}
                             />
 
-                            <Button label={selectedSource === "event" ? "Register" : "Subscribe"} buttonType="submit" form="single-product-order" />
+                            <Button label="Register" buttonType="submit" form="order-confirmation" />
 
                             <Button label="Cancel" buttonType="button" action={closeModal} />
                         </div>
-                    )}
+                    }
                 />
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 

@@ -3,15 +3,18 @@ import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
 
 const router = express.Router();
 
-function buildQuery(name, cookies) {
+function buildQuery(name, cookies, eventId) {
 
     if (name == "event-products") {
-        return "SELECT Id, Name, CreatedDate, IsActive, IsAddOn__c, Event__c, Event__r.Name, Event__r.Start_Date__c, Description FROM Product2 WHERE Event__c != null AND IsActive = true AND IsAddOn__c = false ORDER BY CreatedDate DESC LIMIT 5";
+        return `SELECT Id, Name, CreatedDate, IsActive, IsAddOn__c, Event__c, Event__r.Name, Event__r.Start_Date__c, Description FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = true AND IsAddOn__c = false ORDER BY CreatedDate DESC LIMIT 5`;
     }
     else if (name == "account-contacts") {
         let accountId = cookies.account_id;
         return `SELECT Id, Name, Email, Ocdla_Member_Status__c, Ocdla_Membership_Expiration_Date__c FROM Contact WHERE AccountId = '${accountId}'`;
 
+    }
+    else if (name == "events") {
+        return "SELECT Id, Name, Start_Date__c, Description__c FROM Event__c ORDER BY Start_Date__c DESC";
     }
 }
 
@@ -30,7 +33,7 @@ router.get("/api/query/:type", async (req, res) => {
         accessToken
     );
 
-    const query = buildQuery(req.params.type, req.cookies);
+    const query = buildQuery(req.params.type, req.cookies, "a23hr0000008WKTAA2");
 
     const resp = await client.query(query);
 

@@ -27,13 +27,11 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -41,8 +39,7 @@ export default function AccountContacts() {
 
                 setProducts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -57,13 +54,11 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -71,8 +66,7 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -87,12 +81,10 @@ export default function AccountContacts() {
     const handleCheckboxChange = (event) => {
         const { value, checked } = event.target;
 
-        if (checked)
-        {
+        if (checked) {
             // Add the value to the array if checked
             setSelectedContactIds([...selectedContactIds, value]);
-        } else
-        {
+        } else {
             // Filter out the value from the array if unchecked
             setSelectedContactIds(selectedContactIds.filter((item) => item !== value));
         }
@@ -120,7 +112,7 @@ export default function AccountContacts() {
                                 navigate(`/${orderType}/${orderId}`);
                             }} onError={(error) => CreateToast(NewToast(error))} />
 
-                            <Button label="Register" buttonType="submit" form="batch-registration" />
+                            <Button label="Register" buttonType="submit" form="order-confirmation" />
                             <Button label="Cancel" buttonType="button" action={closeModal} />
                         </div>
                     }

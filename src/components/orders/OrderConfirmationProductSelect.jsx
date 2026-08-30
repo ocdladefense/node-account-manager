@@ -29,7 +29,7 @@ export default function OrderConfirmationProductSelect({ contactIds, products, s
         (entry) => entry.Id === paymentTypeId
     );
 
-    const selectedProduct = products.find(
+    const selectedProduct = products.length === 1 ? products[0] : products.find(
         (entry) => entry.Id === productId
     );
 
@@ -39,7 +39,7 @@ export default function OrderConfirmationProductSelect({ contactIds, products, s
     return (
 
 
-        <form id="batch-registration" onSubmit={handleSubmit}>
+        <form id="order-confirmation" onSubmit={handleSubmit}>
             <div>
                 <h2 className="text-2xl font-semibold mb-4">{label}</h2>
 
@@ -58,13 +58,13 @@ export default function OrderConfirmationProductSelect({ contactIds, products, s
                 <DropMenu
                     label={selectedPaymentType ? selectedPaymentType.Name : "Select Payment Type"}
                     entries={paymentTypes}
-                    handler={(entry) => setPaymentTypeId(entry.Id)}
+                    handler={(paymentType) => setPaymentTypeId(paymentType.Id)}
                 />
 
                 <DropMenu
                     label={selectedProduct ? selectedProduct.Name : "Select Event Ticket"}
                     entries={products}
-                    handler={(entry) => setProductId(entry.Id)}
+                    handler={(product) => setProductId(product.Id)}
                 />
 
                 <input name="paymentTypeId" type="hidden" value={paymentTypeId} readOnly />
@@ -81,7 +81,7 @@ export default function OrderConfirmationProductSelect({ contactIds, products, s
         e.preventDefault();
         e.stopPropagation();
 
-        const formData = new FormData(document.getElementById("batch-registration"));
+        const formData = new FormData(document.getElementById("order-confirmation"));
 
         const plainObject = Object.fromEntries(formData);
 
@@ -95,8 +95,7 @@ export default function OrderConfirmationProductSelect({ contactIds, products, s
 
         const result = await resp.json();
 
-        if (!resp.ok)
-        {
+        if (!resp.ok) {
             console.error("Order failed:", result);
 
             onError(result.error || "Order could not be created.");

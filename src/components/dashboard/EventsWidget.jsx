@@ -8,14 +8,9 @@ export function EventsWidget({ registerHandler }) {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const resp = await fetch("/api/query/event-products");
+                const resp = await fetch("/api/query/events");
                 const data = await resp.json();
-                const records = data.records.map((product) => ({
-                    id: product.Id,
-                    name: product.Name,
-                    date: product.Event__r?.Start_Date__c ?? null,
-                    description: product.Description ?? null
-                }));
+                const records = data.records;
 
                 if (!resp.ok) {
                     throw new Error(
@@ -38,14 +33,9 @@ export function EventsWidget({ registerHandler }) {
             <div className="flex flex-wrap gap-6 mt-6">
                 {events.map((event) => (
                     <EventCard
-                        key={event.id}
+                        key={event.Id}
                         event={event}
-                        registerHandler={() =>
-                            registerHandler({
-                                Id: event.id,
-                                Name: event.name
-                            })
-                        }
+                        registerHandler={registerHandler}
                     />
                 ))}
             </div>
