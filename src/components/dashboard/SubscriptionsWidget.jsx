@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
+import { CautionButton } from '../ui/Button';
 
 // things i might need later
 // import { useOutletContext } from "react-router-dom";
@@ -22,13 +23,14 @@ TODO:
 export function SubscriptionsWidget(){
     
     const getSubscriptions = () => {
-        return [
+
+        const testData = [
             {
-                title:"Books Online",
-                description:"books online membership addon",
-                price:123.45,
-                id:"ADDON-BO",
-                link:"https://bon.ocdla.org"
+                title: "Books Online",
+                description: "books online membership addon",
+                price: 123.45,
+                id: "ADDON-BO",
+                link: "https://bon.ocdla.org"
             },
             {
                 title: "Continuing Legal Education media player",
@@ -45,6 +47,8 @@ export function SubscriptionsWidget(){
                 link: "https://bondev.ocdla.org/formbook/1"
             }
         ];
+
+       return testData
     }
 
     const getOwnedSubs = () => {
@@ -54,8 +58,16 @@ export function SubscriptionsWidget(){
         ];
     }
 
-    const subscriptions = getSubscriptions(); 
+    const subscriptions = getSubscriptions();
     const owned = getOwnedSubs();
+
+    // sort by owned first
+    const sortedSubscriptions = [...subscriptions].sort((a, b) => {
+        const aOwned = owned.includes(a.id);
+        const bOwned = owned.includes(b.id);
+
+        return bOwned - aOwned;
+    });
 
     return(
         <div>
@@ -64,7 +76,7 @@ export function SubscriptionsWidget(){
             <div className="flex flex-wrap gap-6 mt-6">
 
                 {
-                    subscriptions.map(
+                    sortedSubscriptions.map(
                         (sub) => {
                             const isOwned = owned.includes(sub.id);
                             return <SubscriptionCard key={sub.id} subscription={sub} isOwned={isOwned} />
@@ -100,16 +112,25 @@ function SubscriptionCard({ subscription={}, isOwned = false , className = '' })
     };
 
     return (
-        <div className={`card bg-base-100 card-md shadow-sm w-96 ${className}`}>
-            <div className="card-body">
+        <div className={`card bg-base-100 card-md shadow-sm w-96 ${className}`} >
+            <div className={`card-body border-b-2 ${isOwned ? " border-[rgba(87,120,230,1)]" : "border-black"}`} >
 
                 <h2 className="card-title">{title}</h2>
 
                 <p>{description}</p>
                 <p>${price}</p>
 
-                {subscription.id && <Button label="More Information" action={getMoreInfo}/> }
-                {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} /> }
+                {subscription.id != null && (
+                    <>
+                        <Button label="More Information" action={getMoreInfo} />
+
+                        {isOwned ? (
+                            <Button label="Open" action={handleSubmit} />
+                        ) : (
+                            <CautionButton label="Subscribe" action={handleSubmit} />
+                        )}
+                    </>
+                )}
 
             </div>
         </div>
