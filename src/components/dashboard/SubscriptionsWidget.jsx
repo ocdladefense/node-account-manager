@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import Button from "../ui/Button";
+import useModal from '../hooks/useModal';
+
 
 // things i might need later
 // import { useOutletContext } from "react-router-dom";
@@ -19,16 +21,16 @@ TODO:
 5. subscribe button "does what joseph's buttons do"
 */
 
-export function SubscriptionsWidget(){
-    
+export function SubscriptionsWidget({ subscribeHandler }) {
+
     const getSubscriptions = () => {
         return [
             {
-                title:"Books Online",
-                description:"books online membership addon",
-                price:123.45,
-                id:"ADDON-BO",
-                link:"https://bon.ocdla.org"
+                title: "Books Online",
+                description: "books online membership addon",
+                price: 123.45,
+                id: "ADDON-BO",
+                link: "https://bon.ocdla.org"
             },
             {
                 title: "Continuing Legal Education media player",
@@ -54,10 +56,10 @@ export function SubscriptionsWidget(){
         ];
     }
 
-    const subscriptions = getSubscriptions(); 
+    const subscriptions = getSubscriptions();
     const owned = getOwnedSubs();
 
-    return(
+    return (
         <div>
             <h1 className="mt-8 text-2xl font-bold mb-4">Add to your membership</h1>
 
@@ -67,12 +69,13 @@ export function SubscriptionsWidget(){
                     subscriptions.map(
                         (sub) => {
                             const isOwned = owned.includes(sub.id);
-                            return <SubscriptionCard key={sub.id} subscription={sub} isOwned={isOwned} />
+                            return <SubscriptionCard key={sub.id} subscription={sub} isOwned={isOwned} subscribeHandler={subscribeHandler} />
                         }
                     )
                 }
 
             </div>
+
         </div >
     )
 }
@@ -85,14 +88,22 @@ export function SubscriptionsWidget(){
  * @returns {html}
  */
 
-function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
+function SubscriptionCard({ subscription = {}, isOwned = false, className = '', subscribeHandler }) {
     const title = subscription.title || "Error: no title";
     const description = subscription.description || "Error: no description";
     const price = subscription.price || "";
+    const { isOpen, openModal, closeModal } = useModal();
+
+
 
     const handleSubmit = () => {
-        if (isOwned) {window.open(subscription.link || "")}
-        else {}//create order
+        if (isOwned) { window.open(subscription.link || "") }
+        else {
+            subscribeHandler({
+                Id: subscription.id,
+                Name: subscription.title
+            });
+        } //create order
     };
 
     const getMoreInfo = () => {
@@ -108,8 +119,8 @@ function SubscriptionCard({ subscription={}, isOwned = false , className = '' })
                 <p>{description}</p>
                 <p>${price}</p>
 
-                {subscription.id && <Button label="More Information" action={getMoreInfo}/> }
-                {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} /> }
+                {subscription.id && <Button label="More Information" action={getMoreInfo} />}
+                {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} />}
 
             </div>
         </div>

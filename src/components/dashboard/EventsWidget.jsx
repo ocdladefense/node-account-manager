@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import EventCard from '../ui/EventCard';
 
-export function EventsWidget() {
-
+export function EventsWidget({ registerHandler }) {
 
     const [events, setEvents] = useState([]);
 
@@ -41,6 +40,12 @@ export function EventsWidget() {
                     <EventCard
                         key={event.id}
                         event={event}
+                        registerHandler={() =>
+                            registerHandler({
+                                Id: event.id,
+                                Name: event.name
+                            })
+                        }
                     />
                 ))}
             </div>

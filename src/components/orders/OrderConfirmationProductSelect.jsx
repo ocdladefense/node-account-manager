@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 
 
 
-export default function OrderConfirmation({ contactIds, source, onComplete, onError }) {
+export default function OrderConfirmationProductSelect({ contactIds, source, onComplete, onError, label, defaultProduct }) {
 
     const [paymentTypeId, setPaymentTypeId] = useState("");
     const [eventProducts, setEventProducts] = useState([]);
@@ -68,12 +68,18 @@ export default function OrderConfirmation({ contactIds, source, onComplete, onEr
 
         <form id="batch-registration" onSubmit={handleSubmit}>
             <div>
+                <h2 className="text-2xl font-semibold mb-4">{label}</h2>
+
                 {source == "event" &&
                     <p>
                         {selectedProduct
                             ? `Proceed with registration for "${selectedProduct.Name}"? You will register ${contactCount} attendee(s).`
                             : `Please select an event ticket.`}
                     </p>
+                }
+
+                {source == "subscription" &&
+                    <p>Would you like to purchase this subscription?</p>
                 }
 
                 <DropMenu

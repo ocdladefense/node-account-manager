@@ -6,7 +6,7 @@ import DateDisplay from "../ui/DateDisplay.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
-import OrderConfirmation from "../orders/OrderConfirmation.jsx";
+import OrderConfirmationProductSelect from "../orders/OrderConfirmationProductSelect.jsx";
 
 
 export default function AccountContacts() {
@@ -72,7 +72,7 @@ export default function AccountContacts() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
 
-                            <OrderConfirmation contactIds={selectedContactIds} source="event" onComplete={(orderType, orderId) => {
+                            <OrderConfirmationProductSelect contactIds={selectedContactIds} source="event" onComplete={(orderType, orderId) => {
                                 CreateToast(NewToast("Order created successfully."));
 
                                 closeModal();
