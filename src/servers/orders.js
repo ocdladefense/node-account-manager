@@ -105,7 +105,7 @@ router.post("/orders", async (req, res) => {
 
 async function getPricebookEntry(productId) {
 
-    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice FROM PricebookEntry WHERE Product2Id = '${productId}'`;
+    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id = '${productId}'`;
     const pricebookResp = await client.query(pricebookQuery);
     const pricebookEntry = pricebookResp.records[0];
 
@@ -138,7 +138,8 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
             PricebookEntryId: pricebookEntry.Id,
             Quantity: 1,
             UnitPrice: pricebookEntry.UnitPrice,
-            Contact__c: contactId
+            Contact__c: contactId,
+            Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
         };
 
         const itemResp = await client.create("OrderItem", orderItemRecord);
