@@ -46,8 +46,7 @@ router.post("/orders", async (req, res) => {
         BillToContactId: req.cookies.contact_id,
     };
 
-    if (paymentTypeId == "invoice")
-    {
+    if (paymentTypeId == "invoice") {
         orderRecord.PostingEntity__c = "Invoice";
     }
 
@@ -80,7 +79,7 @@ router.post("/orders", async (req, res) => {
 
     // Finally return a response. 
     res.json({
-        postingEntity: orderRecord.PostingEntity__c,
+        postingEntity: paymentTypeId == "invoice" ? "Invoice" : "Receipt",
         order: orderResult,
         orderItems: orderItemResults
     });
@@ -112,8 +111,7 @@ async function getPricebookEntry(productId) {
 
 
     // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntry)
-    {
+    if (!pricebookEntry) {
         throw new Error(`No PricebookEntry found for product: ${productId}`);
     }
 
@@ -133,8 +131,7 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
     const orderItemResults = [];
 
-    for (const contactId of contactIds)
-    {
+    for (const contactId of contactIds) {
 
         const orderItemRecord = {
             OrderId: orderResult.id,

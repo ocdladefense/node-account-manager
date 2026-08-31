@@ -27,13 +27,11 @@ export default function HomePage() {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/event-products?eventId=" + queryParam);
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -41,8 +39,7 @@ export default function HomePage() {
 
                 setProducts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -100,10 +97,9 @@ export default function HomePage() {
                                 products={products}
                                 contactIds={[contactId]}
                                 source={source}
-                                onComplete={(orderType, orderId) => {
-                                    CreateToast(
-                                        NewToast("Order created successfully.")
-                                    );
+                                onComplete={(postingEntity, orderId) => {
+                                    let orderType = postingEntity === "Invoice" ? "invoice" : "order";
+                                    CreateToast(NewToast("Order created successfully."));
 
                                     closeModal();
 
