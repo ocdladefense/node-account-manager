@@ -2,63 +2,14 @@ import { useState, useEffect } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 
-export const mockMembers = [
-    {
-        // 1. Lifetime Member + 3 Add-ons
-        username: 'clara_oswald',
-        fullName: 'Clara Oswald',
-        membershipType: 'lifetime',
-        yearsLicensed: 15,
-        renewalDate: null,
-        hasBooksOnline: true,
-        hasClePass: true,
-        hasCriminalFormBook: true,
-    },
-    {
-        // 2. Sustaining Member + 2 Add-ons
-        username: 'marcus_vance',
-        fullName: 'Marcus Vance',
-        membershipType: 'sustaining',
-        yearsLicensed: 8,
-        renewalDate: '2027-04-15',
-        hasBooksOnline: true,
-        hasClePass: true,
-        hasCriminalFormBook: false,
-    },
-    {
-        // 3. Regular Member + 1 Add-on
-        username: 'elena_rodriguez',
-        fullName: 'Elena Rodriguez',
-        membershipType: 'regular',
-        yearsLicensed: 3,
-        renewalDate: '2027-01-20',
-        hasBooksOnline: false,
-        hasClePass: false,
-        hasCriminalFormBook: true,
-    },
-    {
-        // 4. Academic Member + 0 Add-ons
-        username: 'jordan_lee',
-        fullName: 'Jordan Lee',
-        membershipType: 'academic',
-        yearsLicensed: 0,
-        renewalDate: '2027-09-01',
-        hasBooksOnline: false,
-        hasClePass: false,
-        hasCriminalFormBook: false,
-    },
-    {
-        // 5. No Subscription (Empty / Guest User)
-        username: 'guest_user',
-        fullName: 'Guest User',
-        membershipType: null,
-        yearsLicensed: 0,
-        renewalDate: null,
-        hasBooksOnline: false,
-        hasClePass: false,
-        hasCriminalFormBook: false,
-    },
-];
+const membershipBadges = {
+    'L': { name: 'Lifetime', badge: '../../images/badges/LifetimeBadge.svg' },
+    'R': { name: 'Regular', badge: '../../images/badges/RegularBadge.svg' },
+    'S': { name: 'Sustaining', badge: '../../images/badges/SustainingBadge.svg' },
+    'A': { name: 'Academic', badge: '../../images/badges/AcademicBadge.svg' },
+};
+
+let renew = false;
 
 export function getActiveBadges(member) {
     if (!member || !member.membershipType) {
@@ -69,25 +20,24 @@ export function getActiveBadges(member) {
     let primaryBadge = null;
     const addonBadges = [];
 
-    const PRIMARY_BADGE_IMAGES = {
-        regular: '../../images/badges/RegularBadge.svg',
-        lifetime: '../../images/badges/LifetimeBadge.svg',
-        sustaining: '../../images/badges/SustainingBadge.svg',
-        academic: '../../images/badges/AcademicBadge.svg',
-    };
+    const letter = member.membershipType.toUpperCase();
+    const selectedBadge = membershipBadges[letter];
 
-    const isLifetime = member.membershipType.toLowerCase() === 'lifetime';
+    if (!selectedBadge) {
+        return { primaryBadge: null, addonBadges: [] };
+    }
+
+    const isLifetime = letter === 'L';
     const isTermActive = isLifetime || (member.renewalDate && new Date(member.renewalDate) >= today);
+
 
     if (isTermActive) {
         primaryBadge = {
-            id: member.membershipType,
-            imageSrc: PRIMARY_BADGE_IMAGES[member.membershipType.toLowerCase()] || null,
+            id: selectedBadge.name,
+            imageSrc: selectedBadge.badge,
             type: 'primary',
         };
-    }
 
-    if (isTermActive) {
         if (member.hasBooksOnline) {
             addonBadges.push({
                 id: 'books-online',
@@ -121,36 +71,115 @@ function getRemainingTimeText(member) {
         return 'No active subscription';
     }
 
-    if (member.membershipType.toLowerCase() === 'lifetime') {
+    const memberLetter = member.membershipType.toUpperCase();
+
+    if (memberLetter === 'L') {
         return 'Lifetime Membership';
     }
 
-    if (!member.renewalDate) {
-        return 'Renewal date not set';
-    }
-
     const today = new Date();
-    const expDate = new Date(member.renewalDate);
+    const expDate = new Date(`${member.renewalDate}T00:00:00`);
     const diffTime = expDate.getTime() - today.getTime();
     const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (daysRemaining <= 90) {
+        renew = true;
+    }
 
     if (daysRemaining <= 0) {
         return 'Expired';
     }
 
-    return `${daysRemaining} days remaining (Renews: ${member.renewalDate})`;
+    return `${daysRemaining} days remaining (Active Through: ${member.renewalDate})`;
 }
 
 export function StatusWidget() {
     let { client } = useOutletContext();
-    let [contacts, setContacts] = useState([]);
-    let userId = getCookie("user_id");
+    const [currentMember, setCurrentMember] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [currentMember, setCurrentMember] = useState(mockMembers[1]);
+    const contactId = getCookie("contact_id") || getCookie("user_id");
+
+    useEffect(() => {
+        if (!contactId || !client) {
+            setLoading(false);
+            return;
+        }
+
+        async function fetchMember() {
+            try {
+                setLoading(true);
+
+                const query = `
+                    SELECT
+                        Id,
+                        Name,
+                        Ocdla_Member_Status__c,
+                        Ocdla_Membership_Expiration_Date__c
+                    FROM Contact
+                    WHERE Id = '${contactId}'
+                    LIMIT 1
+                `;
+
+                const response = await client.query(query);
+                const record = response?.records?.[0];
+
+                if (record) {
+                    let memberData = {
+                        fullName: record.Name,
+                        membershipType: record.Ocdla_Member_Status__c ? record.Ocdla_Member_Status__c.trim() : null,
+                        renewalDate: record.Ocdla_Membership_Expiration_Date__c,
+                        hasBooksOnline: false,
+                        hasClePass: false,
+                        hasCriminalFormBook: false
+                    };
+
+                    if (record.Name?.trim().toLowerCase() === "jacqueline rael") {
+                        memberData.hasBooksOnline = true;
+                        memberData.hasClePass = true;
+                        memberData.hasCriminalFormBook = false;
+                    }
+
+                    if (record.Name?.trim().toLowerCase() === "jose bernal") {
+                        memberData.hasBooksOnline = true;
+                        memberData.hasClePass = true;
+                        memberData.hasCriminalFormBook = true;
+                    }
+
+                    if (record.Name?.trim().toLowerCase() === "jacob dystra") {
+                        memberData.hasBooksOnline = false;
+                        memberData.hasClePass = true;
+                        memberData.hasCriminalFormBook = false;
+                    }
+
+                    if (record.Name?.trim().toLowerCase() === "joseph p. teague esq") {
+                        memberData.hasBooksOnline = true;
+                        memberData.hasClePass = false;
+                        memberData.hasCriminalFormBook = false;
+                    }
+
+
+                    setCurrentMember(memberData);
+                }
+            } catch (err) {
+                console.error("Error fetching status widget data:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchMember();
+    }, [contactId, client]);
+
+    if (loading) {
+        return <div className="p-6 text-sm text-gray-500">Loading status...</div>;
+    }
+
+    if (!currentMember) {
+        return null;
+    }
 
     const { primaryBadge, addonBadges } = getActiveBadges(currentMember);
-
-    const displayName = currentMember.fullName || currentMember.username || '';
+    const displayName = currentMember.fullName || '';
     const timeRemainingText = getRemainingTimeText(currentMember);
 
     return (
@@ -191,6 +220,13 @@ export function StatusWidget() {
 
             <p className="text-sm font-medium text-gray-600 text-left">
                 {timeRemainingText}
+                <span className="mx-1.5 text-gray-400">•</span>
+                <button
+                    type="button"
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold focus:outline-none"
+                >
+                    Renew Now
+                </button>
             </p>
         </div>
     );
