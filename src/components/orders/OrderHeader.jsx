@@ -1,7 +1,7 @@
 import DateDisplay from "../ui/DateDisplay";
 
 const getStatusColor = (status) => {
-    return status === 'Activated' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    return status === 'Activated' || status === 'Posted Payment' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
 };
 
 export default function OrderHeader({ id, orderNumber, orderDate, totalDate, status }) {

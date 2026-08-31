@@ -31,7 +31,7 @@ export default function AccountOrders() {
 
     // What about other order statuses?
     const getStatusColor = (status) => {
-        return status === 'Activated' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+        return status === 'Activated' || status === 'Posted Payment' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
     };
 
     return (
