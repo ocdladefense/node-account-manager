@@ -88,7 +88,7 @@ function getRemainingTimeText(member) {
         return 'Expired';
     }
 
-    return `${daysRemaining} days remaining (Renew By: ${member.renewalDate})`;
+    return `${daysRemaining} days remaining (Active Through: ${member.renewalDate})`;
 }
 
 export function StatusWidget() {
