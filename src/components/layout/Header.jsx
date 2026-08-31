@@ -58,25 +58,29 @@ function Dropdown({ loggedIn, userName, userInitial, onAuth, onLogout }) {
                         </MenuItem>
 
                         <MenuItem>
-                            <a href="https://lod.ocdla.org/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                            <a href="https://lod.ocdla.org/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100" target="_blank"
+                                rel="noopener noreferrer">
                                 Library of defense
                             </a>
                         </MenuItem>
 
                         <MenuItem>
-                            <a href="https://bon.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                            <a href="https://bon.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100" target="_blank"
+                                rel="noopener noreferrer">
                                 Books Online
                             </a>
                         </MenuItem>
 
                         <MenuItem>
-                            <a href="/https://media.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                            <a href="https://media.ocdla.org" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100" target="_blank"
+                                rel="noopener noreferrer">
                                 Videos
                             </a>
                         </MenuItem>
 
                         <MenuItem>
-                            <a href="/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100">
+                            <a href="/" className="block cursor-pointer px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100" target="_blank"
+                                rel="noopener noreferrer">
                                 Criminal Law Form Book
                             </a>
                         </MenuItem>
