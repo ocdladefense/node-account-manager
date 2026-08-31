@@ -1,9 +1,9 @@
-import DropMenu from "../ui/form/DropMenu";
 import { useState, useEffect } from "react";
+import DropMenu from "../ui/form/DropMenu";
+import Button from "../ui/Button.jsx";
 
 
-
-export default function OrderConfirmation({ contactIds, products, source, onComplete, onError, label, defaultProduct }) {
+export default function OrderConfirmation({ contactIds, products, source, onComplete, onError, children, closeModal }) {
 
     const [paymentTypeId, setPaymentTypeId] = useState("");
     const [productId, setProductId] = useState("");
@@ -41,19 +41,8 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
 
         <form id="order-confirmation" onSubmit={handleSubmit}>
             <div>
-                <h2 className="text-2xl font-semibold mb-4">{label}</h2>
 
-                {source == "event" &&
-                    <p>
-                        {selectedProduct
-                            ? `Proceed with registration for "${selectedProduct.Name}"? You will register ${contactCount} attendee(s).`
-                            : `Please select an event ticket.`}
-                    </p>
-                }
-
-                {source == "subscription" &&
-                    <p>Would you like to purchase this subscription?</p>
-                }
+                {children}
 
                 <DropMenu
                     label={selectedPaymentType ? selectedPaymentType.Name : "Select Payment Type"}
@@ -72,6 +61,9 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
                 <input name="productId" type="hidden" value={productId} readOnly />
 
                 <input name="contactIds" type="hidden" value={contactIds} readOnly />
+                <p>&nbsp;</p>
+                <Button label="Register" buttonType="submit" form="order-confirmation" />
+                <Button label="Cancel" buttonType="button" action={closeModal} />
             </div>
         </form>
 
