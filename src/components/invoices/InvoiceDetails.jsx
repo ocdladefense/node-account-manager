@@ -36,10 +36,7 @@ export default function InvoiceDetails() {
 
     }, []);
 
-    const displayStatus =
-        invoice?.Status === "Draft"
-            ? "Unpaid"
-            : invoice?.Status;
+    const displayStatus = invoice?.Status === "Draft" || invoice?.Status === "Activated" ? "Unpaid" : invoice?.Status;
 
     return (
         <div className="container mx-auto px-2 mt-[28px]">
