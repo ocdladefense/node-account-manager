@@ -110,7 +110,7 @@ export default function AccountContacts() {
                         <div>
                             <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
 
-                            <OrderConfirmation contactIds={selectedContactIds} products={products} source="event" onComplete={(postingEntity, orderId) => {
+                            <OrderConfirmation closeModal={closeModal} contactIds={selectedContactIds} products={products} source="event" onComplete={(postingEntity, orderId) => {
 
                                 let orderType = postingEntity === "Invoice" ? "invoice" : "order";
                                 CreateToast(NewToast("Order created successfully."));
@@ -118,10 +118,10 @@ export default function AccountContacts() {
                                 closeModal();
 
                                 navigate(`/${orderType}/${orderId}`);
-                            }} onError={(error) => CreateToast(NewToast(error))} />
+                            }} onError={(error) => CreateToast(NewToast(error))}>
 
-                            <Button label="Register" buttonType="submit" form="order-confirmation" />
-                            <Button label="Cancel" buttonType="button" action={closeModal} />
+                                <h2 className="text-2xl font-semibold mb-4">Here is my event registration</h2>
+                            </OrderConfirmation>
                         </div>
                     }
                 />
