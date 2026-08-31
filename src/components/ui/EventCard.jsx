@@ -1,73 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import DateDisplay from "./DateDisplay.jsx";
 import Button from "./Button.jsx";
-import { useToast } from "./notifications/ToastService.jsx";
 
-export default function EventCard({ event }) {
+export default function EventCard({ event, registerHandler }) {
 
-    const navigate = useNavigate();
-    const { CreateToast } = useToast();
-
-    const [registering, setRegistering] = useState(false);
-
-    const shortDescription = event.description
+    const shortDescription = event.Description__c
         ?.split(/(?<=[.!?])\s+/)
         .slice(0, 2)
         .join(" ");
-
-
-    const handleRegister = async () => {
-
-        try {
-            setRegistering(true);
-
-            const resp = await fetch("/orders", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    productId: event.id
-                })
-            });
-
-            const result = await resp.json();
-
-            if (!resp.ok) {
-                console.error("Registration failed:", result);
-
-                CreateToast(
-                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                        {result.error || "Registration could not be completed."}
-                    </div>
-                );
-
-                return;
-            }
-
-            CreateToast(
-                <div className="bg-green-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Registration successful.
-                </div>
-            );
-
-            navigate(`/invoice/${result.order.id}`);
-
-        } catch (error) {
-
-            console.error("Registration error:", error);
-
-            CreateToast(
-                <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                    Unable to contact the server.
-                </div>
-            );
-
-        } finally {
-            setRegistering(false);
-        }
-    };
 
 
     return (
@@ -76,12 +15,12 @@ export default function EventCard({ event }) {
             <div className="card-body">
 
                 <h2 className="card-title">
-                    {event.name}
+                    {event.Name}
                 </h2>
 
-                {event.date && (
+                {event.Start_Date__c && (
                     <DateDisplay
-                        value={event.date}
+                        value={event.Start_Date__c}
                         type="Date"
                         textClassName="text-base"
                     />
@@ -94,10 +33,9 @@ export default function EventCard({ event }) {
                 <div className="justify-end card-actions">
 
                     <Button
-                        label={registering ? "Registering..." : "Register"}
+                        label="Register"
                         buttonType="button"
-                        action={handleRegister}
-                        disabled={registering}
+                        action={() => registerHandler({ Id: event.Id, Name: event.Name }, "event")}
                     />
 
                 </div>

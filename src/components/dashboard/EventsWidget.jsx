@@ -1,22 +1,16 @@
 import { useState, useEffect } from 'react';
 import EventCard from '../ui/EventCard';
 
-export function EventsWidget() {
-
+export function EventsWidget({ registerHandler }) {
 
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const resp = await fetch("/api/query/event-products");
+                const resp = await fetch("/api/query/events");
                 const data = await resp.json();
-                const records = data.records.map((product) => ({
-                    id: product.Id,
-                    name: product.Name,
-                    date: product.Event__r?.Start_Date__c ?? null,
-                    description: product.Description ?? null
-                }));
+                const records = data.records;
 
                 if (!resp.ok) {
                     throw new Error(
@@ -39,8 +33,9 @@ export function EventsWidget() {
             <div className="flex flex-wrap gap-6 mt-6">
                 {events.map((event) => (
                     <EventCard
-                        key={event.id}
+                        key={event.Id}
                         event={event}
+                        registerHandler={registerHandler}
                     />
                 ))}
             </div>

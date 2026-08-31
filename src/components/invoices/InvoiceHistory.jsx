@@ -61,7 +61,7 @@ export default function InvoiceHistory() {
                                     <span
                                         className={`px-3 py-1 rounded-full font-medium ${getStatusColor(invoice.Status)}`}
                                     >
-                                        {invoice.Status}
+                                        {invoice.Status === "Draft" ? "Unpaid" : invoice.Status}
                                     </span>
                                 </div>
 

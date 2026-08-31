@@ -50,7 +50,7 @@ export default function AccountOrders() {
                                 <div>
                                     <p className="text-sm text-gray-500">Order Status</p>
                                     <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(order.Status)}`}>
-                                        {order.Status}
+                                        {order.Status === "Draft" ? "Unpaid" : order.Status}
                                     </span>
                                 </div>
 
