@@ -17,7 +17,7 @@ function buildQuery(name, cookies, eventId) {
     }
     else if (name == "events")
     {
-        return "SELECT Id, Name, Start_Date__c, Description__c FROM Event__c ORDER BY Start_Date__c DESC LIMIT 5";
+        return "SELECT Id, Name, Start_Date__c, Description__c FROM Event__c WHERE Is_Active__c = True ORDER BY Start_Date__c DESC LIMIT 5";
     }
 }
 
