@@ -43,6 +43,7 @@ router.post("/orders", async (req, res) => {
         EffectiveDate: new Date().toISOString().split('T')[0],
         Status: "Draft",
         Pricebook2Id: pricebookEntry.Pricebook2Id,
+        BillToContactId: req.cookies.contact_id,
     };
 
     if (paymentTypeId == "invoice")
