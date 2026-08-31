@@ -5,6 +5,7 @@ import CheckBox from "../ui/form/CheckBox.jsx";
 import DateDisplay from "../ui/DateDisplay.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
+import DropMenu from "../ui/form/DropMenu";
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 import OrderConfirmation from "../orders/OrderConfirmation.jsx";
 
@@ -14,6 +15,8 @@ export default function AccountContacts() {
     const navigate = useNavigate();
     const { isOpen, openModal, closeModal } = useModal();
     const [products, setProducts] = useState([]);
+    const [events, setEvents] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState(null);
     const [contacts, setContacts] = useState([]);
     const [selectedContactIds, setSelectedContactIds] = useState([]);
     const { CreateToast } = useToast();
@@ -29,7 +32,7 @@ export default function AccountContacts() {
         const fetchEventProducts = async () => {
             try
             {
-                const resp = await fetch("/api/query/event-products");
+                const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 const data = await resp.json();
 
                 if (!resp.ok)
@@ -50,7 +53,40 @@ export default function AccountContacts() {
             }
         };
 
+        if (!selectedEvent) return;
         fetchEventProducts();
+    }, [selectedEvent]);
+
+
+
+
+    // This fetch is for populating the drop down menu for the registration modal.
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try
+            {
+                const resp = await fetch("/api/query/events");
+                const data = await resp.json();
+
+                if (!resp.ok)
+                {
+                    throw new Error(
+                        data.error || "Unable to retrieve events."
+                    );
+                }
+
+                setEvents(data.records);
+
+            } catch (error)
+            {
+                console.error(
+                    "Error fetching events:",
+                    error
+                );
+            }
+        };
+
+        fetchEvents();
     }, []);
 
 
@@ -120,7 +156,6 @@ export default function AccountContacts() {
                                 navigate(`/${orderType}/${orderId}`);
                             }} onError={(error) => CreateToast(NewToast(error))}>
 
-                                <h2 className="text-2xl font-semibold mb-4">Here is my event registration</h2>
                             </OrderConfirmation>
                         </div>
                     }
@@ -189,6 +224,12 @@ export default function AccountContacts() {
 
 
 
+
+                    <DropMenu
+                        label={selectedEvent ? selectedEvent.Name : "Register for Event"}
+                        entries={events}
+                        handler={(event) => setSelectedEvent(event)}
+                    />
                     <Button label="Register" buttonType="button" action={openCustomModal} />
                     <Button label="Renew Membership" buttonType="button" />
 
