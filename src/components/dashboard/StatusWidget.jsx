@@ -9,6 +9,8 @@ const membershipBadges = {
     'A': { name: 'Academic', badge: '../../images/badges/AcademicBadge.svg' },
 };
 
+let renew = false;
+
 export function getActiveBadges(member) {
     if (!member || !member.membershipType) {
         return { primaryBadge: null, addonBadges: [] };
@@ -81,7 +83,7 @@ function getRemainingTimeText(member) {
     const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (daysRemaining <= 90) {
-        // Renewal button option here?
+        renew = true;
     }
 
     if (daysRemaining <= 0) {
@@ -218,6 +220,13 @@ export function StatusWidget() {
 
             <p className="text-sm font-medium text-gray-600 text-left">
                 {timeRemainingText}
+                <span className="mx-1.5 text-gray-400">•</span>
+                <button
+                    type="button"
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold focus:outline-none"
+                >
+                    Renew Now
+                </button>
             </p>
         </div>
     );
