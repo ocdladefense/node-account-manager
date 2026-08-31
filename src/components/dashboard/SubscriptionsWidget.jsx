@@ -121,11 +121,11 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
 
                 {subscription.id && (
                     <div className="flex">
-                        <Button label="More Information" size="px-6 py-2 w-fit" action={getMoreInfo} />
-                        <Button label={isOwned ? "Open" : "Subscribe"} size="px-6 py-2 w-fit" action={handleSubmit} />
+                        <Button label="More Information" size="px-6 py-2 w-fit" action={getMoreInfo}></Button>
+                        <Button label={isOwned ? "Open" : "Subscribe"} size="px-6 py-2 w-fit" action={handleSubmit}></Button>
+
                     </div>
                 )}
-
             </div>
         </div>
     );
