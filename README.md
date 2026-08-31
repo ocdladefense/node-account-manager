@@ -32,6 +32,18 @@ _Note: Unless otherwise stated, these installation commands must be run in the p
 3. Disable any already-running server software (these will conflict with the port 80 config of Express server).
 4. Navigate to [http://localhost](http://localhost).
 
+### Webpack server environment:
+1. Preview the base website using <code>npm run watch</code>.
+
+### Start Webpack and Express server with VSCode tasks
+tasks can be created or edited in the .vscode/tasks.json file.
+The "dev" task is the default build task. To run the "dev" task...
+1. Select "Terminal" in the top bar.
+2. Select "Run Build Task"
+
+**or** use shortcut
+<code>ctrl + shift + B</code>
+
 
 ## Using PM2
 Use <code>pm2</code> to run this server as a daemon.
@@ -45,9 +57,6 @@ Use <code>pm2</code> to run this server as a daemon.
 * <code>sudo pm2 save</code> - Save the state of the current pm2 apps so they are restored upon startup.
 * <code>sudo pm2 stop [app-name]</code> - Stop a pm2 server instance.
 * <code>sudo pm2 delete [app-name]</code> - Remove a pm2 server instance.
-
-### Webpack server environment:
-1. Preview the base website using <code>npm run watch</code>.
 
 # Additional resources
 
