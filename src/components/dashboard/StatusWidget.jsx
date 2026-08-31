@@ -81,7 +81,7 @@ function getRemainingTimeText(member) {
     const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (daysRemaining <= 90) {
-        // Renewal button appears
+        // Renewal button option here?
     }
 
     if (daysRemaining <= 0) {
