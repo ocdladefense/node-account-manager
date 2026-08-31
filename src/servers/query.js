@@ -24,6 +24,7 @@ function buildQuery(name, cookies, eventId) {
 router.get("/api/query/:type", async (req, res) => {
     const instanceUrl = req.cookies.instance_url;
     const accessToken = req.cookies.access_token;
+    const eventId = req.query.eventId;
 
     if (!instanceUrl || !accessToken)
     {
@@ -37,7 +38,7 @@ router.get("/api/query/:type", async (req, res) => {
         accessToken
     );
 
-    const query = buildQuery(req.params.type, req.cookies, "a23hr0000008WKTAA2");
+    const query = buildQuery(req.params.type, req.cookies, eventId);
 
     const resp = await client.query(query);
 
