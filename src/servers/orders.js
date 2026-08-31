@@ -74,7 +74,7 @@ router.post("/orders", async (req, res) => {
     // const updatedOrderResult = await updateResp.json();
 
 
-    console.log("updateResp:", updateResp);
+    console.log("updateResp:", updateResp.status);
 
 
     // Finally return a response. 
