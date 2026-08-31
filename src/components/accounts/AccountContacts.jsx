@@ -155,7 +155,7 @@ export default function AccountContacts() {
 
                                 navigate(`/${orderType}/${orderId}`);
                             }} onError={(error) => CreateToast(NewToast(error))}>
-
+                                <h2>{selectedEvent?.Name}</h2>
                             </OrderConfirmation>
                         </div>
                     }
@@ -228,9 +228,9 @@ export default function AccountContacts() {
                     <DropMenu
                         label={selectedEvent ? selectedEvent.Name : "Register for Event"}
                         entries={events}
-                        handler={(event) => setSelectedEvent(event)}
+                        handler={(event) => { setSelectedEvent(event); openCustomModal(); }}
                     />
-                    <Button label="Register" buttonType="button" action={openCustomModal} />
+                    {/* <Button label="Register" buttonType="button" action={openCustomModal} /> */}
                     <Button label="Renew Membership" buttonType="button" />
 
                 </div>
