@@ -220,14 +220,19 @@ export function StatusWidget() {
 
             <p className="text-sm font-medium text-gray-600 text-left">
                 {timeRemainingText}
-                <span className="mx-1.5 text-gray-400">•</span>
-                <button
-                    type="button"
-                    className="text-blue-600 hover:text-blue-800 hover:underline font-semibold focus:outline-none"
-                >
-                    Renew Now
-                </button>
+                {renew && (
+                    <>
+                        <span className="mx-1.5 text-gray-400">•</span>
+                        <button
+                            type="button"
+                            className="text-blue-600 hover:text-blue-800 hover:underline font-semibold focus:outline-none"
+                        >
+                            Renew Now
+                        </button>
+                    </>
+                )}
             </p>
+
         </div>
     );
 
