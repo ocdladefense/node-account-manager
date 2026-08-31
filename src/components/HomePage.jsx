@@ -3,7 +3,7 @@ import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
 import Modal from './ui/Modal';
 import useModal from './hooks/useModal';
-import OrderConfirmationProductSelect from './orders/OrderConfirmationProductSelect';
+import OrderConfirmation from './orders/OrderConfirmation';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { useNavigate } from "react-router-dom";
 import { useToast, NewToast } from "./ui/notifications/ToastService";
@@ -28,11 +28,13 @@ export default function HomePage() {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -40,7 +42,8 @@ export default function HomePage() {
 
                 setProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -95,7 +98,7 @@ export default function HomePage() {
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
                     content={
                         <div>
-                            <OrderConfirmationProductSelect
+                            <OrderConfirmation
                                 products={products}
                                 contactIds={[contactId]}
                                 source={selectedSource}
