@@ -16,7 +16,7 @@ export default function OrderItem({ index, data }) {
 
                 {/* Product Name */}
                 <div>
-                    <div className="text-sm/6 font-medium text-gray-900">Product: {data.Description}</div>
+                    <div className="text-sm/6 font-medium text-gray-900">Product: {data.Product2?.Name}</div>
                 </div>
 
 
