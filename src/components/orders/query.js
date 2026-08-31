@@ -9,7 +9,7 @@ export function getOrderHistory(accountId) {
         FormattedActivatedDate__c
     FROM Order 
     WHERE AccountId = '${accountId}'
-    AND StatusCode = 'Activated'`;
+    AND StatusCode = 'Activated' ORDER BY EffectiveDate DESC LIMIT 100`;
 }
 
 

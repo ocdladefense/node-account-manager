@@ -5,8 +5,8 @@ import Button from "../ui/Button.jsx";
 
 export default function OrderConfirmation({ contactIds, products, source, onComplete, onError, children, closeModal }) {
 
-    const [paymentTypeId, setPaymentTypeId] = useState("");
-    const [productId, setProductId] = useState("");
+    const [paymentTypeId, setPaymentTypeId] = useState(null);
+    const [productId, setProductId] = useState(products.length === 1 ? products[0].Id : null);
     const [contactCount, setContactCount] = useState(contactIds.length);
 
 
@@ -56,11 +56,14 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
                     handler={(product) => setProductId(product.Id)}
                 />
 
-                <input name="paymentTypeId" type="hidden" value={paymentTypeId} readOnly />
-
-                <input name="productId" type="hidden" value={productId} readOnly />
 
                 <input name="contactIds" type="hidden" value={contactIds} readOnly />
+                <input name="productId" type="hidden" value={productId} readOnly />
+                <input name="paymentTypeId" type="hidden" value={paymentTypeId} readOnly />
+
+
+
+
                 <p>&nbsp;</p>
                 <Button label="Register" buttonType="submit" form="order-confirmation" />
                 <Button label="Cancel" buttonType="button" action={closeModal} />

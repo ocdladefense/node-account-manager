@@ -46,7 +46,7 @@ export default function OrderDetails() {
             <div className="container mx-auto px-2 mt-7">
                 {orderHeader && (
                     <>
-                        <OrderHeader orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={displayStatus} />
+                        <OrderHeader id={orderHeader.Id} orderNumber={orderHeader.OrderNumber} orderDate={orderHeader.EffectiveDate} totalDate={orderHeader.TotalAmount} status={displayStatus} />
 
                         <div className="space-y-8">
                             {orderItems && orderItems.length > 0 ? orderItems.map((item, index) => (

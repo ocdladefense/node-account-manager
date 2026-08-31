@@ -70,11 +70,11 @@ router.post("/orders", async (req, res) => {
     // For invoices Status will be Activated;
     // For all others, Status will be Posted Payment.
     let status = paymentTypeId === "invoice" ? "Activated" : "Posted Payment";
-    const updateResp = await client.update("Order", { Id: orderResult.id, Status: status });
-    const updatedOrderResult = await updateResp.json();
+    const updateResp = await client.update("Order", { Id: orderResult.id, Activate__c: true });
+    // const updatedOrderResult = await updateResp.json();
 
 
-
+    console.log("updateResp:", updateResp);
 
 
     // Finally return a response. 

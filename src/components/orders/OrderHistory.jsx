@@ -47,10 +47,10 @@ export default function AccountOrders() {
                             {/* Order Header Row */}
                             <div className="grid grid-cols-5 gap-4 items-center mb-4">
 
-                                <div>
+                                <div data-order-id={order.Id}>
                                     <p className="text-sm text-gray-500">Order Status</p>
                                     <span className={`px-3 py-1 rounded-full font-medium ${getStatusColor(order.Status)}`}>
-                                        {order.Status === "Draft" ? "Unpaid" : order.Status}
+                                        {order.Status}
                                     </span>
                                 </div>
 
