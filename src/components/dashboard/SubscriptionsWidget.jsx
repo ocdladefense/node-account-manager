@@ -16,8 +16,12 @@ TODO:
 1. add products to sandbox
 2. flag products as "IsAddOn__c" in and put in same product family
 3. query products for those two properties
-4. ask joseph what how his buttons work and modal work flow (orders gets same data from SF so go look at that)
+4. ask joseph what how his buttons work and modal work flow 
+    orders gets same data from SF so go look at that
+    servers/order.js gets data to client
 5. subscribe button "does what joseph's buttons do"
+
+
 */
 
 export function SubscriptionsWidget(){
