@@ -39,6 +39,7 @@ export function getOrderItems(orderId) {
         Quantity,
         UnitPrice,
         TotalPrice,
-        Contact__r.Name
+        Contact__r.Name,
+        Description
     FROM OrderItem WHERE OrderId = '${orderId}'`;
 }
