@@ -82,15 +82,14 @@ root.render(
                 </Route>
 
 
-                <Route path="contact" element={<SObject />}>
+                <Route path="contact" element={<Contact />}>
                     <Route path=":contactId" element={<Contact />} />
-                    <Route path=":contactId/edit" element={<ContactForm />} />
-                    <Route path=":contactId/expert" element={<ContactExpertForm />} />
                 </Route>
 
 
                 <Route path="profile" element={<SObject />}>
                     <Route path=":contactId/edit" element={<ContactForm />} />
+                    <Route path=":contactId/expert" element={<ContactExpertForm />} />
                 </Route>
 
 

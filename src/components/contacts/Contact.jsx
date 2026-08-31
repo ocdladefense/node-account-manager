@@ -32,14 +32,17 @@ export default function Contact() {
             const contactQuery = getContactQuery(contactId);
 
 
-            try {
+            try
+            {
                 setLoading(true);
                 const response = await client.query(contactQuery);
                 setContact(response.records[0]);
-            } catch (err) {
+            } catch (err)
+            {
                 setError(err);
                 console.error("Error fetching contact:", err);
-            } finally {
+            } finally
+            {
                 setLoading(false);
             }
         }
@@ -51,10 +54,10 @@ export default function Contact() {
     // First argument /contacts/${contactId}/edit - The URL path to navigate to
     // Second argument { state: { contact } } - This passes data along with the navigation
     const handleEdit = () => {
-        navigate(`/contact/${contactId}/edit`, { state: { contact } });
+        navigate(`/profile/${contactId}/edit`, { state: { contact } });
     };
     const handleEditExpert = () => {
-        navigate(`/contact/${contactId}/expert`, { state: { contact } });
+        navigate(`/profile/${contactId}/expert`, { state: { contact } });
     };
 
 
