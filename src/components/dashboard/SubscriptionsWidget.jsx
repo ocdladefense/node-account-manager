@@ -81,10 +81,10 @@ export function SubscriptionsWidget({ subscribeHandler }) {
 }
 
 /**
- * 
+ *
  * @param {object} subscription - an object containing information about the subscription including title, description, price, id, and a link
  * @param {boolean} [isOwned] - if the subscription is owned by the currently logged in user
- * @param {string} [className] - html classNames to be used with tailwind for to style the object 
+ * @param {string} [className] - html classNames to be used with tailwind for to style the object
  * @returns {html}
  */
 
@@ -119,8 +119,12 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
                 <p>{description}</p>
                 <p>${price}</p>
 
-                {subscription.id && <Button label="More Information" action={getMoreInfo} />}
-                {subscription.id && <Button label={isOwned ? "Open" : "Subscribe"} action={handleSubmit} />}
+                {subscription.id && (
+                    <div className="flex">
+                        <Button label="More Information" size="px-6 py-2 w-fit" action={getMoreInfo} />
+                        <Button label={isOwned ? "Open" : "Subscribe"} size="px-6 py-2 w-fit" action={handleSubmit} />
+                    </div>
+                )}
 
             </div>
         </div>
