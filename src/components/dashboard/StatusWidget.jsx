@@ -152,7 +152,7 @@ export function StatusWidget() {
                         memberData.hasCriminalFormBook = false;
                     }
 
-                    if (record.Name?.trim().toLowerCase() === "joseph p. teague esq") {
+                    if (record.Name?.trim().toLowerCase() === "joseph p. teague") {
                         memberData.hasBooksOnline = true;
                         memberData.hasClePass = false;
                         memberData.hasCriminalFormBook = false;
