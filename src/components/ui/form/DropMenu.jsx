@@ -1,6 +1,6 @@
 import { useRef } from "react";
 
-export default function DropMenu({ label, entries = [], handler }) {
+export default function DropMenu({ label, entries = [], handler, thingThatGetsDisplayed }) {
 
     const detailsRef = useRef(null);
 
@@ -19,7 +19,7 @@ export default function DropMenu({ label, entries = [], handler }) {
                 {entries.map((entry) => (
                     <li key={entry.Id}>
                         <button type="button" onClick={() => handleSelection(entry)}>
-                            {entry.Name}
+                            {thingThatGetsDisplayed ? thingThatGetsDisplayed(entry) : entry.Name}
                         </button>
                     </li>
                 ))}

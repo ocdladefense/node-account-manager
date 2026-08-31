@@ -9,7 +9,6 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
     const [productId, setProductId] = useState(products.length === 1 ? products[0].Id : null);
     const [contactCount, setContactCount] = useState(contactIds.length);
 
-
     let paymentTypes = [
         {
             Name: "Visa 1234",
@@ -51,9 +50,10 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
                 />
 
                 <DropMenu
-                    label={selectedProduct ? selectedProduct.Name : "Select Event Ticket"}
+                    label={selectedProduct ? (selectedProduct.Name + " - $" + selectedProduct.ClickpdxCatalog__StandardPrice__c) : "Select Event Ticket"}
                     entries={products}
                     handler={(product) => setProductId(product.Id)}
+                    thingThatGetsDisplayed={(product) => product.Name + " - $" + product.ClickpdxCatalog__StandardPrice__c}
                 />
 
 
@@ -90,8 +90,7 @@ export default function OrderConfirmation({ contactIds, products, source, onComp
 
         const result = await resp.json();
 
-        if (!resp.ok)
-        {
+        if (!resp.ok) {
             console.error("Order failed:", result);
 
             onError(result.error || "Order could not be created.");
