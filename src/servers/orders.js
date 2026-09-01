@@ -1,5 +1,7 @@
 import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
+import chargeCreditCard from './charge.js';
+
 
 const router = express.Router();
 
@@ -46,7 +48,8 @@ router.post("/orders", async (req, res) => {
         BillToContactId: req.cookies.contact_id,
     };
 
-    if (paymentTypeId == "invoice") {
+    if (paymentTypeId == "invoice")
+    {
         orderRecord.PostingEntity__c = "Invoice";
     }
 
@@ -67,14 +70,8 @@ router.post("/orders", async (req, res) => {
 
 
     // Step 5:  Convert the OrderStatus as appropriate.
-    // For invoices Status will be Activated;
-    // For all others, Status will be Posted Payment.
-    let status = paymentTypeId === "invoice" ? "Activated" : "Posted Payment";
-    const updateResp = await client.update("Order", { Id: orderResult.id, Activate__c: true });
-    // const updatedOrderResult = await updateResp.json();
-
-
-    console.log("updateResp:", updateResp.status);
+    // This needs some kind of "await".
+    chargeCreditCard(updateOrderStatus.bind(null, orderResult.id));
 
 
     // Finally return a response. 
@@ -100,6 +97,16 @@ router.post("/orders", async (req, res) => {
 
 
 
+async function updateOrderStatus(orderId) {
+    // For invoices Status will be Activated;
+    // For all others, Status will be Posted Payment.
+
+    const updateResp = await client.update("Order", { Id: orderId, Activate__c: true });
+    // const updatedOrderResult = await updateResp.json();
+
+
+    console.log("updateResp:", updateResp.status);
+}
 
 
 
@@ -111,7 +118,8 @@ async function getPricebookEntry(productId) {
 
 
     // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntry) {
+    if (!pricebookEntry)
+    {
         throw new Error(`No PricebookEntry found for product: ${productId}`);
     }
 
@@ -131,7 +139,8 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
     const orderItemResults = [];
 
-    for (const contactId of contactIds) {
+    for (const contactId of contactIds)
+    {
 
         const orderItemRecord = {
             OrderId: orderResult.id,
@@ -157,6 +166,7 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
     return orderItemResults;
 }
+
 
 
 
