@@ -3,7 +3,7 @@ import DropMenu from "../ui/form/DropMenu";
 import Button from "../ui/Button.jsx";
 
 
-export default function OrderConfirmation({ contactIds, products, source, onComplete, onError, children, closeModal }) {
+export default function OrderConfirmation({ contactIds, products, onComplete, onError, children, closeModal }) {
 
     const [paymentTypeId, setPaymentTypeId] = useState(null);
     const [productId, setProductId] = useState(products.length === 1 ? products[0].Id : null);
