@@ -9,6 +9,7 @@ const router = express.Router();
 
 let client;
 
+const FORCE_PAYMENT_ERROR = false;
 
 
 /**
@@ -48,8 +49,7 @@ router.post("/orders", async (req, res) => {
         BillToContactId: req.cookies.contact_id,
     };
 
-    if (paymentTypeId == "invoice")
-    {
+    if (paymentTypeId == "invoice") {
         orderRecord.PostingEntity__c = "Invoice";
     }
 
@@ -71,25 +71,23 @@ router.post("/orders", async (req, res) => {
 
     // Step 5:  Convert the OrderStatus as appropriate.
     // This needs some kind of "await".
+    // build in error message
     chargeCreditCard(updateOrderStatus.bind(null, orderResult.id));
 
-
-    // Finally return a response. 
-    res.json({
+    let successfulOrder = {
         postingEntity: paymentTypeId == "invoice" ? "Invoice" : "Receipt",
         order: orderResult,
         orderItems: orderItemResults
-    });
-
+    };
 
     // Otherwise, maybe there was an error
-    /*
 
-        return res.status(resp.status).json({
-            error: "Salesforce failed to create the order.",
-            details: orderResult
-        });
-        */
+    let failedOrder = {
+        error: "Salesforce failed to create the order.",
+        details: orderResult
+    };
+
+    res.json(FORCE_PAYMENT_ERROR ? failedOrder : successfulOrder);
 
 
 
@@ -118,8 +116,7 @@ async function getPricebookEntry(productId) {
 
 
     // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntry)
-    {
+    if (!pricebookEntry) {
         throw new Error(`No PricebookEntry found for product: ${productId}`);
     }
 
@@ -139,8 +136,7 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
     const orderItemResults = [];
 
-    for (const contactId of contactIds)
-    {
+    for (const contactId of contactIds) {
 
         const orderItemRecord = {
             OrderId: orderResult.id,
