@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useToast } from "../notifications/ToastService";
 import { CautionButton } from "../Button";
+import { MdDescription } from "react-icons/md";
 
 const SERVER_PORT = process.env.PORT;
 const SERVER_ENDPOINT = `http://localhost:${SERVER_PORT}/upload`;
@@ -213,12 +214,15 @@ export function FileView({ filePaths, action, buttonLabel }) {
 
                 return (
                     <div key={path} >
-                        <h3 className="inline">{fileName}</h3>
+                        <div className=" font-semibold text-xl p-2 border rounded bg-cyan-100">
+                            <MdDescription />
+                            {fileName}
+                        </div>
                         <CautionButton
                             action={() => action(path)}
                             label={buttonLabel}
                             buttonType="button"
-                            className="inline"
+                            className="inline px-6 w-50 py-2 rounded-sm mx-2.5 text-white bg-red-500 hover:bg-red-600"
                         />
                     </div>
                 );
