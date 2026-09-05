@@ -77,6 +77,21 @@ export default function InputForm() {
                         className="w-full bg-white border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm font-mono text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors shadow-sm"
                     />
                 </div>
+
+                <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+                        Remeber Card
+                    </label>
+                    <input
+                        type="checkbox"
+                        name="Remeber Card"
+                        className="w-full bg-white border border-gray-300 rounded-lg px-3.5 py-2.5 text-sm font-mono text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors shadow-sm"
+                    />
+                </div>
+
+
+
+
             </div>
 
             {/* Billing Address Section */}
