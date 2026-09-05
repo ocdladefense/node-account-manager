@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu";
-import InputForm from "./InputForm";
+
 
 
 const defaultPaymentOption = [
@@ -8,13 +8,14 @@ const defaultPaymentOption = [
     { Id: "invoice", Name: "Bill via Invoice", type: "invoice" },
 ];
 
-export default function CardSelection() {
+export default function CardSelection({ nextStep }) {
     const [selectedOption, setSelectedOption] = useState(null);
     const [paymentOptions, setPaymentOptions] = useState(defaultPaymentOption);
 
     useEffect(() => {
         const fetchPaymentMethods = async () => {
-            try {
+            try
+            {
                 // Implement later
                 // const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 // const data = await resp.json();
@@ -36,7 +37,8 @@ export default function CardSelection() {
                     return [...data.records, ...options];
                 });
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching payment method",
                     error
@@ -63,15 +65,12 @@ export default function CardSelection() {
             <DropMenu
                 label={selectedOption ? selectedOption.Name : "Choose a card"}
                 entries={paymentOptions}
-                handler={(option) => setSelectedOption(option)}
+                handler={(option) => { setSelectedOption(option); if (option.Id == "new_card") { nextStep() } }}
                 thingThatGetsDisplayed={(option) => option.Name}
             />
 
-            {selectedOption?.type === "new_card" && (
-                <div className="w-full max-w-sm p-4 bg-gray-50 border border-gray-200 rounded-lg text-left">
-                    <InputForm />
-                </div>
-            )}
+
+
 
             {selectedOption?.type === "invoice" && (
                 <div className="w-full max-w-sm p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 text-left">

@@ -7,8 +7,9 @@ import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import DropMenu from "../ui/form/DropMenu";
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
-import OrderConfirmation from "../orders/OrderConfirmation.jsx";
-
+// import OrderConfirmation from "../orders/OrderConfirmation.jsx";
+import SelectProduct from "../orders/SelectProduct.jsx";
+import CardSelection from "../payment/CardSelection.jsx";
 
 export default function AccountContacts() {
 
@@ -21,6 +22,7 @@ export default function AccountContacts() {
     const [selectedContactIds, setSelectedContactIds] = useState([]);
     const { CreateToast } = useToast();
 
+
     const openCustomModal = () => {
         openModal();
     };
@@ -30,11 +32,13 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -42,7 +46,8 @@ export default function AccountContacts() {
 
                 setProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -60,11 +65,13 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEvents = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/events");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve events."
                     );
@@ -72,7 +79,8 @@ export default function AccountContacts() {
 
                 setEvents(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching events:",
                     error
@@ -87,11 +95,13 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -99,7 +109,8 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -114,10 +125,12 @@ export default function AccountContacts() {
     const handleCheckboxChange = (event) => {
         const { value, checked } = event.target;
 
-        if (checked) {
+        if (checked)
+        {
             // Add the value to the array if checked
             setSelectedContactIds([...selectedContactIds, value]);
-        } else {
+        } else
+        {
             // Filter out the value from the array if unchecked
             setSelectedContactIds(selectedContactIds.filter((item) => item !== value));
         }
@@ -130,25 +143,10 @@ export default function AccountContacts() {
             <div className="w-full">
 
                 {/*-------------------- START OF MODAL SECTION -------------------- */}
-                <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
-                    content={
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-4">Event Registration</h2>
-
-                            <OrderConfirmation closeModal={closeModal} contactIds={selectedContactIds} products={products} onComplete={(postingEntity, orderId) => {
-
-                                let orderType = postingEntity === "Invoice" ? "invoice" : "order";
-                                CreateToast(NewToast("Order created successfully."));
-
-                                closeModal();
-
-                                navigate(`/${orderType}/${orderId}`);
-                            }} onError={(error) => CreateToast(NewToast(error))}>
-                                <h2>{selectedEvent?.Name}</h2>
-                            </OrderConfirmation>
-                        </div>
-                    }
-                />
+                <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={true}>
+                    <SelectProduct contactIds={selectedContactIds} products={products} />
+                    <CardSelection />
+                </Modal>
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 
                 <div className="container mx-auto px-6 mt-7">

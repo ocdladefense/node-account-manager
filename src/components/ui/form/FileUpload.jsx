@@ -1,4 +1,4 @@
-import { Network } from "lucide-react";
+// import { Network } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useToast } from "../notifications/ToastService";
@@ -27,7 +27,7 @@ export function FileUpload({ label = "File Upload", name = "file-upload", accept
     const { CreateToast, UpdateToast } = useToast();
 
     const onChangeFunction = (e) => {
-        if (onChange)onChange(e); // run function from param
+        if (onChange) onChange(e); // run function from param
 
         // file preview
         const file = e.target.files[0];

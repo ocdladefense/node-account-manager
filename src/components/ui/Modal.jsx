@@ -1,26 +1,32 @@
 import ReactDOM from 'react-dom';
-import { useState, useEffect, useRef } from 'react';
-import Button, { CautionButton } from './Button';
+import { Children, useState, useEffect, useRef, isValidElement, cloneElement } from 'react';
+import Button, { CautionButton, BackButton } from './Button';
+
+
 
 export default function Modal({
     isOpen,
     onClose,
     confirmAction,
     content,
-    steps = null,
-    currentStep = 0,
     externalNode,
-    defaultButtons = true
+    children,
 }) {
+
     const containerRef = useRef(null);
+    const [currentStep, setCurrentStep] = useState(0);
+    // const [steps, setSteps] = useState();
+
 
     useEffect(() => {
-        if (containerRef.current && externalNode) {
+        if (containerRef.current && externalNode)
+        {
             containerRef.current.appendChild(externalNode);
         }
 
         return () => {
-            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode))
+            {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -28,8 +34,8 @@ export default function Modal({
 
     if (!isOpen) return null;
 
-    const isMultiStep = Array.isArray(steps) && steps.length > 0;
-    const totalSteps = isMultiStep ? steps.length : 1;
+    const isMultiStep = Children.count(children) > 1;
+    const totalSteps = isMultiStep && Children.count(children);
 
     return ReactDOM.createPortal(
         <div
@@ -43,8 +49,21 @@ export default function Modal({
                 onClick={(e) => e.stopPropagation()}
                 className="relative w-11/12 md:w-3/5 max-w-4xl min-h-[360px] max-h-[85vh] flex flex-col bg-white rounded-2xl p-8 shadow-2xl overflow-hidden border border-gray-100"
             >
-                <div className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
-                    {isMultiStep ? (
+
+                <h2>Here's how many kids I have: {children ? Children.count(children) : 0}</h2>
+
+                {
+                    currentStep > 0 && (
+                        <div className="absolute top-6 left-6 z-20">
+                            <BackButton className="px-6 w-25 py-1 cursor-pointer rounded-md bg-white text-black hover:bg-gray-100 active:bg-gray-200 transition-colors duration-150" label="< Back" action={() => setCurrentStep(currentStep - 1)} />
+                        </div>
+                    )
+                }
+
+
+                {/* transition-transform duration-300 ease-in-out */}
+                <div id="multi-step-container" className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
+                    {isMultiStep && (
                         <div
                             className="flex transition-transform duration-300 ease-in-out w-full"
                             style={{
@@ -52,17 +71,21 @@ export default function Modal({
                                 transform: `translateX(-${(currentStep / totalSteps) * 100}%)`
                             }}
                         >
-                            {steps.map((stepNode, index) => (
-                                <div
-                                    key={index}
-                                    style={{ width: `${100 / totalSteps}%` }}
-                                    className="flex flex-col items-center text-center space-y-6 px-4"
-                                >
-                                    {stepNode}
-                                </div>
-                            ))}
+                            {Children.map(children, (stepNode, index) => {
+                                return (
+                                    <div
+                                        key={index}
+                                        style={{ width: `${100 / totalSteps}%` }}
+                                        className="flex flex-col items-center text-center space-y-6 px-4"
+                                    >{/* Make sure that this cloneElement syntax, below, doesn't interfere with properties we've already passed to these components. */}
+                                        {isValidElement(stepNode) ? cloneElement(stepNode, { nextStep: (stepNumber) => setCurrentStep(stepNumber) }) : stepNode}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    ) : (
+                    )}
+
+                    {!isMultiStep && (
                         <div className="flex flex-col items-center text-center space-y-6">
                             {content}
                         </div>
@@ -71,21 +94,21 @@ export default function Modal({
                     <div ref={containerRef} />
                 </div>
 
-                {defaultButtons && (
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
-                        <CautionButton
-                            label="Cancel"
-                            isCancel={true}
-                            action={onClose}
-                        />
-                        {confirmAction && (
-                            <Button
-                                label="Confirm"
-                                action={confirmAction}
-                            />
-                        )}
-                    </div>
-                )}
+
+                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
+                    <CautionButton
+                        label="Cancel"
+                        isCancel={true}
+                        action={onClose}
+                    />
+
+                    <Button
+                        label={isMultiStep && currentStep < totalSteps - 1 ? 'Next' : 'Confirm'}
+                        action={() => { if (isMultiStep && currentStep < totalSteps - 1) { setCurrentStep(currentStep + 1) } else { onClose() } }}
+                    />
+
+                </div>
+
             </div>
         </div>,
         document.body
