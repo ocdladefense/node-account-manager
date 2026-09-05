@@ -1,38 +1,18 @@
 import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu";
 import Button, { CautionButton, BackButton } from "../ui/Button.jsx";
+import CardSelection from "../payment/CardSelection.jsx";
 
 
 export default function OrderConfirmation({ contactIds, products, onComplete, onError, children, closeModal }) {
 
     const [step, setStep] = useState(1);
-    const [paymentTypeId, setPaymentTypeId] = useState(null);
     const [productId, setProductId] = useState(products.length === 1 ? products[0].Id : null);
     const [contactCount, setContactCount] = useState(contactIds.length);
-
-    let paymentTypes = [
-        {
-            Name: "Visa 1234",
-            Id: "1234"
-        },
-        {
-            Name: "MasterCard 5678",
-            Id: "5678"
-        },
-        {
-            Name: "Invoice",
-            Id: "invoice"
-        }
-    ];
-
-    const selectedPaymentType = paymentTypes.find(
-        (entry) => entry.Id === paymentTypeId
-    );
 
     const selectedProduct = products.length === 1 ? products[0] : products.find(
         (entry) => entry.Id === productId
     );
-
 
 
 
@@ -50,13 +30,13 @@ export default function OrderConfirmation({ contactIds, products, onComplete, on
 
                 <input name="contactIds" type="hidden" value={contactIds} readOnly />
                 <input name="productId" type="hidden" value={productId} readOnly />
-                <input name="paymentTypeId" type="hidden" value={paymentTypeId} readOnly />
 
                 <div className="overflow-hidden w-full">
                     <div
                         className={`flex w-[200%] transition-transform duration-300 ease-in-out ${step === 2 ? "-translate-x-1/2" : "translate-x-0"
                             }`}
                     >
+                        {/* Slide 1: Ticket Selection */}
                         <div className="w-1/2 flex flex-col items-center space-y-4 px-4">
                             <DropMenu
                                 label={selectedProduct ? (selectedProduct.Name + " - $" + selectedProduct.ClickpdxCatalog__StandardPrice__c) : "Select Event Ticket"}
@@ -78,16 +58,11 @@ export default function OrderConfirmation({ contactIds, products, onComplete, on
                             </div>
                         </div>
 
-                        <div className="w-1/2 flex flex-col items-center space-y-4 px-4">
+                        {/* Slide 2: Sibling of Slide 1 under the w-[200%] parent */}
+                        <div className="w-1/2 flex flex-col items-center space-y-4 px-4 pb-32">
+                            <CardSelection />
 
-                            <DropMenu
-                                label={selectedPaymentType ? selectedPaymentType.Name : "Select Payment Type"}
-                                entries={paymentTypes}
-                                handler={(paymentType) => setPaymentTypeId(paymentType.Id)}
-                            />
-
-                            <p>&nbsp;</p>
-                            <div>
+                            <div className="flex gap-3 pt-4">
                                 <Button label="Register" buttonType="submit" form="order-confirmation" />
                                 <CautionButton label="Cancel" buttonType="button" action={closeModal} isCancel={true} />
                             </div>
