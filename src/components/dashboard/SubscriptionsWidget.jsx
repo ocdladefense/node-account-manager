@@ -1,25 +1,27 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, Pressable } from 'react';
 import { useOutletContext } from "react-router-dom";
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { CautionButton } from '../ui/Button';
 import Button from "../ui/Button";
-import useModal from '../hooks/useModal';
 
 
 /* TODO:
 - SubscriptionsWidget
   - update query for products to use correct field and/or table names
+    - add link field to product2 object
   - update query for owned products to use correct field and/or table names
 
 - SubscriptionCard
   - make "subscribe" button create order and open payment modal
-  - make "More Information" button open product information page
+  - make "More Information" button open SubscriptionPopUp
 
-- create product information page or pop up
+- SubscriptionPopUp
+  - add style to the pop up
+  - somehow use the useModal in homepage.jsx to show pop up?
+  - use absolute position style to make pop up?
 */
 
-export function SubscriptionsWidget(){
+export function SubscriptionsWidget({ subscribeHandler }){
     const [products, setProducts] = useState([]);
     const [owned, setOwned] = useState([]);
     const userId = getCookie("user_id");
@@ -27,20 +29,19 @@ export function SubscriptionsWidget(){
 
     const getSubscriptions = async () => {
 
-        const productQuery = //fix query field and/or table names
+        const productQuery = //fix query field and/or table names - add link field to product2 object
             `
             SELECT
-                Id,
+                ExternalId,
                 Name,
-                Price,
-                Description,
-                link
-            FROM 
-                products p
+                ClickpdxCatalog__MemberPrice__c,
+                Description
+            FROM
+                Product2
             WHERE
-                p.IsActive = true
-                AND p.IsAddOn__c = true
-                AND p.Family = 'Membership';
+                IsActive = true
+                AND IsAddOn__c = true
+                AND Family = 'Membership'
             `
 
         const resp = await client.query(productQuery);
@@ -51,16 +52,13 @@ export function SubscriptionsWidget(){
         
         const ownedQuery = //fix query field and/or table names
             `SELECT
-                p.Id
-            FROM Orders o
-                JOIN OrderItems oi
-                    ON o.id = oi.id
-                JOIN products p
-                    ON oi.productId = p.id
+                Product2.ExternalId
+            FROM
+                OrderItem
             WHERE
-                o.ContactId__c = '${userId}'
-                AND p.IsAddOn__c = true
-                AND p.Family = 'Membership';
+                ContactId__c = '${userId}'
+                AND Product2.IsAddOn__c = true
+                AND Product2.Family = 'Membership'
             `
 
         const resp = await client.query(ownedQuery);
@@ -68,10 +66,10 @@ export function SubscriptionsWidget(){
     }
 
     useEffect(() => {
-        //getSubscriptions();
-        //getOwnedSubs();
-        
-        // test data, delete once SQL is working and uncomment above lines
+        // getSubscriptions();
+        // getOwnedSubs();
+
+        setOwned(["ADDON-BO","ADDON-CLFB"]);
         setProducts([
             {
                 title: "Books Online",
@@ -79,6 +77,8 @@ export function SubscriptionsWidget(){
                 price: 123.45,
                 id: "ADDON-BO",
                 link: "https://bon.ocdla.org",
+                IsAddOn__c: true,
+                Family: "MEMBERSHIP_ADDON"
             },
             {
                 title: "Continuing Legal Education media player",
@@ -86,6 +86,8 @@ export function SubscriptionsWidget(){
                 price: 123.45,
                 id: "ADDON-CLE",
                 link: "https://media.ocdla.org",
+                IsAddOn__c: true,
+                Family: "MEMBERSHIP_ADDON"
             },
             {
                 title: "Criminal Law Form Book",
@@ -93,10 +95,11 @@ export function SubscriptionsWidget(){
                 price: 123.45,
                 id: "ADDON-CLFB",
                 link: "https://bondev.ocdla.org/formbook/1",
+                IsAddOn__c: true,
+                Family: "MEMBERSHIP_ADDON"
             }
         ]);
-        
-        setOwned(['ADDON-BO','ADDON-CLFB']);
+
     }, []);
 
     const sortedProducts = [...products].sort((a, b) => {
@@ -114,7 +117,7 @@ export function SubscriptionsWidget(){
 
                 {
                     sortedProducts.map(
-                        (sub) => <SubscriptionCard key={sub.id} subscription={sub} isOwned={owned.includes(sub.id)} />
+                        (sub) => <SubscriptionCard key={sub.id} subscription={sub} isOwned={owned.includes(sub.id)} subscribeHandler={subscribeHandler} />
                     )
                 }
 
@@ -125,33 +128,29 @@ export function SubscriptionsWidget(){
 }
 
 /**
- *
  * @param {object} subscription - an object containing information about the subscription including title, description, price, id, and a link
  * @param {boolean} [isOwned] - if the subscription is owned by the currently logged in user
  * @param {string} [className] - html classNames to be used with tailwind for to style the object
+ * @param {function} subscribeHandler - the function called when subscribe button is clicked
  * @returns {html}
  */
-
 function SubscriptionCard({ subscription = {}, isOwned = false, className = '', subscribeHandler }) {
     const title = subscription.title || "Error: no title";
     const description = subscription.description || "Error: no description";
     const price = subscription.price || "";
-    const { isOpen, openModal, closeModal } = useModal();
-
-
 
     const handleSubmit = () => {
         if (isOwned) { window.open(subscription.link || "") }
         else {
             subscribeHandler({
                 Id: subscription.id,
-                Name: subscription.title
+                Name: subscription.title,
             });
-        } //create order
+        }
     };
 
     const getMoreInfo = () => {
-        useNavigate(`product/${subscription.id || "undefined"}`)
+
     };
 
     return (
@@ -175,6 +174,24 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
                     </div>
                 )}
             </div>
+        </div>
+    );
+}
+
+/**
+ * @param {object} subscription - an object containing information about the subscription including title, description and price
+ * @param {function} onClose - the function that is called by the close button
+ * @returns {html}
+ */
+function SubscriptionPopUp({ subscription, onClose }){
+    return(
+        <div> 
+            <p> {subscription.title} </p> 
+            <p> {subscription.description} </p> 
+            <p> ${subscription.price} </p> 
+            <Pressable onPress={() => onClose} > 
+                <Text>Close</Text> 
+            </Pressable>
         </div>
     );
 }
