@@ -1,46 +1,93 @@
 import ReactDOM from 'react-dom';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import Button, { CautionButton } from './Button';
 
-
-
-export default function Modal({ isOpen, onClose, confirmAction, content, externalNode, defaultButtons = true }) {
-    // if (!isOpen) return null; // does this "early return" create an issue in some implementations??
-
+export default function Modal({
+    isOpen,
+    onClose,
+    confirmAction,
+    content,
+    steps = null,
+    currentStep = 0,
+    externalNode,
+    defaultButtons = true
+}) {
     const containerRef = useRef(null);
 
-
     useEffect(() => {
-        // Append the external DOM node to the container after the component mounts
         if (containerRef.current && externalNode) {
             containerRef.current.appendChild(externalNode);
         }
 
-        // Optional cleanup function to remove the node when the component unmounts
         return () => {
-            return;
-            if (containerRef.current && externalNode) {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
                 containerRef.current.removeChild(externalNode);
             }
         };
-    }, [externalNode]); // Rerun if the external node changes
+    }, [externalNode]);
 
-    return isOpen && ReactDOM.createPortal(
-        <div id="my-modal" style={{ zIndex: 100, top: "0px", left: "0px", textAlign: "center", height: "100vh", width: "100vw" }} onClick={onClose} className="fixed p-8 bg-black bg-opacity-70">
-            <div style={{ height: "90%", margin: "0 auto", overflowY: "scroll", overflowX: "hidden" }} className="bg-white rounded-xl p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-                {content}
-                <div ref={containerRef} />
-                <div>
-                    {defaultButtons && (
-                        <div>
-                            <button type="button" onClick={onClose} className="bg-gray-300 px-4 py-2 rounded" >
-                                Cancel
-                            </button>
+    if (!isOpen) return null;
+
+    const isMultiStep = Array.isArray(steps) && steps.length > 0;
+    const totalSteps = isMultiStep ? steps.length : 1;
+
+    return ReactDOM.createPortal(
+        <div
+            id="my-modal"
+            aria-modal="true"
+            role="dialog"
+            onClick={onClose}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm"
+        >
+            <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative w-11/12 md:w-3/5 max-w-4xl min-h-[360px] max-h-[85vh] flex flex-col bg-white rounded-2xl p-8 shadow-2xl overflow-hidden border border-gray-100"
+            >
+                <div className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
+                    {isMultiStep ? (
+                        <div
+                            className="flex transition-transform duration-300 ease-in-out w-full"
+                            style={{
+                                width: `${totalSteps * 100}%`,
+                                transform: `translateX(-${(currentStep / totalSteps) * 100}%)`
+                            }}
+                        >
+                            {steps.map((stepNode, index) => (
+                                <div
+                                    key={index}
+                                    style={{ width: `${100 / totalSteps}%` }}
+                                    className="flex flex-col items-center text-center space-y-6 px-4"
+                                >
+                                    {stepNode}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center text-center space-y-6">
+                            {content}
                         </div>
                     )}
-                    {/*<button onClick={confirmAction} className="bg-green-600 text-white px-4 py-2 rounded">Confirm</button>*/}
+
+                    <div ref={containerRef} />
                 </div>
+
+                {defaultButtons && (
+                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
+                        <CautionButton
+                            label="Cancel"
+                            isCancel={true}
+                            action={onClose}
+                        />
+                        {confirmAction && (
+                            <Button
+                                label="Confirm"
+                                action={confirmAction}
+                            />
+                        )}
+                    </div>
+                )}
             </div>
         </div>,
         document.body
-    )
+    );
 }
