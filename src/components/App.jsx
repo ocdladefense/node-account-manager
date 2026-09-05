@@ -7,6 +7,8 @@ import { getCookie } from '@ocdla/salesforce/CookieUtils.js';
 import Menu from './ui/Menu.jsx';
 import ToastProvider from "./ui/notifications/ToastProvider";
 import LoginPrompt from './ui/LoginPrompt.jsx';
+import faviconUrl from '../images/logos/favicon.png';
+
 
 
 let client;
@@ -72,6 +74,17 @@ export default function App() {
 
     const [client, setClient] = useState(null);
     const [appReady, setAppReady] = useState(false);
+
+    useEffect(() => {
+        let link = document.querySelector("link[rel*='icon']");
+        if (!link) {
+            link = document.createElement("link");
+            link.rel = "icon";
+            document.head.appendChild(link);
+        }
+        link.type = "image/png";
+        link.href = faviconUrl;
+    }, []);
 
     useEffect(() => {
         async function fn() {
