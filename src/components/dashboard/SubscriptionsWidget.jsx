@@ -1,77 +1,84 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import Button from "../ui/Button";
+import { useOutletContext } from "react-router-dom";
+import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { CautionButton } from '../ui/Button';
+import Button from "../ui/Button";
 
-// things i might need later
-// import { useOutletContext } from "react-router-dom";
-// import { getCookie } from '@ocdla/salesforce/CookieUtils';
-// let { client } = useOutletContext();
-// let [contacts, setContacts] = useState([]);
-// let userId = getCookie("user_id");
+/* TODO:
+Sub widget
+- function SubscriptionsWidget
+  - update query for products to use correct field names
+    - filter results by:
+      - IsAddOn__c = true
+      - Family = MEMBERSHIP_ADDON
+  - update query for OrderItems to use correct fields
+    - filter results by:
+      - ContactId__c = current user
 
+- function ~SubscriptionCard
+  - make subscribe button create order and open payment modal
+  - make More Information button open product information page
 
-/*
-TODO:
-1. add products to sandbox
-2. flag products as "IsAddOn__c" in and put in same product family
-3. query products for those two properties
-4. ask joseph what how his buttons work and modal work flow 
-    orders gets same data from SF so go look at that
-    servers/order.js gets data to client
-5. subscribe button "does what joseph's buttons do"
-
-
+- create product information page
 */
 
 export function SubscriptionsWidget(){
-    
-    const getSubscriptions = () => {
+    const [products, setProducts] = useState([]);
+    const [owned, setOwned] = useState([]);
+    const userId = getCookie("user_id");
+    let { client } = useOutletContext();
 
-        const testData = [
-            {
-                title: "Books Online",
-                description: "books online membership addon",
-                price: 123.45,
-                id: "ADDON-BO",
-                link: "https://bon.ocdla.org"
-            },
-            {
-                title: "Continuing Legal Education media player",
-                description: "continuing legal education membership addon",
-                price: 123.45,
-                id: "ADDON-CLE",
-                link: "https://media.ocdla.org"
-            },
-            {
-                title: "Criminal Law Form Book",
-                description: "Criminal Law Form Book membership addon",
-                price: 123.45,
-                id: "ADDON-CLFB",
-                link: "https://bondev.ocdla.org/formbook/1"
-            }
-        ];
 
-       return testData
+    const getSubscriptions = async () => {
+
+        const productQuery = //fix query
+            `SELECT 
+                Id
+                Name,
+                Price,
+                Description,
+                link
+            FROM Product2 
+                WHERE IsAddOn__c = true && 
+                Family = 'MEMBERSHIP_ADDON';
+            `
+
+        const resp = await client.query(productQuery);
+        //setProducts(resp.records);
+        setProducts([]);
     }
 
-    const getOwnedSubs = () => {
-        return [
-            "ADDON-BO",
-            "ADDON-CLFB"
-        ];
+    const getOwnedSubs = async () => {
+        
+        const ownedQuery = //fix query
+            `SELECT
+                product2.Id
+            FROM orders o JOIN
+                    orderItems oi ON
+                        o.id = oi.orderId
+            WHERE o.userid = '${userId}'
+            `
+
+        const resp = await client.query(ownedQuery);
+        //setOwned(resp.records);
+        setOwned([]);
     }
 
-    const subscriptions = getSubscriptions();
-    const owned = getOwnedSubs();
+    useEffect(() => {
+        getSubscriptions();
+        getOwnedSubs();        
+    }, []);
 
-    // sort by owned first
-    const sortedSubscriptions = [...subscriptions].sort((a, b) => {
-        const aOwned = owned.includes(a.id);
-        const bOwned = owned.includes(b.id);
+    useEffect(() => {
+        // sort products by owned first
+        setProducts([...products].sort((a, b) => {
+            const aOwned = owned.includes(a.id);
+            const bOwned = owned.includes(b.id);
 
-        return bOwned - aOwned;
-    });
+            return bOwned - aOwned;
+        }));
+    }, [owned]);
 
     return(
         <div>
@@ -80,11 +87,8 @@ export function SubscriptionsWidget(){
             <div className="flex flex-wrap gap-6 mt-6">
 
                 {
-                    sortedSubscriptions.map(
-                        (sub) => {
-                            const isOwned = owned.includes(sub.id);
-                            return <SubscriptionCard key={sub.id} subscription={sub} isOwned={isOwned} />
-                        }
+                    products.map(
+                        (sub) => <SubscriptionCard key={sub.id} subscription={sub} isOwned={owned.includes(sub.id)} />
                     )
                 }
 
@@ -100,7 +104,6 @@ export function SubscriptionsWidget(){
  * @param {string} [className] - html classNames to be used with tailwind for to style the object 
  * @returns {html}
  */
-
 function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
     const title = subscription.title || "Error: no title";
     const description = subscription.description || "Error: no description";
