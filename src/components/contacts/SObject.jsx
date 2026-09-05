@@ -1,6 +1,6 @@
 import { Outlet, useOutletContext } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getContactQuery, fetchPicklistValues } from "./query.js";
+// import { getContactQuery, fetchPicklistValues } from "./query.js";
 
 let picklistValues = {
     salutation: [],

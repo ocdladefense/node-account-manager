@@ -4,6 +4,8 @@ import { useOutletContext } from "react-router-dom";
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { CautionButton } from '../ui/Button';
 import Button from "../ui/Button";
+import useModal from '../hooks/useModal';
+
 
 /* TODO:
 - SubscriptionsWidget
@@ -36,13 +38,13 @@ export function SubscriptionsWidget(){
             FROM 
                 products p
             WHERE
-                p.IsAddOn__c = true
-                AND p.Family = 'MEMBERSHIP_ADDON';
+                p.IsActive = true
+                AND p.IsAddOn__c = true
+                AND p.Family = 'Membership';
             `
 
         const resp = await client.query(productQuery);
-        //setProducts(resp.records);
-        setProducts([]);
+        setProducts(resp.records);
     }
 
     const getOwnedSubs = async () => {
@@ -58,61 +60,94 @@ export function SubscriptionsWidget(){
             WHERE
                 o.ContactId__c = '${userId}'
                 AND p.IsAddOn__c = true
-                AND p.Family = 'MEMBERSHIP_ADDON';
+                AND p.Family = 'Membership';
             `
 
         const resp = await client.query(ownedQuery);
-        //setOwned(resp.records);
-        setOwned([]);
+        setOwned(resp.records);
     }
 
     useEffect(() => {
-        getSubscriptions();
-        getOwnedSubs();        
+        //getSubscriptions();
+        //getOwnedSubs();
+        
+        // test data, delete once SQL is working and uncomment above lines
+        setProducts([
+            {
+                title: "Books Online",
+                description: "books online membership addon",
+                price: 123.45,
+                id: "ADDON-BO",
+                link: "https://bon.ocdla.org",
+            },
+            {
+                title: "Continuing Legal Education media player",
+                description: "continuing legal education membership addon",
+                price: 123.45,
+                id: "ADDON-CLE",
+                link: "https://media.ocdla.org",
+            },
+            {
+                title: "Criminal Law Form Book",
+                description: "Criminal Law Form Book membership addon",
+                price: 123.45,
+                id: "ADDON-CLFB",
+                link: "https://bondev.ocdla.org/formbook/1",
+            }
+        ]);
+        
+        setOwned(['ADDON-BO','ADDON-CLFB']);
     }, []);
 
-    useEffect(() => {
-        // sort products by owned first
-        setProducts([...products].sort((a, b) => {
-            const aOwned = owned.includes(a.id);
-            const bOwned = owned.includes(b.id);
+    const sortedProducts = [...products].sort((a, b) => {
+        const aOwned = owned.includes(a.id);
+        const bOwned = owned.includes(b.id);
 
-            return bOwned - aOwned;
-        }));
-    }, [owned]);
+        return bOwned - aOwned;
+    });
 
-    return(
+    return (
         <div>
             <h1 className="mt-8 text-2xl font-bold mb-4">Add to your membership</h1>
 
             <div className="flex flex-wrap gap-6 mt-6">
 
                 {
-                    products.map(
+                    sortedProducts.map(
                         (sub) => <SubscriptionCard key={sub.id} subscription={sub} isOwned={owned.includes(sub.id)} />
                     )
                 }
 
             </div>
+
         </div >
     )
 }
 
 /**
- * 
+ *
  * @param {object} subscription - an object containing information about the subscription including title, description, price, id, and a link
  * @param {boolean} [isOwned] - if the subscription is owned by the currently logged in user
- * @param {string} [className] - html classNames to be used with tailwind for to style the object 
+ * @param {string} [className] - html classNames to be used with tailwind for to style the object
  * @returns {html}
  */
-function SubscriptionCard({ subscription={}, isOwned = false , className = '' }) {
+
+function SubscriptionCard({ subscription = {}, isOwned = false, className = '', subscribeHandler }) {
     const title = subscription.title || "Error: no title";
     const description = subscription.description || "Error: no description";
     const price = subscription.price || "";
+    const { isOpen, openModal, closeModal } = useModal();
+
+
 
     const handleSubmit = () => {
-        if (isOwned) {window.open(subscription.link || "")}
-        else {}//create order
+        if (isOwned) { window.open(subscription.link || "") }
+        else {
+            subscribeHandler({
+                Id: subscription.id,
+                Name: subscription.title
+            });
+        } //create order
     };
 
     const getMoreInfo = () => {
@@ -129,17 +164,16 @@ function SubscriptionCard({ subscription={}, isOwned = false , className = '' })
                 <p>${price}</p>
 
                 {subscription.id != null && (
-                    <>
-                        <Button label="More Information" action={getMoreInfo} />
+                    <div className="flex">
+                        <Button label="More Information" size="px-6 py-2 w-fit min-w-45" action={getMoreInfo} />
 
                         {isOwned ? (
-                            <Button label="Open" action={handleSubmit} />
+                            <Button label="Open" size="px-6 py-2 w-fit" action={handleSubmit} />
                         ) : (
-                            <CautionButton label="Subscribe" action={handleSubmit} />
+                            <CautionButton label="Subscribe" size="px-6 py-2 w-fit" action={handleSubmit} />
                         )}
-                    </>
+                    </div>
                 )}
-
             </div>
         </div>
     );

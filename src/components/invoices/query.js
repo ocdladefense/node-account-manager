@@ -9,6 +9,5 @@ export function getInvoiceHistory(accountId) {
         FormattedActivatedDate__c
     FROM Order 
     WHERE AccountId = '${accountId}'
-    AND StatusCode = 'Draft'
-    AND PostingEntity__c = 'Invoice'`;
+    AND PostingEntity__c = 'Invoice' ORDER BY EffectiveDate DESC LIMIT 100`;
 }

@@ -23,10 +23,13 @@ import JobForm from '../components/jobs/JobForm.jsx';
 import JobEdit from "../components/jobs/JobEdit.jsx";
 import InvoiceHistory from "../components/invoices/InvoiceHistory.jsx";
 import InvoiceDetails from '../components/invoices/InvoiceDetails.jsx';
-
 import SObject from "../components/contacts/SObject.jsx";
 
-if (process.env.NODE_ENV === 'debug') {
+
+
+
+if (process.env.NODE_ENV === 'debug')
+{
     setDebugLevel(1);
 }
 
@@ -81,6 +84,10 @@ root.render(
 
                 <Route path="contact" element={<Contact />}>
                     <Route path=":contactId" element={<Contact />} />
+                </Route>
+
+
+                <Route path="profile" element={<SObject />}>
                     <Route path=":contactId/edit" element={<ContactForm />} />
                     <Route path=":contactId/expert" element={<ContactExpertForm />} />
                 </Route>

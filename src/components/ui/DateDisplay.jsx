@@ -23,7 +23,8 @@ export default function DateDisplay({
     };
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString + "T00:00:00");
+        const dateOnly = dateString.split("T")[0];
+        const date = new Date(dateOnly + "T00:00:00");
 
         return date.toLocaleDateString("en-US", {
             year: "numeric",
@@ -31,7 +32,6 @@ export default function DateDisplay({
             day: "numeric",
         });
     };
-
 
 
 
