@@ -6,21 +6,15 @@ import { CautionButton } from '../ui/Button';
 import Button from "../ui/Button";
 
 /* TODO:
-Sub widget
-- function SubscriptionsWidget
-  - update query for products to use correct field names
-    - filter results by:
-      - IsAddOn__c = true
-      - Family = MEMBERSHIP_ADDON
-  - update query for OrderItems to use correct fields
-    - filter results by:
-      - ContactId__c = current user
+- SubscriptionsWidget
+  - update query for products to use correct field and/or table names
+  - update query for owned products to use correct field and/or table names
 
-- function ~SubscriptionCard
-  - make subscribe button create order and open payment modal
-  - make More Information button open product information page
+- SubscriptionCard
+  - make "subscribe" button create order and open payment modal
+  - make "More Information" button open product information page
 
-- create product information page
+- create product information page or pop up
 */
 
 export function SubscriptionsWidget(){
@@ -29,19 +23,21 @@ export function SubscriptionsWidget(){
     const userId = getCookie("user_id");
     let { client } = useOutletContext();
 
-
     const getSubscriptions = async () => {
 
-        const productQuery = //fix query
-            `SELECT 
-                Id
+        const productQuery = //fix query field and/or table names
+            `
+            SELECT
+                Id,
                 Name,
                 Price,
                 Description,
                 link
-            FROM Product2 
-                WHERE IsAddOn__c = true && 
-                Family = 'MEMBERSHIP_ADDON';
+            FROM 
+                products p
+            WHERE
+                p.IsAddOn__c = true
+                AND p.Family = 'MEMBERSHIP_ADDON';
             `
 
         const resp = await client.query(productQuery);
@@ -51,13 +47,18 @@ export function SubscriptionsWidget(){
 
     const getOwnedSubs = async () => {
         
-        const ownedQuery = //fix query
+        const ownedQuery = //fix query field and/or table names
             `SELECT
-                product2.Id
-            FROM orders o JOIN
-                    orderItems oi ON
-                        o.id = oi.orderId
-            WHERE o.userid = '${userId}'
+                p.Id
+            FROM Orders o
+                JOIN OrderItems oi
+                    ON o.id = oi.id
+                JOIN products p
+                    ON oi.productId = p.id
+            WHERE
+                o.ContactId__c = '${userId}'
+                AND p.IsAddOn__c = true
+                AND p.Family = 'MEMBERSHIP_ADDON';
             `
 
         const resp = await client.query(ownedQuery);
