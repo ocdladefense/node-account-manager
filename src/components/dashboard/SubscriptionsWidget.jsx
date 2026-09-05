@@ -164,7 +164,7 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
                 <p>${price}</p>
 
                 {subscription.id != null && (
-                    <div className="flex">
+                    <div className="flex mx-auto">
                         <Button label="More Information" size="px-6 py-2 w-fit min-w-45" action={getMoreInfo} />
 
                         {isOwned ? (
