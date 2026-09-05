@@ -24,12 +24,12 @@ import JobEdit from "../components/jobs/JobEdit.jsx";
 import InvoiceHistory from "../components/invoices/InvoiceHistory.jsx";
 import InvoiceDetails from '../components/invoices/InvoiceDetails.jsx';
 import SObject from "../components/contacts/SObject.jsx";
+import PaymentMethodTest from "../components/payment-methods/paymentMethodTest.jsx";
 
 
 
 
-if (process.env.NODE_ENV === 'debug')
-{
+if (process.env.NODE_ENV === 'debug') {
     setDebugLevel(1);
 }
 
@@ -115,6 +115,8 @@ root.render(
                     <Route path=":jobId" element={<Job />} />
                     <Route path=":jobId/edit" element={<JobEdit />} />
                 </Route>
+
+                <Route path="/payment-method-test" element={<PaymentMethodTest />} />
 
 
             </Route>
