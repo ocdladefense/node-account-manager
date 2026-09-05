@@ -32,7 +32,7 @@ export function BackButton({ label, className = " ", buttonType = "button", acti
         <button
             type={buttonType}
             onClick={action}
-            className={className || "px-6 w-25 py-1 cursor-pointer rounded-md bg-white text-black cursor-pointer border border-black"}
+            className={className || "px-6 w-25 py-1 rounded-md bg-white text-black cursor-pointer border border-black"}
 
         >
             {label}
