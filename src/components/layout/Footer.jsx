@@ -1,11 +1,11 @@
 // import { vNode, View } from "@ocdla/view";
-import Legal from "@ocdla/global-components/src/Legal";
-import Sitemap from "@ocdla/global-components/src/Sitemap";
-import SitemapCategory from "@ocdla/global-components/src/SitemapCategory";
-import Social from "@ocdla/global-components/src/Social";
-import Contacts from "@ocdla/global-components/src/Contacts";
-import Logo from "@ocdla/global-components/src/Logo";
-import GoogleMaps from "@ocdla/global-components/src/GoogleMaps";
+// import Legal from "@ocdla/global-components/src/Legal";
+// import Sitemap from "@ocdla/global-components/src/Sitemap";
+// import SitemapCategory from "@ocdla/global-components/src/SitemapCategory";
+// import Social from "@ocdla/global-components/src/Social";
+// import Contacts from "@ocdla/global-components/src/Contacts";
+// import Logo from "@ocdla/global-components/src/Logo";
+// import GoogleMaps from "@ocdla/global-components/src/GoogleMaps";
 
 const siteInfo = {
     organization: "Oregon Criminal Defense Lawyers Association",
