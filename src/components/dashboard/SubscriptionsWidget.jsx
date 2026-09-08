@@ -4,21 +4,6 @@ import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { CautionButton } from '../ui/Button';
 import Button from "../ui/Button";
 
-
-/* TODO:
-- SubscriptionsWidget
-    - fix subcard sorting
-
-- SubscriptionCard
-  - make "subscribe" button create order and open payment modal
-  - make "More Information" button open SubscriptionPopUp
-
-- SubscriptionPopUp
-  - add style to the pop up
-  - somehow use the useModal in homepage.jsx to show pop up?
-  - use absolute position style to make pop up?
-*/
-
 export function SubscriptionsWidget({ subscribeHandler }){
     const [subs, setSubs] = useState([]);
     const [ownershipStatus, setOwnershipStatus] = useState([]);
@@ -70,12 +55,35 @@ export function SubscriptionsWidget({ subscribeHandler }){
         getOwnershipStatus(ids);
     }, [subs])
 
-    // const sortedSubs = [...subs].sort((a, b) => {
-    //     const aOwned = ownershipStatus.includes(a.Id);
-    //     const bOwned = ownershipStatus.includes(b.Id);
+    const sortedSubs = [...subs].sort((a, b) => {
 
-    //     return bOwned - aOwned;
-    // });
+        const ownershipA = ownershipStatus.find(status => {
+            return status.Id === a.Id;
+        });
+
+        const ownershipB = ownershipStatus.find(status => {
+            return status.Id === b.Id;
+        });
+
+        let aOwned = false;
+        if (ownershipA) {
+            aOwned = ownershipA.Owned;
+        }
+
+        let bOwned = false;
+        if (ownershipB) {
+            bOwned = ownershipB.Owned;
+        }
+
+        if (aOwned && !bOwned) {
+            return -1;
+        }
+
+        if (!aOwned && bOwned) {
+            return 1;
+        }
+        return 0;
+    });
 
     return (
         <div>
@@ -84,7 +92,7 @@ export function SubscriptionsWidget({ subscribeHandler }){
             <div className="flex flex-wrap gap-6 mt-6">
 
                 {
-                    subs.map((sub) => {
+                    sortedSubs.map((sub) => {
                         let ownership = ownershipStatus.filter((item) => {
                             return item.Id == sub.Id;
                         });
@@ -124,7 +132,7 @@ function SubCard({ subscription = {}, isOwned = false, className = '', subscribe
     };
 
     const getMoreInfo = () => {
-
+        window.open(subscription.CatalogUrl__c || null)
     };
 
     return (
@@ -137,35 +145,31 @@ function SubCard({ subscription = {}, isOwned = false, className = '', subscribe
                 {price && <p>${price}</p>}
 
                 {subscription.Id != null && (
-                    <div className="flex mx-auto">
-                        <Button label="More Information" size="px-6 py-2 w-fit min-w-45" action={getMoreInfo} />
+                    isOwned ? (
+                        <div>
+                            <Button
+                                label="Open"
+                                size="px-6 py-2 w-fit"
+                                action={handleSubmit}
+                            />
+                        </div>
+                    ) : (
+                        <div className="flex mx-auto">
+                            <Button
+                                label="More Information"
+                                size="px-6 py-2 w-fit min-w-45"
+                                action={getMoreInfo}
+                            />
 
-                        {isOwned ? (
-                            <Button label="Open" size="px-6 py-2 w-fit" action={handleSubmit} />
-                        ) : (
-                            <CautionButton label="Subscribe" size="px-6 py-2 w-fit" action={handleSubmit} />
-                        )}
-                    </div>
+                            <CautionButton
+                                label="Subscribe"
+                                size="px-6 py-2 w-fit"
+                                action={handleSubmit}
+                            />
+                        </div>
+                    )
                 )}
             </div>
-        </div>
-    );
-}
-
-/**
- * @param {object} subscription - an object containing information about the subscription including title, description and price
- * @param {function} onClose - the function that is called by the close button
- * @returns {html}
- */
-function SubPopUp({ subscription, onClose }){
-    return(
-        <div> 
-            <p> {subscription.title} </p> 
-            <p> {subscription.description} </p> 
-            <p> ${subscription.price} </p> 
-            <Pressable onPress={() => onClose} > 
-                <Text>Close</Text> 
-            </Pressable>
         </div>
     );
 }
