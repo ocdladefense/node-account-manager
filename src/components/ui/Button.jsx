@@ -27,12 +27,12 @@ export function CautionButton({ label, size = "px-6 w-50 py-2 mx-2.5", className
     )
 }
 
-export function BackButton({ label, className = " ", buttonType = "button", action }) {
+export function BackButton({ label, className = "", buttonType = "button", action }) {
     return (
         <button
             type={buttonType}
             onClick={action}
-            className={className || "px-6 w-25 py-1 rounded-md bg-white text-black cursor-pointer border border-black"}
+            className={className || "px-6 w-25 py-1 cursor-pointer rounded-md bg-white text-black border border-black"}
 
         >
             {label}
