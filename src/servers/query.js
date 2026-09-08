@@ -16,7 +16,7 @@ function buildQuery(name, cookies, eventId, productIds) {
         return "SELECT Id, Name, Start_Date__c, Description__c FROM Event__c WHERE Is_Active__c = True AND Start_Date__c >= TODAY ORDER BY Start_Date__c ASC LIMIT 5";
     }
     else if (name == "subs"){
-        return `SELECT Id, Name, ClickpdxCatalog__MemberPrice__c, ClickpdxCatalog__StandardPrice__c, Description, ClickpdxCatalog__DownloadUrl__c FROM Product2 WHERE IsActive = true AND IsAddOn__c = true AND Family = 'Publications'`
+        return `SELECT Id, Name, ClickpdxCatalog__MemberPrice__c, ClickpdxCatalog__StandardPrice__c, Description, ClickpdxCatalog__DownloadUrl__c, CatalogUrl__c FROM Product2 WHERE IsActive = true AND IsAddOn__c = true AND Family = 'Publications'`
     }
     else if (name == "owned") {
         return `SELECT Product2.Id FROM OrderItem WHERE Contact__c = '${cookies.contact_id}' AND Product2.Id IN(${formatListForSql(productIds)}) AND Order.StatusCode != 'Draft'`
