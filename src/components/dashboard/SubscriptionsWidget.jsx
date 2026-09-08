@@ -7,9 +7,7 @@ import Button from "../ui/Button";
 
 /* TODO:
 - SubscriptionsWidget
-  - update query for products to use correct field and/or table names
-    - add link field to product2 object
-  - update query for owned products to use correct field and/or table names
+    - fix subcard sorting
 
 - SubscriptionCard
   - make "subscribe" button create order and open payment modal
@@ -22,92 +20,62 @@ import Button from "../ui/Button";
 */
 
 export function SubscriptionsWidget({ subscribeHandler }){
-    const [products, setProducts] = useState([]);
-    const [owned, setOwned] = useState([]);
-    const userId = getCookie("user_id");
+    const [subs, setSubs] = useState([]);
+    const [ownershipStatus, setOwnershipStatus] = useState([]);
+    const contactId = getCookie("contact_id");
     let { client } = useOutletContext();
 
-    const getSubscriptions = async () => {
-
-        const productQuery = //fix query field and/or table names - add link field to product2 object
-            `
-            SELECT
-                ExternalId,
-                Name,
-                ClickpdxCatalog__MemberPrice__c,
-                Description
-            FROM
-                Product2
-            WHERE
-                IsActive = true
-                AND IsAddOn__c = true
-                AND Family = 'Membership'
-            `
-
-        const resp = await client.query(productQuery);
-        setProducts(resp.records);
-    }
-
-    const getOwnedSubs = async () => {
-        
-        const ownedQuery = //fix query field and/or table names
-            `SELECT
-                Product2.ExternalId
-            FROM
-                OrderItem
-            WHERE
-                ContactId__c = '${userId}'
-                AND Product2.IsAddOn__c = true
-                AND Product2.Family = 'Membership'
-            `
-
-        const resp = await client.query(ownedQuery);
-        setOwned(resp.records);
-    }
-
     useEffect(() => {
-        // getSubscriptions();
-        // getOwnedSubs();
+        const getSubscriptions = async () => {
+            try {
+                const resp = await fetch("/api/query/subs");
+                const data = await resp.json();
+                const records = data.records;
 
-        setOwned(["ADDON-BO","ADDON-CLFB"]);
-        setProducts([
-            {
-                title: "Books Online",
-                description: "books online membership addon",
-                price: 123.45,
-                id: "ADDON-BO",
-                link: "https://bon.ocdla.org",
-                IsAddOn__c: true,
-                Family: "MEMBERSHIP_ADDON"
-            },
-            {
-                title: "Continuing Legal Education media player",
-                description: "continuing legal education membership addon",
-                price: 123.45,
-                id: "ADDON-CLE",
-                link: "https://media.ocdla.org",
-                IsAddOn__c: true,
-                Family: "MEMBERSHIP_ADDON"
-            },
-            {
-                title: "Criminal Law Form Book",
-                description: "Criminal Law Form Book membership addon",
-                price: 123.45,
-                id: "ADDON-CLFB",
-                link: "https://bondev.ocdla.org/formbook/1",
-                IsAddOn__c: true,
-                Family: "MEMBERSHIP_ADDON"
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve events."
+                    );
+                }
+
+                setSubs(records);
+            } catch (error) {
+                console.error("Error fetching subscriptions:", error);
             }
-        ]);
+        }
 
+        getSubscriptions();
     }, []);
 
-    const sortedProducts = [...products].sort((a, b) => {
-        const aOwned = owned.includes(a.id);
-        const bOwned = owned.includes(b.id);
+    useEffect(() => {
+        const getOwnershipStatus = async (ids) => {
+            try {
+                const resp = await fetch(`/api/query/owned?ids=${ids}`);
+                const data = await resp.json();
+                const records = data.records;
 
-        return bOwned - aOwned;
-    });
+                if (!resp.ok) {
+                    throw new Error(
+                        data.error || "Unable to retrieve events."
+                    );
+                }
+
+                setOwnershipStatus(records);
+            } catch (error) {
+                console.error("Error fetching owned:", error);
+            }
+        }
+
+        let ids = subs.map((sub) => sub.Id).join(",");
+        getOwnershipStatus(ids);
+    }, [subs])
+
+    // const sortedSubs = [...subs].sort((a, b) => {
+    //     const aOwned = ownershipStatus.includes(a.Id);
+    //     const bOwned = ownershipStatus.includes(b.Id);
+
+    //     return bOwned - aOwned;
+    // });
 
     return (
         <div>
@@ -116,8 +84,14 @@ export function SubscriptionsWidget({ subscribeHandler }){
             <div className="flex flex-wrap gap-6 mt-6">
 
                 {
-                    sortedProducts.map(
-                        (sub) => <SubscriptionCard key={sub.id} subscription={sub} isOwned={owned.includes(sub.id)} subscribeHandler={subscribeHandler} />
+                    subs.map((sub) => {
+                        let ownership = ownershipStatus.filter((item) => {
+                            return item.Id == sub.Id;
+                        });
+                        let ownedItem = ownership[0] || {Owned: false};
+                        let isOwned = ownedItem.Owned;
+                        return <SubCard key={sub.Id} subscription={sub} isOwned={isOwned} subscribeHandler={subscribeHandler} />
+                    }
                     )
                 }
 
@@ -134,17 +108,17 @@ export function SubscriptionsWidget({ subscribeHandler }){
  * @param {function} subscribeHandler - the function called when subscribe button is clicked
  * @returns {html}
  */
-function SubscriptionCard({ subscription = {}, isOwned = false, className = '', subscribeHandler }) {
-    const title = subscription.title || "Error: no title";
-    const description = subscription.description || "Error: no description";
-    const price = subscription.price || "";
+function SubCard({ subscription = {}, isOwned = false, className = '', subscribeHandler }) {
+    const title = subscription.Name || "Error: no title";
+    const description = subscription.Description || "Error: no description";
+    const price = subscription.ClickpdxCatalog__MemberPrice__c || subscription.ClickpdxCatalog__StandardPrice__c || "0.00";
 
     const handleSubmit = () => {
-        if (isOwned) { window.open(subscription.link || "") }
+        if (isOwned) { window.open(subscription.ClickpdxCatalog__DownloadUrl__c || null) }
         else {
             subscribeHandler({
-                Id: subscription.id,
-                Name: subscription.title,
+                Id: subscription.Id,
+                Name: subscription.Name,
             });
         }
     };
@@ -160,9 +134,9 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
                 <h2 className="card-title">{title}</h2>
 
                 <p>{description}</p>
-                <p>${price}</p>
+                {price && <p>${price}</p>}
 
-                {subscription.id != null && (
+                {subscription.Id != null && (
                     <div className="flex mx-auto">
                         <Button label="More Information" size="px-6 py-2 w-fit min-w-45" action={getMoreInfo} />
 
@@ -183,7 +157,7 @@ function SubscriptionCard({ subscription = {}, isOwned = false, className = '', 
  * @param {function} onClose - the function that is called by the close button
  * @returns {html}
  */
-function SubscriptionPopUp({ subscription, onClose }){
+function SubPopUp({ subscription, onClose }){
     return(
         <div> 
             <p> {subscription.title} </p> 
