@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu";
 import Button, { CautionButton, BackButton } from "../ui/Button.jsx";
-import CardSelection from "../payment/CardSelection.jsx";
+import SelectPaymentMethod from "../payment/SelectPaymentMethod.jsx";
 /// NOTE THIS is the "last step" of our multi-step order modal.  It should submit the form values for all previous steps.
 // Good luck :-)
 
@@ -49,8 +49,7 @@ export default function OrderConfirmation({ contactIds, products, onComplete, on
                             <p>&nbsp;</p>
                             <div>
                                 <Button label="Pay Now" buttonType="button" action={() => {
-                                    if (!productId)
-                                    {
+                                    if (!productId) {
                                         alert("Please select an event ticket before proceeding.");
                                         return;
                                     }
@@ -62,7 +61,7 @@ export default function OrderConfirmation({ contactIds, products, onComplete, on
 
                         {/* Slide 2: Sibling of Slide 1 under the w-[200%] parent */}
                         <div className="w-1/2 flex flex-col items-center space-y-4 px-4 pb-32">
-                            <CardSelection />
+                            <SelectPaymentMethod />
 
                             <div className="flex gap-3 pt-4">
                                 <Button label="Register" buttonType="submit" form="order-confirmation" />
@@ -95,8 +94,7 @@ export default function OrderConfirmation({ contactIds, products, onComplete, on
 
         const result = await resp.json();
 
-        if (!resp.ok)
-        {
+        if (!resp.ok) {
             console.error("Order failed:", result);
 
             onError(result.error || "Order could not be created.");
