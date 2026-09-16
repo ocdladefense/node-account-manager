@@ -14,19 +14,21 @@ export default function Modal({
 }) {
 
     const containerRef = useRef(null);
-    const [currentStep, setCurrentStep] = useState(0);
+    const [currentStep, setCurrentStep] = useState(1);
     // const [steps, setSteps] = useState();
+
+    let getNextStep = function() {
+        return currentStep + 1;
+    };
 
 
     useEffect(() => {
-        if (containerRef.current && externalNode)
-        {
+        if (containerRef.current && externalNode) {
             containerRef.current.appendChild(externalNode);
         }
 
         return () => {
-            if (containerRef.current && externalNode && containerRef.current.contains(externalNode))
-            {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -68,17 +70,26 @@ export default function Modal({
                             className="flex transition-transform duration-300 ease-in-out w-full"
                             style={{
                                 width: `${totalSteps * 100}%`,
-                                transform: `translateX(-${(currentStep / totalSteps) * 100}%)`
+                                transform: `translateX(-${((currentStep - 1) / totalSteps) * 100}%)`
                             }}
                         >
                             {Children.map(children, (stepNode, index) => {
+
+                                let step = index + 1;
+
+                                let _getNextStep = stepNode.props.getNextStep;
+
+                                if (currentStep == step && _getNextStep) {
+                                    getNextStep = _getNextStep;
+                                }
+
                                 return (
                                     <div
                                         key={index}
                                         style={{ width: `${100 / totalSteps}%` }}
                                         className="flex flex-col items-center text-center space-y-6 px-4"
                                     >{/* Make sure that this cloneElement syntax, below, doesn't interfere with properties we've already passed to these components. */}
-                                        {isValidElement(stepNode) ? cloneElement(stepNode, { nextStep: (stepNumber) => setCurrentStep(stepNumber) }) : stepNode}
+                                        {stepNode}
                                     </div>
                                 );
                             })}
@@ -103,8 +114,8 @@ export default function Modal({
                     />
 
                     <Button
-                        label={isMultiStep && currentStep < totalSteps - 1 ? 'Next' : 'Confirm'}
-                        action={() => { if (isMultiStep && currentStep < totalSteps - 1) { setCurrentStep(currentStep + 1) } else { onClose() } }}
+                        label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
+                        action={() => { if (isMultiStep && currentStep < totalSteps) { let theNextStep = getNextStep(); setCurrentStep(theNextStep); } else { onClose() } }}
                     />
 
                 </div>
