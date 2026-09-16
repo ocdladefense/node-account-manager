@@ -7,7 +7,6 @@ import Button, { CautionButton, BackButton } from './Button';
 export default function Modal({
     isOpen,
     onClose,
-    confirmAction,
     content,
     externalNode,
     children,
@@ -15,20 +14,23 @@ export default function Modal({
 
     const containerRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(1);
-    // const [steps, setSteps] = useState();
 
+
+    // Default "next step getter" just increments the current step by 1.
     let getNextStep = function() {
         return currentStep + 1;
     };
 
 
     useEffect(() => {
-        if (containerRef.current && externalNode) {
+        if (containerRef.current && externalNode)
+        {
             containerRef.current.appendChild(externalNode);
         }
 
         return () => {
-            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode))
+            {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -37,7 +39,11 @@ export default function Modal({
     if (!isOpen) return null;
 
     const isMultiStep = Children.count(children) > 1;
-    const totalSteps = isMultiStep && Children.count(children);
+    const totalSteps = Children.count(children);
+
+
+
+
 
     return ReactDOM.createPortal(
         <div
@@ -79,7 +85,8 @@ export default function Modal({
 
                                 let _getNextStep = stepNode.props.getNextStep;
 
-                                if (currentStep == step && _getNextStep) {
+                                if (currentStep == step && _getNextStep)
+                                {
                                     getNextStep = _getNextStep;
                                 }
 
@@ -88,7 +95,7 @@ export default function Modal({
                                         key={index}
                                         style={{ width: `${100 / totalSteps}%` }}
                                         className="flex flex-col items-center text-center space-y-6 px-4"
-                                    >{/* Make sure that this cloneElement syntax, below, doesn't interfere with properties we've already passed to these components. */}
+                                    >
                                         {stepNode}
                                     </div>
                                 );
@@ -115,7 +122,17 @@ export default function Modal({
 
                     <Button
                         label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
-                        action={() => { if (isMultiStep && currentStep < totalSteps) { let theNextStep = getNextStep(); setCurrentStep(theNextStep); } else { onClose() } }}
+                        action={() => {
+                            if (isMultiStep && currentStep < totalSteps)
+                            {
+                                let formData = new FormData(document.getElementById("batch-action"));
+                                let theNextStep = getNextStep(formData);
+                                setCurrentStep(theNextStep);
+                            } else
+                            {
+                                onClose();
+                            }
+                        }}
                     />
 
                 </div>

@@ -7,9 +7,10 @@ import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import DropMenu from "../ui/form/DropMenu";
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
-// import OrderConfirmation from "../orders/OrderConfirmation.jsx";
+import ConfirmOrder from "../orders/ConfirmOrder.jsx";
 import SelectProduct from "../orders/SelectProduct.jsx";
 import SelectPaymentMethod from "../payment/SelectPaymentMethod.jsx";
+import NewPaymentMethod from "../payment/NewPaymentMethod.jsx";
 
 export default function AccountContacts() {
 
@@ -32,11 +33,13 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEventProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -44,7 +47,8 @@ export default function AccountContacts() {
 
                 setProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -62,11 +66,13 @@ export default function AccountContacts() {
     // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEvents = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/events");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve events."
                     );
@@ -74,7 +80,8 @@ export default function AccountContacts() {
 
                 setEvents(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching events:",
                     error
@@ -89,11 +96,13 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -101,7 +110,8 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -116,29 +126,31 @@ export default function AccountContacts() {
     const handleCheckboxChange = (event) => {
         const { value, checked } = event.target;
 
-        if (checked) {
+        if (checked)
+        {
             // Add the value to the array if checked
             setSelectedContactIds([...selectedContactIds, value]);
-        } else {
+        } else
+        {
             // Filter out the value from the array if unchecked
             setSelectedContactIds(selectedContactIds.filter((item) => item !== value));
         }
     };
 
 
+
+
     return (
 
-        <form id="select-contacts">
+        <form id="batch-action">
             <div className="w-full">
 
                 {/*-------------------- START OF MODAL SECTION -------------------- */}
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={true}>
                     <SelectProduct contactIds={selectedContactIds} products={products} />
                     <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentTypeId") == "new_card" ? 3 : 4} />
-                    <div>Step 3</div>
-                    <div>Step 4</div>
-                    {/* <NewPaymentMethod /> */}
-                    {/* <ConfirmPurchase onComplete={(postingEntity, orderId) => {
+                    <NewPaymentMethod />
+                    <ConfirmOrder onComplete={(postingEntity, orderId) => {
 
                         let orderType = postingEntity === "Invoice" ? "invoice" : "order";
                         CreateToast(NewToast("Order created successfully."));
@@ -146,8 +158,7 @@ export default function AccountContacts() {
                         closeModal();
 
                         navigate(`/${orderType}/${orderId}`);
-                    }} onError={(error) => CreateToast(NewToast(error))} /> */}
-
+                    }} onError={(error) => CreateToast(NewToast(error))} />
                 </Modal>
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 

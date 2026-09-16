@@ -3,7 +3,7 @@ import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
 import Modal from './ui/Modal';
 import useModal from './hooks/useModal';
-import OrderConfirmation from './orders/OrderConfirmation';
+import ConfirmOrder from './orders/ConfirmOrder';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { useNavigate } from "react-router-dom";
 import { useToast, NewToast } from "./ui/notifications/ToastService";
@@ -27,11 +27,13 @@ export default function HomePage() {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/event-products?eventId=" + queryParam);
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve event products."
                     );
@@ -39,7 +41,8 @@ export default function HomePage() {
 
                 setProducts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching event products:",
                     error
@@ -89,35 +92,7 @@ export default function HomePage() {
                 <SubscriptionsWidget subscribeHandler={openOrderConfirmation} />
 
                 {/*-------------------- START OF MODAL SECTION -------------------- */}
-                <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={false}
-                    content={
-                        <div>
-                            <OrderConfirmation
-                                closeModal={closeModal}
-                                products={products}
-                                contactIds={[contactId]}
-                                source={source}
-                                onComplete={(postingEntity, orderId) => {
-                                    let orderType = postingEntity === "Invoice" ? "invoice" : "order";
-                                    CreateToast(NewToast("Order created successfully."));
 
-                                    closeModal();
-
-                                    navigate(`/${orderType}/${orderId}`);
-                                }}
-                                onError={(error) => CreateToast(
-                                    <div className="bg-red-500 text-black px-6 py-4 text-lg font-semibold rounded-lg shadow-lg">
-                                        {error}
-                                    </div>
-                                )}
-                            >
-                                {source == "event" && <EventRegistrationLabel label={label} contacts={[contactId]} />}
-                                {source == "subscription" && <MembershipAddOnLabel product={products[0]} />}
-                                {source == "membership" && <MembershipRenewalLabel />}
-                            </OrderConfirmation>
-                        </div>
-                    }
-                />
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 
             </div>
