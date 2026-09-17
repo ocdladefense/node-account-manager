@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu.jsx";
 
-export default function SelectProduct({ contactIds, products }) {
 
 
+export default function SelectProduct({ products }) {
+
+
+    // const [products, setProducts] = useState([]);
     const [productIds, setProductIds] = useState(products.length === 1 ? [products[0].Id] : []);
 
     const selectedProduct = products.length === 1 ? products[0] : products.find(
@@ -12,14 +15,42 @@ export default function SelectProduct({ contactIds, products }) {
 
 
 
+    // This fetch is for populating the drop down menu for the registration modal.
+    useEffect(() => {
+        const fetchEventProducts = async () => {
+            try
+            {
+                const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
+                const data = await resp.json();
+
+                if (!resp.ok)
+                {
+                    throw new Error(
+                        data.error || "Unable to retrieve event products."
+                    );
+                }
+
+                setProducts(data.records);
+
+            } catch (error)
+            {
+                console.error(
+                    "Error fetching event products:",
+                    error
+                );
+            }
+        };
+
+        if (!selectedEvent) return;
+        fetchEventProducts();
+    }, [selectedEvent]);
+
+
 
 
     return (
 
         <div>
-
-
-            <input name="contactIds" type="hidden" value={contactIds} readOnly />
             <input name="productIds" type="hidden" value={productIds} readOnly />
 
             <div className="overflow-hidden w-full">

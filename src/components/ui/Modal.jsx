@@ -20,6 +20,7 @@ export default function Modal({
     let getNextStep = function() {
         return currentStep + 1;
     };
+    let onSubmit = function() { console.log("Executing default submit.") };
 
 
     useEffect(() => {
@@ -42,6 +43,18 @@ export default function Modal({
     const totalSteps = Children.count(children);
 
 
+
+    console.log("Current step:", currentStep);
+    console.log("Total steps:", totalSteps);
+    let nextAction = isMultiStep && currentStep < totalSteps ?
+        () => {
+            let formData = new FormData(document.getElementById("batch-action"));
+            let theNextStep = getNextStep(formData);
+            setCurrentStep(theNextStep);
+        } :
+        () => {
+            onSubmit();
+        };
 
 
 
@@ -83,11 +96,16 @@ export default function Modal({
 
                                 let step = index + 1;
 
+
                                 let _getNextStep = stepNode.props.getNextStep;
 
-                                if (currentStep == step && _getNextStep)
+                                if (step == currentStep && _getNextStep)
                                 {
                                     getNextStep = _getNextStep;
+                                }
+                                if (step == currentStep && currentStep == totalSteps && stepNode.props.onSubmit)
+                                {
+                                    onSubmit = stepNode.props.onSubmit;
                                 }
 
                                 return (
@@ -120,20 +138,11 @@ export default function Modal({
                         action={onClose}
                     />
 
-                    <Button
-                        label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
-                        action={() => {
-                            if (isMultiStep && currentStep < totalSteps)
-                            {
-                                let formData = new FormData(document.getElementById("batch-action"));
-                                let theNextStep = getNextStep(formData);
-                                setCurrentStep(theNextStep);
-                            } else
-                            {
-                                onClose();
-                            }
-                        }}
-                    />
+                    {currentStep == totalSteps ? <input type="submit" value="Submit me" form="batch-action" /> :
+                        <Button
+                            label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
+                            action={nextAction}
+                        />}
 
                 </div>
 
