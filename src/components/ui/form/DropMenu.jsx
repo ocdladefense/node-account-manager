@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function DropMenu({ label, entries = [], handler, thingThatGetsDisplayed }) {
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
