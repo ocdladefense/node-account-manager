@@ -5,7 +5,6 @@ import { useOutletContext } from "react-router-dom";
 import { getAccountQuery } from "./query.js";
 import AccountContacts from "./AccountContacts";
 import AccountHeader from "./AccountHeader.jsx";
-import { ZapIcon } from "lucide-react";
 import FormatAddress from "../ui/FormatAddress.jsx";
 
 export default function Account() {

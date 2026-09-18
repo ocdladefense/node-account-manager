@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu";
-import InputForm from "./InputForm";
+
 
 
 const defaultPaymentOption = [
@@ -8,7 +8,7 @@ const defaultPaymentOption = [
     { Id: "invoice", Name: "Bill via Invoice", type: "invoice" },
 ];
 
-export default function CardSelection() {
+export default function SelectPaymentMethod() {
     const [selectedOption, setSelectedOption] = useState(null);
     const [paymentOptions, setPaymentOptions] = useState(defaultPaymentOption);
 
@@ -63,15 +63,12 @@ export default function CardSelection() {
             <DropMenu
                 label={selectedOption ? selectedOption.Name : "Choose a card"}
                 entries={paymentOptions}
-                handler={(option) => setSelectedOption(option)}
+                handler={(option) => { setSelectedOption(option); }}
                 thingThatGetsDisplayed={(option) => option.Name}
             />
 
-            {selectedOption?.type === "new_card" && (
-                <div className="w-full max-w-sm p-4 bg-gray-50 border border-gray-200 rounded-lg text-left">
-                    <InputForm />
-                </div>
-            )}
+
+
 
             {selectedOption?.type === "invoice" && (
                 <div className="w-full max-w-sm p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700 text-left">

@@ -1,26 +1,38 @@
 import ReactDOM from 'react-dom';
-import { useState, useEffect, useRef } from 'react';
-import Button, { CautionButton } from './Button';
+import { React, Children, useState, useEffect, useRef, isValidElement, cloneElement } from 'react';
+import Button, { CautionButton, BackButton } from './Button';
+
+
 
 export default function Modal({
     isOpen,
     onClose,
-    confirmAction,
     content,
-    steps = null,
-    currentStep = 0,
     externalNode,
-    defaultButtons = true
+    children,
 }) {
+
     const containerRef = useRef(null);
+    const [currentStep, setCurrentStep] = useState(1);
+    const [data, setData] = useState(() => ({}));
+
+
+    // Default "next step getter" just increments the current step by 1.
+    let getNextStep = function() {
+        return currentStep + 1;
+    };
+    let onSubmit = function() { console.log("Executing default submit.") };
+
 
     useEffect(() => {
-        if (containerRef.current && externalNode) {
+        if (containerRef.current && externalNode)
+        {
             containerRef.current.appendChild(externalNode);
         }
 
         return () => {
-            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode))
+            {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -28,8 +40,25 @@ export default function Modal({
 
     if (!isOpen) return null;
 
-    const isMultiStep = Array.isArray(steps) && steps.length > 0;
-    const totalSteps = isMultiStep ? steps.length : 1;
+    const isMultiStep = Children.count(children) > 1;
+    const totalSteps = Children.count(children);
+
+
+
+    console.log("Current step:", currentStep);
+    console.log("Total steps:", totalSteps);
+    let nextAction = isMultiStep && currentStep < totalSteps ?
+        () => {
+            let formData = new FormData(document.getElementById("batch-action"));
+            let theNextStep = getNextStep(formData);
+            setCurrentStep(theNextStep);
+        } :
+        () => {
+            onSubmit();
+            // Also reset the steps to 0 or whatever?
+        };
+
+
 
     return ReactDOM.createPortal(
         <div
@@ -43,26 +72,58 @@ export default function Modal({
                 onClick={(e) => e.stopPropagation()}
                 className="relative w-11/12 md:w-3/5 max-w-4xl min-h-[360px] max-h-[85vh] flex flex-col bg-white rounded-2xl p-8 shadow-2xl overflow-hidden border border-gray-100"
             >
-                <div className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
-                    {isMultiStep ? (
+
+                <h2>Here's how many kids I have: {children ? Children.count(children) : 0}</h2>
+
+                {
+                    currentStep > 0 && (
+                        <div className="absolute top-6 left-6 z-20">
+                            <BackButton className="px-6 w-25 py-1 cursor-pointer rounded-md bg-white text-black hover:bg-gray-100 active:bg-gray-200 transition-colors duration-150" label="< Back" action={() => setCurrentStep(currentStep - 1)} />
+                        </div>
+                    )
+                }
+
+
+                {/* transition-transform duration-300 ease-in-out */}
+                <div id="multi-step-container" className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
+                    {isMultiStep && (
                         <div
                             className="flex transition-transform duration-300 ease-in-out w-full"
                             style={{
                                 width: `${totalSteps * 100}%`,
-                                transform: `translateX(-${(currentStep / totalSteps) * 100}%)`
+                                transform: `translateX(-${((currentStep - 1) / totalSteps) * 100}%)`
                             }}
                         >
-                            {steps.map((stepNode, index) => (
-                                <div
-                                    key={index}
-                                    style={{ width: `${100 / totalSteps}%` }}
-                                    className="flex flex-col items-center text-center space-y-6 px-4"
-                                >
-                                    {stepNode}
-                                </div>
-                            ))}
+                            {Children.map(children, (stepNode, index) => {
+
+                                let step = index + 1;
+
+
+                                let _getNextStep = stepNode.props.getNextStep;
+
+                                if (step == currentStep && _getNextStep)
+                                {
+                                    getNextStep = _getNextStep;
+                                }
+                                if (step == currentStep && currentStep == totalSteps && stepNode.props.onSubmit)
+                                {
+                                    onSubmit = stepNode.props.onSubmit;
+                                }
+
+                                return (
+                                    <div
+                                        key={index}
+                                        style={{ width: `${100 / totalSteps}%` }}
+                                        className="flex flex-col items-center text-center space-y-6 px-4"
+                                    >
+                                        {isValidElement(stepNode) ? cloneElement(stepNode, { data: data, setData: setData }) : stepNode}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    ) : (
+                    )}
+
+                    {!isMultiStep && (
                         <div className="flex flex-col items-center text-center space-y-6">
                             {content}
                         </div>
@@ -71,21 +132,22 @@ export default function Modal({
                     <div ref={containerRef} />
                 </div>
 
-                {defaultButtons && (
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
-                        <CautionButton
-                            label="Cancel"
-                            isCancel={true}
-                            action={onClose}
-                        />
-                        {confirmAction && (
-                            <Button
-                                label="Confirm"
-                                action={confirmAction}
-                            />
-                        )}
-                    </div>
-                )}
+
+                <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
+                    <CautionButton
+                        label="Cancel"
+                        isCancel={true}
+                        action={onClose}
+                    />
+
+                    {currentStep == totalSteps ? <input type="submit" value="Submit me" form="batch-action" /> :
+                        <Button
+                            label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
+                            action={nextAction}
+                        />}
+
+                </div>
+
             </div>
         </div>,
         document.body
