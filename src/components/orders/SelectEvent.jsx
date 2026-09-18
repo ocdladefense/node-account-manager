@@ -2,9 +2,9 @@
 import { useState, useEffect } from "react";
 import DropMenu from "../ui/form/DropMenu.jsx";
 
-export default function SelectEvent({ products }) {
+export default function SelectEvent({ products, setData, data }) {
     const [events, setEvents] = useState([]);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEvent, setSelectedEvent] = useState("");
 
 
 
@@ -42,10 +42,14 @@ export default function SelectEvent({ products }) {
 
 
     return (
-        <DropMenu
-            label={selectedEvent ? selectedEvent.Name : "Register for Event"}
-            entries={events}
-            handler={(event) => { setSelectedEvent(event); }}
-        />
+
+        <>
+            <input name="theEvent" id="theEvent" type="hidden" value={selectedEvent} readOnly />
+            <DropMenu
+                label={selectedEvent ? selectedEvent.Name : "Register for Event"}
+                entries={events}
+                handler={(event) => { setSelectedEvent(event); setData({ selectedEvent: event }); }}
+            />
+        </>
     )
 }

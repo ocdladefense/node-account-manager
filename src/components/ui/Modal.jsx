@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import { Children, useState, useEffect, useRef, isValidElement, cloneElement } from 'react';
+import { React, Children, useState, useEffect, useRef, isValidElement, cloneElement } from 'react';
 import Button, { CautionButton, BackButton } from './Button';
 
 
@@ -14,6 +14,7 @@ export default function Modal({
 
     const containerRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(1);
+    const [data, setData] = useState(() => ({}));
 
 
     // Default "next step getter" just increments the current step by 1.
@@ -54,6 +55,7 @@ export default function Modal({
         } :
         () => {
             onSubmit();
+            // Also reset the steps to 0 or whatever?
         };
 
 
@@ -114,7 +116,7 @@ export default function Modal({
                                         style={{ width: `${100 / totalSteps}%` }}
                                         className="flex flex-col items-center text-center space-y-6 px-4"
                                     >
-                                        {stepNode}
+                                        {isValidElement(stepNode) ? cloneElement(stepNode, { data: data, setData: setData }) : stepNode}
                                     </div>
                                 );
                             })}

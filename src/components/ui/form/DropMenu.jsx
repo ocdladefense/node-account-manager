@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function DropMenu({ label, entries = [], handler, thingThatGetsDisplayed }) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
     const dropdownRef = useRef(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target))
+            {
                 setIsOpen(false);
             }
         };
@@ -33,8 +34,7 @@ export default function DropMenu({ label, entries = [], handler, thingThatGetsDi
                 <span className="truncate pr-3">{label}</span>
 
                 <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180 text-blue-600" : ""
-                        }`}
+                    className={`w-4 h-4 text-gray-500 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180 text-blue-600" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -43,7 +43,7 @@ export default function DropMenu({ label, entries = [], handler, thingThatGetsDi
                 </svg>
             </button>
 
-            {isOpen && (
+            {true && (
                 <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-56 overflow-y-auto p-1.5 focus:outline-none">
                     {entries.map((entry) => {
                         const displayText = thingThatGetsDisplayed
