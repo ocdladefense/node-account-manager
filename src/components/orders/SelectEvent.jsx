@@ -48,7 +48,7 @@ export default function SelectEvent({ products, setData, data }) {
             <DropMenu
                 label={selectedEvent ? selectedEvent.Name : "Register for Event"}
                 entries={events}
-                handler={(event) => { setSelectedEvent(event); setData({ selectedEvent: event }); }}
+                handler={(event) => { setSelectedEvent(event); setData(prev => ({ ...prev, selectedEvent: event })); }}
             />
         </>
     )

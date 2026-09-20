@@ -10,11 +10,13 @@ export default function Modal({
     content,
     externalNode,
     children,
+    data,
+    setData,
 }) {
 
     const containerRef = useRef(null);
     const [currentStep, setCurrentStep] = useState(1);
-    const [data, setData] = useState(() => ({}));
+
 
 
     // Default "next step getter" just increments the current step by 1.
