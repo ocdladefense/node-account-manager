@@ -79,7 +79,7 @@ export default function AccountContacts() {
                     <SelectEvent />
                     {/*<SelectProduct />*/}
                     <ContactAndProductSelect contacts={contacts} />
-                    <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentTypeId") == "new_card" ? 4 : 5} />
+                    <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentMethodId") == "new_card" ? 4 : 5} />
                     <NewPaymentMethod />
                     <ConfirmOrder />
                 </Modal>

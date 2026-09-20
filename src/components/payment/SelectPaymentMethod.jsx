@@ -14,7 +14,8 @@ export default function SelectPaymentMethod() {
 
     useEffect(() => {
         const fetchPaymentMethods = async () => {
-            try {
+            try
+            {
                 // Implement later
                 // const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 // const data = await resp.json();
@@ -36,7 +37,8 @@ export default function SelectPaymentMethod() {
                     return [...data.records, ...options];
                 });
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching payment method",
                     error
@@ -54,10 +56,11 @@ export default function SelectPaymentMethod() {
     return (
         <div className="w-full flex flex-col items-center space-y-4">
             <input
-                name="paymentTypeId"
+                name="paymentMethodId"
                 type="hidden"
                 value={selectedOption?.Id || ""}
                 readOnly
+                form="batch-action"
             />
 
             <DropMenu

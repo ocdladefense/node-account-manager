@@ -28,8 +28,10 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
 
     // This Map would actually happen on the server, returning the recommended ticket for each contact.
     let theMap = new Map();
+    let JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID = "01thr0000008Nyt";
+    const JUVENILE_LAW_TRAINING_ACADEMY_EVENT_ID = "a23hr0000008sWHAAY";
     contacts.forEach(contact => {
-        theMap.set(contact.Id, "productId123");
+        theMap.set(contact.Id, JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID);
     });
 
 
@@ -53,6 +55,10 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
         <div>
 
             <h1 className="text-2xl font-bold mb-4"> {contacts.length} people selected.</h1>
+
+            <input name="productIds" type="hidden" value={Array.from(theMap.values())} readOnly form="batch-action" />
+
+
             <table className="w-full border-collapse">
 
                 <thead>

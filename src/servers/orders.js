@@ -24,8 +24,8 @@ router.post("/orders", async (req, res) => {
     // Data required to create an Order.
     let contactIds = req.body.contactIds.split(",");
     let accountId = req.cookies.account_id;
-    const productId = req.body.productId;
-    const paymentTypeId = req.body.paymentTypeId;
+    const productIds = req.body.productIds.split(",");
+    const paymentMethodId = req.body.paymentMethodId;
 
 
     // Connection to Salesforce REST API using the access token and instance URL from cookies.
@@ -34,8 +34,8 @@ router.post("/orders", async (req, res) => {
     client = new SalesforceRestApi(url, token);
 
 
-    // Step 1: Get the PricebookEntry for the productId.
-    let pricebookEntry = await getPricebookEntry(productId);
+    // Step 1: Get the PricebookEntry for the first productId.
+    let pricebookEntry = await getPricebookEntry(productIds[0]);
 
 
 
@@ -49,7 +49,8 @@ router.post("/orders", async (req, res) => {
         BillToContactId: req.cookies.contact_id,
     };
 
-    if (paymentTypeId == "invoice") {
+    if (paymentMethodId == "invoice")
+    {
         orderRecord.PostingEntity__c = "Invoice";
     }
 
@@ -75,7 +76,7 @@ router.post("/orders", async (req, res) => {
     chargeCreditCard(updateOrderStatus.bind(null, orderResult.id));
 
     let successfulOrder = {
-        postingEntity: paymentTypeId == "invoice" ? "Invoice" : "Receipt",
+        postingEntity: paymentMethodId == "invoice" ? "Invoice" : "Receipt",
         order: orderResult,
         orderItems: orderItemResults
     };
@@ -111,12 +112,15 @@ async function updateOrderStatus(orderId) {
 async function getPricebookEntry(productId) {
 
     const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id = '${productId}'`;
+
+    console.log(pricebookQuery);
     const pricebookResp = await client.query(pricebookQuery);
     const pricebookEntry = pricebookResp.records[0];
 
 
     // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntry) {
+    if (!pricebookEntry)
+    {
         throw new Error(`No PricebookEntry found for product: ${productId}`);
     }
 
@@ -136,7 +140,8 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
     const orderItemResults = [];
 
-    for (const contactId of contactIds) {
+    for (const contactId of contactIds)
+    {
 
         const orderItemRecord = {
             OrderId: orderResult.id,

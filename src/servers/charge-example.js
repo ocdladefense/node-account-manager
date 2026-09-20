@@ -163,42 +163,133 @@ export default function chargeCreditCard(callback) {
         //pretty print response
         console.log(JSON.stringify(response, null, 2));
 
-        if (response != null) {
-            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
-                if (response.getTransactionResponse().getMessages() != null) {
+        if (response != null)
+        {
+            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK)
+            {
+                if (response.getTransactionResponse().getMessages() != null)
+                {
                     console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
                     console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
                     console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
                     console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
                 }
-                else {
+                else
+                {
                     console.log('Failed Transaction.');
-                    if (response.getTransactionResponse().getErrors() != null) {
+                    if (response.getTransactionResponse().getErrors() != null)
+                    {
                         console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                         console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                     }
                 }
             }
-            else {
+            else
+            {
                 console.log('Failed Transaction. ');
-                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
+                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null)
+                {
 
                     console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                     console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                 }
-                else {
+                else
+                {
                     console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
                     console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
                 }
             }
         }
-        else {
+        else
+        {
             var apiError = ctrl.getError();
             console.log(apiError);
             console.log('Null Response.');
         }
 
         callback(response);
+    });
+}
+
+
+// createCustomerProfileFromTransaction();
+
+
+
+function createCustomerProfileFromTransaction() {
+    // 1. Setup Merchant Authentication
+    const merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
+    merchantAuthenticationType.setName('YOUR_API_LOGIN_ID');
+    merchantAuthenticationType.setTransactionKey('YOUR_TRANSACTION_KEY');
+
+    // 2. Set up Payment Data (Example using Accept.js opaque data / nonce)
+    const opaqueData = new APIContracts.OpaqueDataType();
+    opaqueData.setDataValue('COMMON.ACCEPT.INAPP.NONCE'); // Replace with your actual nonce
+    opaqueData.setDataSource('COMMON.ACCEPT.INAPP');
+
+    const paymentType = new APIContracts.PaymentType();
+    paymentType.setOpaqueData(opaqueData);
+
+    // 3. Set up Customer Info (Required to populate the profile name/email)
+    const customerData = new APIContracts.CustomerDataType();
+    customerData.setType(APIContracts.CustomerTypeEnum.INDIVIDUAL);
+    customerData.setId('CUSTOMER_INTERNAL_ID_123');
+    customerData.setEmail('customer@example.com');
+
+    // 4. Create the Transaction Request Object
+    const transactionRequestType = new APIContracts.TransactionRequestType();
+    transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHONLYTRANSACTION); // or AUTHCAPTURETRANSACTION
+    transactionRequestType.setAmount('49.99');
+    transactionRequestType.setPayment(paymentType);
+    transactionRequestType.setCustomer(customerData);
+
+    // CRITICAL STEP: Direct Authorize.net to generate a CIM profile from this transaction
+    transactionRequestType.setProfileInsideTransactionRequest(true);
+
+    // 5. Wrap inside the ultimate CreateTransactionRequest container
+    const createRequest = new APIContracts.CreateTransactionRequest();
+    createRequest.setMerchantAuthentication(merchantAuthenticationType);
+    createRequest.setTransactionRequest(transactionRequestType);
+
+    // 6. Execute the Request
+    const ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
+
+    // Switch to production environment when ready using standard endpoint adjustments
+    // ctrl.setEnvironment(SDKConstants.endpoint.production); 
+
+    ctrl.execute(function() {
+        const apiResponse = ctrl.getResponse();
+        const response = new APIContracts.CreateTransactionResponse(apiResponse);
+
+        if (response != null)
+        {
+            if (response.getMessages().getResultCode() === APIContracts.MessageTypeEnum.OK)
+            {
+                const transactionResponse = response.getTransactionResponse();
+
+                if (transactionResponse != null && transactionResponse.getMessages() != null)
+                {
+                    console.log(`Transaction Success! ID: ${transactionResponse.getTransId()}`);
+
+                    // EXTRACTION: Retrieve your newly generated profile IDs
+                    const profileResponse = transactionResponse.getProfileResponse();
+                    if (profileResponse != null)
+                    {
+                        console.log(`Generated Customer Profile ID: ${profileResponse.getCustomerProfileId()}`);
+                        console.log(`Generated Payment Profile ID: ${profileResponse.getCustomerPaymentProfileIdList().getNumericString()[0]}`);
+                    }
+                } else
+                {
+                    console.error('Transaction Failed:', transactionResponse.getErrors().getError()[0].getErrorText());
+                }
+            } else
+            {
+                console.error('API Error:', response.getMessages().getMessage()[0].getText());
+            }
+        } else
+        {
+            console.error('Null response received from Authorize.Net.');
+        }
     });
 }
 

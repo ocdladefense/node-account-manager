@@ -43,7 +43,7 @@ export default function DropMenu({ label, entries = [], handler, thingThatGetsDi
                 </svg>
             </button>
 
-            {true && (
+            {isOpen && (
                 <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-56 overflow-y-auto p-1.5 focus:outline-none">
                     {entries.map((entry) => {
                         const displayText = thingThatGetsDisplayed

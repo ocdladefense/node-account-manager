@@ -44,7 +44,6 @@ export default function SelectEvent({ products, setData, data }) {
     return (
 
         <>
-            <input name="theEvent" id="theEvent" type="hidden" value={selectedEvent} readOnly />
             <DropMenu
                 label={selectedEvent ? selectedEvent.Name : "Register for Event"}
                 entries={events}
