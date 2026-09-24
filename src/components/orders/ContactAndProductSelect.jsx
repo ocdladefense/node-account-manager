@@ -36,6 +36,10 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
         {
             Id: JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID,
             Name: "Juvenile Law Training Academy - Member Ticket"
+        },
+        {
+            Id: "01tVJ00000EgOx7YAF",
+            Name: "Autism Webinar Ticket"
         }
     ]
 
@@ -103,6 +107,8 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
 
 function TableRow({ id, name, status, product, products, addToSelectedContactIds }) {
 
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
 
@@ -116,7 +122,10 @@ function TableRow({ id, name, status, product, products, addToSelectedContactIds
             <td className="px-4 py-3">{status || "-"}</td>
 
             <td className="px-4 py-3">
-                <DropMenu label="Select Product" entries={products} handler={(selectedProduct) => { console.log("Selected product: ", id, selectedProduct); }} />
+                <DropMenu label={selectedProduct ? selectedProduct.Name : "Select Product"} entries={products} handler={(product) => {
+                    setSelectedProduct(product);
+                    console.log("Selected product: ", id, product);
+                }} />
             </td>
 
 
