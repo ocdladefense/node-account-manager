@@ -16,7 +16,7 @@ theMap[{Id: "thecontactId","Name": "thecontactName","MemberStatus": "R"}] = "pro
 
 
 
-export default function ContactAndProductSelect({ contacts, eventId, data }) {
+export default function ContactAndProductSelect({ contacts, eventId, data, setData }) {
 
     // Step 1: Prove that we can construct and use a JavaScript Map.
 
@@ -62,6 +62,22 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
     };
 
 
+    const handleProductSelect = (contactId, product) => {
+
+        setData(prev => {
+
+            const contactIds = prev.selectedContactIds || [];
+            const productIds = [...(prev.productIds || [])];
+
+            const contactIndex = contactIds.indexOf(contactId);
+
+            productIds[contactIndex] = product.Id;
+
+            return { ...prev, productIds };
+        });
+    };
+
+
 
     return (
 
@@ -93,7 +109,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
                 <tbody>
 
                     {contacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={theProducts} addToSelectedContactIds={addToSelectedContactIds} />
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={theProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
                     ))}
                 </tbody>
 
@@ -105,7 +121,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
 
 
 
-function TableRow({ id, name, status, product, products, addToSelectedContactIds }) {
+function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds }) {
 
     const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -124,6 +140,7 @@ function TableRow({ id, name, status, product, products, addToSelectedContactIds
             <td className="px-4 py-3">
                 <DropMenu label={selectedProduct ? selectedProduct.Name : "Select Product"} entries={products} handler={(product) => {
                     setSelectedProduct(product);
+                    handleProductSelect(id, product);
                     console.log("Selected product: ", id, product);
                 }} />
             </td>
