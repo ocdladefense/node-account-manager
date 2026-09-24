@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import CheckBox from "../ui/form/CheckBox.jsx";
+import DropMenu from "../ui/form/DropMenu.jsx";
 
 
 // Each contact id will be associated with a productId;
@@ -28,8 +29,16 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
 
     // This Map would actually happen on the server, returning the recommended ticket for each contact.
     let theMap = new Map();
+
     let JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID = "01thr0000008Nyt";
     const JUVENILE_LAW_TRAINING_ACADEMY_EVENT_ID = "a23hr0000008sWHAAY";
+    const theProducts = [
+        {
+            Id: JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID,
+            Name: "Juvenile Law Training Academy - Member Ticket"
+        }
+    ]
+
     contacts.forEach(contact => {
         theMap.set(contact.Id, JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID);
     });
@@ -80,7 +89,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
                 <tbody>
 
                     {contacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} addToSelectedContactIds={addToSelectedContactIds} />
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={theProducts} addToSelectedContactIds={addToSelectedContactIds} />
                     ))}
                 </tbody>
 
@@ -92,7 +101,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data }) {
 
 
 
-function TableRow({ id, name, status, product, addToSelectedContactIds }) {
+function TableRow({ id, name, status, product, products, addToSelectedContactIds }) {
 
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
@@ -106,7 +115,9 @@ function TableRow({ id, name, status, product, addToSelectedContactIds }) {
 
             <td className="px-4 py-3">{status || "-"}</td>
 
-            <td className="px-4 py-3">{product || "-"}</td>
+            <td className="px-4 py-3">
+                <DropMenu label="Select Product" entries={products} handler={(selectedProduct) => { console.log("Selected product: ", id, selectedProduct); }} />
+            </td>
 
 
         </tr>
