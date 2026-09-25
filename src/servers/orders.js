@@ -35,8 +35,10 @@ router.post("/orders", async (req, res) => {
 
 
     // Step 1: Get the PricebookEntry for the first productId.
-    let pricebookEntry = await getPricebookEntry(productIds[0]);
+    let pricebookEntries = await getPricebookEntries(productIds);
 
+    // Step 1.5: Get the Pricebook2Id from the first product queried for. Use the key (the productId) for the .get
+    const pricebook2Id = pricebookEntries.get(productIds[0]).Pricebook2Id;
 
 
     // Step 2: Construct the Order object in Salesforce.
@@ -45,12 +47,11 @@ router.post("/orders", async (req, res) => {
         AccountId: accountId,
         EffectiveDate: new Date().toISOString().split('T')[0],
         Status: "Draft",
-        Pricebook2Id: pricebookEntry.Pricebook2Id,
+        Pricebook2Id: pricebook2Id,
         BillToContactId: req.cookies.contact_id,
     };
 
-    if (paymentMethodId == "invoice")
-    {
+    if (paymentMethodId == "invoice") {
         orderRecord.PostingEntity__c = "Invoice";
     }
 
@@ -67,7 +68,7 @@ router.post("/orders", async (req, res) => {
 
 
     // Step 4: Create OrderItems for each contactId.
-    const orderItemResults = await createOrderItems(orderResult, contactIds, pricebookEntry);
+    const orderItemResults = await createOrderItems(orderResult, contactIds, productIds, pricebookEntries);
 
 
     // Step 5:  Convert the OrderStatus as appropriate.
@@ -109,39 +110,53 @@ async function updateOrderStatus(orderId) {
 
 
 
-async function getPricebookEntry(productId) {
+async function getPricebookEntries(productIds) {
 
-    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id = '${productId}'`;
+    const soql = productIds.map(productId => `'${productId}'`).join(', ');
+
+    const entriesByProduct = new Map();
+
+    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
 
     console.log(pricebookQuery);
     const pricebookResp = await client.query(pricebookQuery);
-    const pricebookEntry = pricebookResp.records[0];
+    const pricebookEntries = pricebookResp.records;
+
+
+    for (const entry of pricebookEntries) {
+        entriesByProduct.set(entry.Product2Id, entry);
+    }
 
 
     // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntry)
-    {
-        throw new Error(`No PricebookEntry found for product: ${productId}`);
+    if (!pricebookEntries) {
+        throw new Error(`No PricebookEntry found for product(s): ${productIds}`);
     }
 
-    return pricebookEntry;
+    return entriesByProduct;
 }
 
 
 
 
-
-
-
-
-
-async function createOrderItems(orderResult, contactIds, pricebookEntry) {
+async function createOrderItems(orderResult, contactIds, productIds, pricebookEntries) {
 
 
     const orderItemResults = [];
 
-    for (const contactId of contactIds)
-    {
+    for (let index = 0; index < contactIds.length; index++) {
+
+        const contactId = contactIds[index];
+        const productId = productIds[index];
+
+        const pricebookEntry = pricebookEntries.get(productId);
+
+        if (!pricebookEntry) {
+            throw new Error(
+                `No PricebookEntry found for product: ${productId}`
+            );
+        }
+
 
         const orderItemRecord = {
             OrderId: orderResult.id,
@@ -162,7 +177,6 @@ async function createOrderItems(orderResult, contactIds, pricebookEntry) {
 
         orderItemResults.push(itemResult);
     }
-
 
 
     return orderItemResults;

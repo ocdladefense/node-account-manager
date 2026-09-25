@@ -38,13 +38,15 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
             Name: "Juvenile Law Training Academy - Member Ticket"
         },
         {
-            Id: "01tVJ00000EgOx7YAF",
-            Name: "Autism Webinar Ticket"
+            Id: "01thr0000008Np4",
+            Name: "Juvenile Law Training Academy - Non-Member Ticket"
         }
     ]
 
-    contacts.forEach(contact => {
-        theMap.set(contact.Id, JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID);
+    selectedContactIds.forEach((contactId, index) => {
+
+        const productId = data.productIds?.[index] || "";
+        theMap.set(contactId, productId);
     });
 
 
