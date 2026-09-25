@@ -30,7 +30,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
     // This Map would actually happen on the server, returning the recommended ticket for each contact.
     let theMap = new Map();
 
-    let JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID = "01thr0000008Nyt";
+    let JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID = "01thr0000008NytAAE";
     const JUVENILE_LAW_TRAINING_ACADEMY_EVENT_ID = "a23hr0000008sWHAAY";
     const theProducts = [
         {
@@ -38,7 +38,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
             Name: "Juvenile Law Training Academy - Member Ticket"
         },
         {
-            Id: "01thr0000008Np4",
+            Id: "01thr0000008Np4AAE",
             Name: "Juvenile Law Training Academy - Non-Member Ticket"
         }
     ]
