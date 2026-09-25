@@ -4,44 +4,49 @@ import CheckBox from "../ui/form/CheckBox.jsx";
 import DropMenu from "../ui/form/DropMenu.jsx";
 
 
-// Each contact id will be associated with a productId;
-/*
-
-let theMap = {};
-theMap["123abc"] = "productId123";
-theMap[{Id: "thecontactId","Name": "thecontactName","MemberStatus": "R"}] = "productId123";  // theMap could also look like this.
-
-
-*/
-
-
-
-export default function ContactAndProductSelect({ contacts, eventId, data, setData }) {
+export default function ContactAndProductSelect({ contacts, data, setData }) {
 
     // Step 1: Prove that we can construct and use a JavaScript Map.
 
     // Step 2: Figuring out how to populate the Map with actual data from the previous step.
     let selectedContactIds = data.selectedContactIds || [];
 
+    // Step 2.5: Use the event selected in the previous step to populate the drop menu with the associated tickets from the server.
+    const [eventProducts, setEventProducts] = useState([]);
+    const selectedEventId = data.selectedEvent?.Id;
+
+    useEffect(() => {
+
+        if (!selectedEventId) {
+            return;
+        }
+
+        const fetchEventProducts = async () => {
+
+            try {
+
+                const resp = await fetch(`/api/query/event-products?eventId=${encodeURIComponent(selectedEventId)}`);
+                const result = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(result.error || "Unable to retrieve event products.");
+                }
+
+                setEventProducts(result.records);
+
+            } catch (error) {
+                console.error("Error fetching event products:", error);
+            }
+        };
+
+        fetchEventProducts();
+    }, [selectedEventId]);
 
 
-    contacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
+    const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
 
     // This Map would actually happen on the server, returning the recommended ticket for each contact.
     let theMap = new Map();
-
-    let JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID = "01thr0000008NytAAE";
-    const JUVENILE_LAW_TRAINING_ACADEMY_EVENT_ID = "a23hr0000008sWHAAY";
-    const theProducts = [
-        {
-            Id: JUVENILE_LAW_TRAINING_ACADEMY_MEMBERS_ONLY_PRODUCT_ID,
-            Name: "Juvenile Law Training Academy - Member Ticket"
-        },
-        {
-            Id: "01thr0000008Np4AAE",
-            Name: "Juvenile Law Training Academy - Non-Member Ticket"
-        }
-    ]
 
     selectedContactIds.forEach((contactId, index) => {
 
@@ -49,9 +54,6 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
         theMap.set(contactId, productId);
     });
 
-
-
-    console.log(data);
 
     const addToSelectedContactIds = (event) => {
         const { value, checked } = event.target;
@@ -85,7 +87,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
 
         <div>
 
-            <h1 className="text-2xl font-bold mb-4"> {contacts.length} people selected.</h1>
+            <h1 className="text-2xl font-bold mb-4"> {selectedContacts.length} people selected.</h1>
 
             <input name="productIds" type="hidden" value={Array.from(theMap.values())} readOnly form="batch-action" />
 
@@ -110,8 +112,8 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
 
                 <tbody>
 
-                    {contacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={theProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
+                    {selectedContacts.map((contact) => (
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
                     ))}
                 </tbody>
 
@@ -123,7 +125,7 @@ export default function ContactAndProductSelect({ contacts, eventId, data, setDa
 
 
 
-function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds }) {
+function TableRow({ id, name, status, products, handleProductSelect, addToSelectedContactIds }) {
 
     const [selectedProduct, setSelectedProduct] = useState(null);
 
