@@ -72,10 +72,9 @@ export default function Modal({
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="relative w-11/12 md:w-3/5 max-w-4xl min-h-[360px] max-h-[85vh] flex flex-col bg-white rounded-2xl p-8 shadow-2xl overflow-hidden border border-gray-100"
+                className="relative max-w-[80vw] min-h-[360px] max-h-[85vh] flex flex-col bg-white rounded-2xl p-8 shadow-2xl overflow-hidden border border-gray-100"
             >
 
-                <h2>Here's how many kids I have: {children ? Children.count(children) : 0}</h2>
 
                 {
                     currentStep > 0 && (

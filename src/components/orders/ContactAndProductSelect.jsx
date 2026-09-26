@@ -141,7 +141,7 @@ function TableRow({ id, name, status, products, handleProductSelect, addToSelect
 
             <td className="px-4 py-3">{status || "-"}</td>
 
-            <td className="px-4 py-3">
+            <td className="px-4 py-3 w-[300px]">
                 <DropMenu label={selectedProduct ? selectedProduct.Name : "Select Product"} entries={products} handler={(product) => {
                     setSelectedProduct(product);
                     handleProductSelect(id, product);
