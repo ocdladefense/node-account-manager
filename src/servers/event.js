@@ -8,7 +8,9 @@ router.post("/event/recommendations", async (req, res) => {
 
     const recommendations = new Map();
 
-    contactIds.forEach((contactId) => { recommendations.set(contactId, null); });
+    const PRODUCT_ID = "01thr0000008NytAAE";
+
+    contactIds.forEach((contactId) => { recommendations.set(contactId, PRODUCT_ID); });
 
     return res.json({ recommendations: Object.fromEntries(recommendations) });
 });
