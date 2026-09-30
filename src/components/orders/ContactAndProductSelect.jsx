@@ -71,10 +71,13 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                     );
                 }
 
-                console.log(
-                    "RECOMMENDATIONS:",
-                    result.recommendations
-                );
+
+                console.log("RECOMMENDATIONS:", result.recommendations);
+
+
+                const recommendedProductIds = selectedContactIds.map(contactId => result.recommendations[contactId] || "");
+
+                setData(prev => ({ ...prev, productIds: recommendedProductIds }));
 
             } catch (error) {
 
@@ -172,9 +175,10 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
 
 
-function TableRow({ id, name, status, products, handleProductSelect, addToSelectedContactIds }) {
+function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds }) {
 
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    // This value didn't work with a useState initial value, but I don't think the useState was necessary for this step? Ask Jose about it.
+    const selectedProduct = products.find(item => item.Id === product);
 
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
@@ -190,9 +194,7 @@ function TableRow({ id, name, status, products, handleProductSelect, addToSelect
 
             <td className="px-4 py-3 w-[300px]">
                 <DropMenu label={selectedProduct ? selectedProduct.Name : "Select Product"} entries={products} handler={(product) => {
-                    setSelectedProduct(product);
                     handleProductSelect(id, product);
-                    console.log("Selected product: ", id, product);
                 }} />
             </td>
 
