@@ -8,9 +8,15 @@ router.post("/event/recommendations", async (req, res) => {
 
     const recommendations = new Map();
 
-    const PRODUCT_ID = "01thr0000008NytAAE";
+    const MEMBER_PRODUCT_ID = "01thr0000008NytAAE";
+    const NON_MEMBER_PRODUCT_ID = "01thr0000008Np4AAE";
 
-    contactIds.forEach((contactId) => { recommendations.set(contactId, PRODUCT_ID); });
+    contactIds.forEach((contactId, index) => {
+
+        const productId = index % 2 === 0 ? MEMBER_PRODUCT_ID : NON_MEMBER_PRODUCT_ID;
+
+        recommendations.set(contactId, productId);
+    });
 
     return res.json({ recommendations: Object.fromEntries(recommendations) });
 });

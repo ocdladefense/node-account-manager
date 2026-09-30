@@ -42,6 +42,53 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
         fetchEventProducts();
     }, [selectedEventId]);
 
+    useEffect(() => {
+
+        if (!selectedEventId || selectedContactIds.length === 0) {
+            return;
+        }
+
+        const fetchRecommendations = async () => {
+
+            try {
+
+                const resp = await fetch("/event/recommendations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        contactIds: selectedContactIds,
+                        eventId: selectedEventId
+                    })
+                });
+
+                const result = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(
+                        result.error || "Unable to retrieve recommendations."
+                    );
+                }
+
+                console.log(
+                    "RECOMMENDATIONS:",
+                    result.recommendations
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error fetching recommendations:",
+                    error
+                );
+            }
+        };
+
+        fetchRecommendations();
+
+    }, [selectedEventId, selectedContactIds]);
+
 
     const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
 

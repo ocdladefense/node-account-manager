@@ -23,6 +23,7 @@ import orderRoutes from "./orders.js";
 import fs from 'fs';
 import queryRoutes from "./query.js";
 import paymentMethodRoutes from "./payment-method.js";
+import eventRoutes from "./event.js";
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -67,6 +68,7 @@ app.use('/', filesRoutes);
 app.use('/', orderRoutes);
 app.use('/', queryRoutes);
 app.use("/", paymentMethodRoutes);
+app.use("/", eventRoutes);
 
 
 
