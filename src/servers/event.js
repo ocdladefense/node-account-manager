@@ -36,13 +36,13 @@ router.post("/event/recommendations", async (req, res) => {
     // ===============================================================================================================================
 
 
+    // let theAlgorithm = selectBestProductByMembership;
+    let theAlgorithm = selectBestProductRandomly;
 
 
+    let suggest = contacts.map((contact, index) => {
 
-
-    let suggest = contacts.map((contact) => {
-
-        return [contact.Id, selectBestProductByMembership(contact, products).Id];
+        return [contact.Id, theAlgorithm(contact, products, index).Id];
     });
 
 
@@ -57,11 +57,18 @@ router.post("/event/recommendations", async (req, res) => {
 
 
 
-function selectBestProductByMembership(contact, products) {
+function selectBestProductByMembership(contact, products, index) {
     const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true)
     const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
 
     return contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
+}
+
+function selectBestProductRandomly(contact, products, index) {
+
+    let rand = Math.floor(Math.random() * products.length);
+
+    return products[rand];
 }
 
 
