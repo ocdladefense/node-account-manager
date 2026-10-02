@@ -10,39 +10,26 @@ router.post("/event/recommendations", async (req, res) => {
 
     // Populate map with contactId to product suggestions.
     const _suggest = new Map();
-
-
     const instanceUrl = req.cookies.instance_url;
     const accessToken = req.cookies.access_token;
-
-    client = new SalesforceRestApi(instanceUrl, accessToken);
-
     const { contactIds, eventId } = req.body;
-
-
-
-
-    // ===============================================================================================================================
-    // Contact Salesforce query
-    // ===============================================================================================================================
 
     let contacts = await fetchContactRecords(contactIds);
     let products = await fetchProductRecords(eventId);
+    client = new SalesforceRestApi(instanceUrl, accessToken);
 
 
     console.log("RECOMMENDATION CONTACTS:", contacts);
     console.log("RECOMMENDATION PRODUCTS:", products);
 
-    // ===============================================================================================================================
 
 
-    // let theAlgorithm = selectBestProductByMembership;
-    let theAlgorithm = selectBestProductRandomly;
+    let theAlgorithm = selectBestProductByMembership;
+    // Ultimately, we want to use multiple, weighted algorithms.
 
-
-    let suggest = contacts.map((contact, index) => {
-
-        return [contact.Id, theAlgorithm(contact, products, index).Id];
+    let suggest = contacts.map((contact) => {
+        let product = theAlgorithm(contact, products);
+        return [contact.Id, product.Id];
     });
 
 
