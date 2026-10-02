@@ -51,14 +51,14 @@ router.post("/event/recommendations", async (req, res) => {
 
     const recommendations = new Map();
 
-    const MEMBER_PRODUCT_ID = "01thr0000008NytAAE";
-    const NON_MEMBER_PRODUCT_ID = "01thr0000008Np4AAE";
+    const memberProduct = productResp.records.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true)
+    const nonMemberProduct = productResp.records.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
 
-    contactIds.forEach((contactId, index) => {
+    contactResp.records.forEach((contact) => {
 
-        const productId = index % 2 === 0 ? MEMBER_PRODUCT_ID : NON_MEMBER_PRODUCT_ID;
+        const recommendedProduct = contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
 
-        recommendations.set(contactId, productId);
+        recommendations.set(contact.Id, recommendedProduct.Id);
     });
 
     return res.json({ recommendations: Object.fromEntries(recommendations) });
