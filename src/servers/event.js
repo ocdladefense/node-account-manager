@@ -9,7 +9,7 @@ let client;
 router.post("/event/recommendations", async (req, res) => {
 
     // Populate map with contactId to product suggestions.
-    const recommendations = new Map();
+    const _suggest = new Map();
 
 
     const instanceUrl = req.cookies.instance_url;
@@ -26,44 +26,43 @@ router.post("/event/recommendations", async (req, res) => {
     // Contact Salesforce query
     // ===============================================================================================================================
 
-    let contactRecords = await fetchContactRecords(contactIds);
-    let productRecords = await fetchProductRecords(eventId);
+    let contacts = await fetchContactRecords(contactIds);
+    let products = await fetchProductRecords(eventId);
 
 
-
-    console.log("RECOMMENDATION CONTACTS:", contactRecords);
-
-    // ===============================================================================================================================
-
-
-
-
-
-    // ===============================================================================================================================
-    // Product Salesforce query
-    // ===============================================================================================================================
-
-
-    console.log("RECOMMENDATION PRODUCTS:", productRRecords);
+    console.log("RECOMMENDATION CONTACTS:", contacts);
+    console.log("RECOMMENDATION PRODUCTS:", products);
 
     // ===============================================================================================================================
 
 
 
 
-    const memberProduct = productResp.records.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true)
-    const nonMemberProduct = productResp.records.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
 
-    contactRecords.forEach((contact) => {
 
-        const recommendedProduct = contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
+    let suggest = contacts.map((contact) => {
 
-        recommendations.set(contact.Id, recommendedProduct.Id);
+        return [contact.Id, selectBestProductByMembership(contact, products).Id];
     });
 
-    return res.json({ recommendations: Object.fromEntries(recommendations) });
+
+    suggest.forEach(([contactId, productId]) => {
+        _suggest.set(contactId, productId);
+    });
+
+
+
+    return res.json({ recommendations: Object.fromEntries(_suggest) });
 });
 
+
+
+function selectBestProductByMembership(contact, products) {
+    const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true)
+    const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
+
+    return contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
+}
 
 
 
