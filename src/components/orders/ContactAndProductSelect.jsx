@@ -63,19 +63,19 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                     })
                 });
 
-                const result = await resp.json();
+                const suggested = await resp.json();
 
                 if (!resp.ok) {
                     throw new Error(
-                        result.error || "Unable to retrieve recommendations."
+                        suggested.error || "Unable to retrieve recommendations."
                     );
                 }
 
 
-                console.log("RECOMMENDATIONS:", result.recommendations);
+                console.log("RECOMMENDATIONS:", suggested);
 
 
-                const recommendedProductIds = selectedContactIds.map(contactId => result.recommendations[contactId] || "");
+                const recommendedProductIds = selectedContactIds.map(contactId => suggested[contactId] || "");
 
                 setData(prev => ({ ...prev, productIds: recommendedProductIds }));
 
