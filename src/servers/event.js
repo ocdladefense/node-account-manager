@@ -17,49 +17,46 @@ router.post("/event/recommendations", async (req, res) => {
 
     client = new SalesforceRestApi(instanceUrl, accessToken);
 
+
     let contacts = await fetchContactRecords(contactIds);
     let products = await fetchProductRecords(eventId);
-
-
 
     console.log("RECOMMENDATION CONTACTS:", contacts);
     console.log("RECOMMENDATION PRODUCTS:", products);
 
 
-    // Ultimately, we want to use multiple, weighted algorithms.
-    // Run select by IsMember THEN by MemberStatus
-
-
-
-    // This was just proof of concept. Don't do this.
-    let algo1 = selectBestProductRandomly;
-
-
-    let algo2 = selectBestProductByIsMember;
-    let algo3 = selectBestProductByMemberStatus;
-
+    let algorithms = [oneTicketAlgorithm, selectBestProductByIsMember, selectBestProductByMemberStatus];
+    algorithms.reverse();
 
     let suggest = contacts.map((contact) => {
-        let product = algo2(contact, products);
-        // Run additional algorithm ordered by weight
-        product = algo3(contact, products, product);
-        return [contact.Id, product.Id];
+
+        let results = algorithms.map(fn => fn(contact, products));
+
+        // Turns out that testing for "!= false" still returned the undefined value as the first viable value. Stepping back to the "firs truthy result" fixed the app's functionality.
+        let suggestion = results.find(result => result);
+
+        return [contact.Id, suggestion.Id];
+
     });
 
 
     suggest.forEach(([contactId, productId]) => {
+
         _suggest.set(contactId, productId);
+
     });
-
-
 
     return res.json(Object.fromEntries(_suggest));
 });
 
 
 
-function selectBestProductByIsMember(contact, products, index) {
+
+
+function selectBestProductByIsMember(contact, products) {
+
     const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true);
+
     const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
 
     return contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
@@ -69,16 +66,33 @@ function selectBestProductByIsMember(contact, products, index) {
 // If we have a contact who has an "A" status (acedemic status) automatically select a third ticket via "OcdlaEligibleMemberStatuses__c"
 // Switch this up. Use new parameters to make this a "filter" rather than the raw assignment.
 // Should default to previous filtered product if no applicable product exists for this filter.
-function selectBestProductByMemberStatus(contact, products, currentProduct) {
-    if (contact.Ocdla_Member_Status__c !== "A") {
-        return currentProduct;
-    }
 
-    const lawStudentProduct = products.find(product => product.OcdlaEligibleMemberStatuses__c === "A");
+// If we have a prod that lists one or more eligible statuses, 
+function selectBestProductByMemberStatus(contact, products) {
 
-    return lawStudentProduct || currentProduct;
+    return products.find(product => {
+
+        if (!product.OcdlaEligibleMemberStatuses__c) {
+
+            return false;
+
+        }
+
+        let eligibleStatuses = product.OcdlaEligibleMemberStatuses__c.split(",");
+
+        let memberStatus = contact.Ocdla_Member_Status__c;
+
+        return eligibleStatuses.includes(memberStatus);
+
+    });
 }
 
+
+function oneTicketAlgorithm(contact, products) {
+    if (products.length === 1) {
+        return products[0];
+    }
+}
 
 
 
