@@ -33,7 +33,7 @@ router.post("/event/recommendations", async (req, res) => {
         let results = algorithms.map(fn => fn(contact, products));
 
         // Turns out that testing for "!= false" still returned the undefined value as the first viable value. Stepping back to the "firs truthy result" fixed the app's functionality.
-        let suggestion = results.find(result => result);
+        let suggestion = results.find(result => !!result);
 
         return [contact.Id, suggestion.Id];
 

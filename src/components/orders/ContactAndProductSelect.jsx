@@ -180,6 +180,10 @@ function TableRow({ id, name, status, product, products, handleProductSelect, ad
     // This value didn't work with a useState initial value, but I don't think the useState was necessary for this step? Ask Jose about it.
     const selectedProduct = products.find(item => item.Id === product);
 
+    function thingThatGetsDisplayed(product) {
+        return product.Name + " - $" + product.ClickpdxCatalog__StandardPrice__c;
+    }
+
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
 
@@ -193,9 +197,9 @@ function TableRow({ id, name, status, product, products, handleProductSelect, ad
             <td className="px-4 py-3">{status || "-"}</td>
 
             <td className="px-4 py-3 w-[300px]">
-                <DropMenu label={selectedProduct ? selectedProduct.Name : "Select Product"} entries={products} handler={(product) => {
+                <DropMenu label={selectedProduct ? selectedProduct.Name + " - $" + selectedProduct.ClickpdxCatalog__StandardPrice__c : "Select Product"} entries={products} handler={(product) => {
                     handleProductSelect(id, product);
-                }} />
+                }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
             </td>
 
 
