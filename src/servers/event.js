@@ -25,14 +25,13 @@ router.post("/event/recommendations", async (req, res) => {
     console.log("RECOMMENDATION PRODUCTS:", products);
 
 
-    let algorithms = [oneTicketAlgorithm, selectBestProductByIsMember, selectBestProductByMemberStatus];
-    algorithms.reverse();
+    let algorithms = [selectBestProductByMemberStatus, selectBestProductByIsMember, oneTicketAlgorithm];
+
 
     let suggest = contacts.map((contact) => {
 
         let results = algorithms.map(fn => fn(contact, products));
 
-        // Turns out that testing for "!= false" still returned the undefined value as the first viable value. Stepping back to the "firs truthy result" fixed the app's functionality.
         let suggestion = results.find(result => !!result);
 
         return [contact.Id, suggestion.Id];
@@ -52,12 +51,12 @@ router.post("/event/recommendations", async (req, res) => {
 
 
 
-
+// Changed this function so it can't accidentally pick the special status tickets.
 function selectBestProductByIsMember(contact, products) {
 
-    const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true);
+    const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true && !product.OcdlaEligibleMemberStatuses__c);
 
-    const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false);
+    const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false && !product.OcdlaEligibleMemberStatuses__c);
 
     return contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
 }
@@ -67,7 +66,7 @@ function selectBestProductByIsMember(contact, products) {
 // Switch this up. Use new parameters to make this a "filter" rather than the raw assignment.
 // Should default to previous filtered product if no applicable product exists for this filter.
 
-// If we have a prod that lists one or more eligible statuses, 
+// If we have a product that lists one or more eligible statuses, that would be the best choice for members with that status.
 function selectBestProductByMemberStatus(contact, products) {
 
     return products.find(product => {

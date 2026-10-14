@@ -64,7 +64,7 @@ router.get("/api/query/:type", async (req, res) => {
 function buildQuery(name, cookies, eventId, productIds) {
 
     if (name == "event-products") {
-        return `SELECT Id, Name, CreatedDate, IsActive, IsAddOn__c, Event__c, Event__r.Name, Event__r.Start_Date__c, Description, ClickpdxCatalog__StandardPrice__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
+        return `SELECT Id, Name, CreatedDate, IsActive, IsAddOn__c, Event__c, Event__r.Name, Event__r.Start_Date__c, Event__r.Early_Bird_End_Date__c, Description, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
     }
     else if (name == "account-contacts") {
         let accountId = cookies.account_id;
