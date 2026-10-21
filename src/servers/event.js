@@ -43,6 +43,7 @@ router.post("/event-products", async (req, res) => {
         records = resp.records;
     }
 
+
     let theData = records.map((product) => {
         return {
             Id: product.Id,
@@ -115,51 +116,6 @@ router.post("/event/price", async (req, res) => {
     }
 });
 
-
-
-
-
-// Changed this function so it can't accidentally pick the special status tickets.
-function selectBestProductByIsMember(contact, products) {
-
-    const memberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === true && !product.OcdlaEligibleMemberStatuses__c);
-
-    const nonMemberProduct = products.find(product => product.ClickpdxCatalog__IsMembersOnly__c === false && !product.OcdlaEligibleMemberStatuses__c);
-
-    return contact.Ocdla_Current_Member_Flag__c ? memberProduct : nonMemberProduct;
-}
-
-
-// If we have a contact who has an "A" status (acedemic status) automatically select a third ticket via "OcdlaEligibleMemberStatuses__c"
-// Switch this up. Use new parameters to make this a "filter" rather than the raw assignment.
-// Should default to previous filtered product if no applicable product exists for this filter.
-
-// If we have a product that lists one or more eligible statuses, that would be the best choice for members with that status.
-function selectBestProductByMemberStatus(contact, products) {
-
-    return products.find(product => {
-
-        if (!product.OcdlaEligibleMemberStatuses__c) {
-
-            return false;
-
-        }
-
-        let eligibleStatuses = product.OcdlaEligibleMemberStatuses__c.split(",");
-
-        let memberStatus = contact.Ocdla_Member_Status__c;
-
-        return eligibleStatuses.includes(memberStatus);
-
-    });
-}
-
-
-function oneTicketAlgorithm(contact, products) {
-    if (products.length === 1) {
-        return products[0];
-    }
-}
 
 
 
@@ -256,14 +212,6 @@ function isBeforeEarlyBirdEndDate(product) {
 }
 
 
-// This was just proof of concept. Don't do this.
-function selectBestProductRandomly(contact, products, index) {
-
-    let rand = Math.floor(Math.random() * products.length);
-
-    return products[rand];
-}
-
 
 function formatContactQuery(ids) {
     const idList = ids.map(id => `'${id}'`).join(",");
@@ -295,42 +243,6 @@ function getSuggestedPrice(product, contact, useEarlyBird = true) {
     return standardPrice;
 }
 
-// uncomment and fix this
-// function fubar() {
-//         const contactQuery = formatContactQuery(contactIds);
 
-//         const contactResp = await client.query(contactQuery);
-
-//         const contacts = contactResp.records;
-
-//         let algorithms = [selectBestProductByMemberStatus, selectBestProductByIsMember, oneTicketAlgorithm];
-
-//         const recommendations = {};
-
-//         contacts.forEach(contact => {
-
-//             const suggestion = algorithms.map(fn => fn(contact, records)).find(result => !!result);
-
-//             if (!suggestion) {
-//                 recommendations[contact.Id] = null;
-//                 return;
-//             }
-
-//             const calculatedPrice = calculateProductPrice(suggestion, contact,
-//             );
-
-//             recommendations[contact.Id] = {
-//                 productId: suggestion.Id,
-//                 price: calculatedPrice
-//             };
-//         });
-
-
-
-//         return res.json({
-//             records: records,
-//             recommendations: recommendations
-//         });
-//     });
 
 export default router;
