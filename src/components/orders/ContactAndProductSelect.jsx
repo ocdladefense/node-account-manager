@@ -75,9 +75,14 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                 console.log("RECOMMENDATIONS:", suggested);
 
 
-                const recommendedProductIds = selectedContactIds.map(contactId => suggested[contactId] || "");
+                const recommendedProductIds = selectedContactIds.map(contactId => suggested[contactId]?.productId || "");
 
-                setData(prev => ({ ...prev, productIds: recommendedProductIds }));
+                const recommendedPrices = selectedContactIds.map(contactId => suggested[contactId]?.price ?? null);
+
+                setData(prev => ({ ...prev, productIds: recommendedProductIds, prices: recommendedPrices }));
+
+                console.log("RECOMMENDED PRODUCT IDS:", recommendedProductIds);
+                console.log("RECOMMENDED PRICES:", recommendedPrices);
 
             } catch (error) {
 
@@ -116,19 +121,54 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
     };
 
 
-    const handleProductSelect = (contactId, product) => {
+    const handleProductSelect = async (contactId, product) => {
 
-        setData(prev => {
+        try {
+            const resp = await fetch("/event/price", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contactId: contactId,
+                    productId: product.Id,
+                    eventId: selectedEventId
+                })
+            });
 
-            const contactIds = prev.selectedContactIds || [];
-            const productIds = [...(prev.productIds || [])];
+            const result = await resp.json();
 
-            const contactIndex = contactIds.indexOf(contactId);
+            if (!resp.ok) {
+                throw new Error(
+                    result.error || "Unable to calculate product price."
+                );
+            }
 
-            productIds[contactIndex] = product.Id;
+            setData(prev => {
 
-            return { ...prev, productIds };
-        });
+                const contactIds = prev.selectedContactIds || [];
+                const productIds = [...(prev.productIds || [])];
+                const prices = [...(prev.prices || [])];
+
+                const contactIndex = contactIds.indexOf(contactId);
+
+                if (contactIndex === -1) {
+                    return prev;
+                }
+
+                productIds[contactIndex] = result.productId;
+                prices[contactIndex] = result.price;
+
+                return {
+                    ...prev,
+                    productIds,
+                    prices
+                };
+            });
+
+        } catch (error) {
+            console.error("Error updating selected product:", error);
+        }
     };
 
 
@@ -163,7 +203,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                 <tbody>
 
                     {selectedContacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} price={data.prices?.[selectedContactIds.indexOf(contact.Id)]} />
                     ))}
                 </tbody>
 
@@ -175,7 +215,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
 
 
-function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds }) {
+function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds, price }) {
 
     // This value didn't work with a useState initial value, but I don't think the useState was necessary for this step? Ask Jose about it.
     const selectedProduct = products.find(item => item.Id === product);
@@ -197,9 +237,7 @@ function TableRow({ id, name, status, product, products, handleProductSelect, ad
             <td className="px-4 py-3">{status || "-"}</td>
 
             <td className="px-4 py-3 w-[300px]">
-                <DropMenu label={selectedProduct ? selectedProduct.Name + " - $" + selectedProduct.ClickpdxCatalog__StandardPrice__c : "Select Product"} entries={products} handler={(product) => {
-                    handleProductSelect(id, product);
-                }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
+                <DropMenu label={selectedProduct ? `${selectedProduct.Name} - ${price != null ? `$${price}` : "Price unavailable"}` : "Select Product"} entries={products} handler={(product) => { handleProductSelect(id, product); }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
             </td>
 
 

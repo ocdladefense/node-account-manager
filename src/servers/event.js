@@ -32,21 +32,98 @@ router.post("/event/recommendations", async (req, res) => {
 
         let results = algorithms.map(fn => fn(contact, products));
 
+        // let suggestion = results.find(result => !!result);
+        // return [contact.Id, suggestion.Id];
+
         let suggestion = results.find(result => !!result);
 
-        return [contact.Id, suggestion.Id];
+        if (!suggestion) {
+            console.warn(`No recommended product found for ${contact.Id}`);
+            return [contact.Id, null];
+        }
+
+        const calculatedPrice = calculateProductPrice(contact, suggestion);
+
+        console.log(
+            `CONTACT: ${contact.Name}`,
+            `PRODUCT: ${suggestion.Name}`,
+            `CALCULATED PRICE: $${calculatedPrice}`
+        );
+
+        return [
+            contact.Id,
+            {
+                productId: suggestion.Id,
+                price: calculatedPrice
+            }
+        ];
 
     });
 
 
-    suggest.forEach(([contactId, productId]) => {
+    suggest.forEach(([contactId, recommendation]) => {
 
-        _suggest.set(contactId, productId);
+        _suggest.set(contactId, recommendation);
 
     });
 
     return res.json(Object.fromEntries(_suggest));
 });
+
+
+
+router.post("/event/price", async (req, res) => {
+
+    const { contactId, productId, eventId } = req.body;
+
+    if (!contactId || !productId || !eventId) {
+        return res.status(400).json({
+            error: "Contact ID, product ID, and event ID are required."
+        });
+    }
+
+    try {
+        const instanceUrl = req.cookies.instance_url;
+        const accessToken = req.cookies.access_token;
+
+        const apiClient = new SalesforceRestApi(instanceUrl, accessToken);
+
+        const contactResponse = await apiClient.query(
+            formatContactQuery([contactId])
+        );
+
+        const contact = contactResponse.records?.[0];
+
+        const productResponse = await apiClient.query(
+            formatProductQuery(eventId)
+        );
+
+        const product = productResponse.records?.find(
+            item => item.Id === productId
+        );
+
+        if (!contact || !product) {
+            return res.status(404).json({
+                error: "Contact or event product not found."
+            });
+        }
+
+        const price = calculateProductPrice(contact, product);
+
+        return res.json({
+            productId: product.Id,
+            price: price
+        });
+
+    } catch (error) {
+        console.error("Error calculating product price:", error);
+
+        return res.status(500).json({
+            error: "Unable to calculate the selected product's price."
+        });
+    }
+});
+
 
 
 
@@ -95,6 +172,45 @@ function oneTicketAlgorithm(contact, products) {
 
 
 
+function calculateProductPrice(contact, product) {
+
+    const standardPrice = product.ClickpdxCatalog__StandardPrice__c;
+    const memberPrice = product.ClickpdxCatalog__MemberPrice__c;
+    const earlyBirdPrice = product.EarlyBirdPrice__c;
+
+    const earlyBirdEndDate = product.Event__r?.Early_Bird_End_Date__c;
+
+    // Yes, I totally let AI write this value for me lol
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    // Special membership-status tickets use their own pricing.
+    if (product.OcdlaEligibleMemberStatuses__c) {
+        return standardPrice;
+    }
+
+    // Apply early-bird pricing if within the appropriate timeframe.
+    if (
+        earlyBirdEndDate &&
+        currentDate <= earlyBirdEndDate &&
+        earlyBirdPrice != null
+    ) {
+        return earlyBirdPrice;
+    }
+
+    // Apply member pricing when available.
+    if (
+        contact.Ocdla_Current_Member_Flag__c &&
+        memberPrice != null
+    ) {
+        return memberPrice;
+    }
+
+    // Otherwise, use the standard price.
+    return standardPrice;
+}
+
+
+
 // This was just proof of concept. Don't do this.
 function selectBestProductRandomly(contact, products, index) {
 
@@ -104,13 +220,11 @@ function selectBestProductRandomly(contact, products, index) {
 }
 
 
-
-
-
 function formatContactQuery(ids) {
     const idList = ids.map(id => `'${id}'`).join(",");
     return `SELECT Id, Name, Ocdla_Current_Member_Flag__c, Ocdla_Member_Status__c FROM Contact WHERE Id IN (${idList})`;
 }
+
 
 async function fetchContactRecords(contactIds) {
     const contactQuery = formatContactQuery(contactIds);
@@ -119,20 +233,17 @@ async function fetchContactRecords(contactIds) {
 }
 
 
-
 // Do same thing with product records
 function formatProductQuery(eventId) {
-    return `SELECT Id, Name, Event__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
+    return `SELECT Id, Name, Event__c, Event__r.Early_Bird_End_Date__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
 }
+
 
 async function fetchProductRecords(eventId) {
     const productQuery = formatProductQuery(eventId);
     let resp = await client.query(productQuery);
     return resp.records;
 }
-
-
-
 
 
 
