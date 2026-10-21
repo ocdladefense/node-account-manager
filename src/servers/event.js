@@ -6,69 +6,60 @@ const router = express.Router();
 let client;
 
 
-router.post("/event/recommendations", async (req, res) => {
-
-    // Populate map with contactId to product suggestions.
+// this route needs to return the id, name, and price of product
+router.post("/event-products", async (req, res) => {
     const _suggest = new Map();
     const instanceUrl = req.cookies.instance_url;
     const accessToken = req.cookies.access_token;
     const { contactIds, eventId } = req.body;
 
 
-    client = new SalesforceRestApi(instanceUrl, accessToken);
+    if (!instanceUrl || !accessToken) {
+        return res.status(401).json({
+            error: "You must be logged in."
+        });
+    }
 
+    const client = new SalesforceRestApi(
+        instanceUrl,
+        accessToken
+    );
 
-    let contacts = await fetchContactRecords(contactIds);
-    let products = await fetchProductRecords(eventId);
+    const query = `SELECT Id, Name, CreatedDate, IsActive, IsAddOn__c, Event__c, Event__r.Name, Event__r.Start_Date__c, Event__r.Early_Bird_End_Date__c, Description, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
 
-    console.log("RECOMMENDATION CONTACTS:", contacts);
-    console.log("RECOMMENDATION PRODUCTS:", products);
+    const resp = await client.query(query);
+    let records = [];
 
-
-    let algorithms = [selectBestProductByMemberStatus, selectBestProductByIsMember, oneTicketAlgorithm];
-
-
-    let suggest = contacts.map((contact) => {
-
-        let results = algorithms.map(fn => fn(contact, products));
-
-        // let suggestion = results.find(result => !!result);
-        // return [contact.Id, suggestion.Id];
-
-        let suggestion = results.find(result => !!result);
-
-        if (!suggestion) {
-            console.warn(`No recommended product found for ${contact.Id}`);
-            return [contact.Id, null];
-        }
-
-        const calculatedPrice = calculateProductPrice(contact, suggestion);
-
-        console.log(
-            `CONTACT: ${contact.Name}`,
-            `PRODUCT: ${suggestion.Name}`,
-            `CALCULATED PRICE: $${calculatedPrice}`
+    if (!resp.records) {
+        console.error(
+            "Event products Salesforce response:",
+            resp
         );
 
-        return [
-            contact.Id,
-            {
-                productId: suggestion.Id,
-                price: calculatedPrice
-            }
-        ];
+        return res.status(502).json({
+            error: "Unable to retrieve data."
+        });
+    } else {
+        records = resp.records;
+    }
 
+    let theData = records.map((product) => {
+        return {
+            Id: product.Id,
+            Name: product.Name,
+            Price: getStandardPrice(product),
+            MemberPrice: getMemberPrice(product),
+            EarlyBirdPrice: getEarlyBirdPrice(product)
+        }
     });
 
-
-    suggest.forEach(([contactId, recommendation]) => {
-
-        _suggest.set(contactId, recommendation);
-
+    return res.json({
+        records: theData
     });
-
-    return res.json(Object.fromEntries(_suggest));
 });
+
+
+
 
 
 
@@ -211,6 +202,60 @@ function calculateProductPrice(contact, product) {
 
 
 
+
+
+function getStandardPrice(product) {
+    return product.ClickpdxCatalog__StandardPrice__c;
+}
+
+
+function getMemberPrice(product) {
+
+    let price;
+
+    if (product.isMembersOnly) {
+        price = product.ClickpdxCatalog__StandardPrice__c;
+    }
+
+    else if (!product.isMembersOnly && product.ClickpdxCatalog__MemberPrice__c) {
+        price = product.ClickpdxCatalog__MemberPrice__c;
+    }
+
+    else {
+        price = product.ClickpdxCatalog__StandardPrice__c;
+    }
+
+
+    return price;
+}
+
+
+
+function getEarlyBirdPrice(product) {
+
+    const earlyBirdPrice = product.EarlyBirdPrice__c;
+
+    if (!earlyBirdPrice) {
+        return null;
+    }
+
+    return earlyBirdPrice;
+}
+
+function isBeforeEarlyBirdEndDate(product) {
+
+    const currentDate = new Date().toISOString().split("T")[0];
+
+    const earlyBirdEndDate = product.Event__r?.Early_Bird_End_Date__c;
+
+    if (earlyBirdEndDate && currentDate <= earlyBirdEndDate) {
+        return true;
+    }
+
+    return false;
+}
+
+
 // This was just proof of concept. Don't do this.
 function selectBestProductRandomly(contact, products, index) {
 
@@ -226,25 +271,66 @@ function formatContactQuery(ids) {
 }
 
 
-async function fetchContactRecords(contactIds) {
-    const contactQuery = formatContactQuery(contactIds);
-    let resp = await client.query(contactQuery);
-    return resp.records;
-}
-
-
 // Do same thing with product records
 function formatProductQuery(eventId) {
     return `SELECT Id, Name, Event__c, Event__r.Early_Bird_End_Date__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
 }
 
 
-async function fetchProductRecords(eventId) {
-    const productQuery = formatProductQuery(eventId);
-    let resp = await client.query(productQuery);
-    return resp.records;
+
+// gets us the price if they buy it now
+function getSuggestedPrice(product, contact, useEarlyBird = true) {
+
+    const standardPrice = getStandardPrice(product);
+    const memberPrice = getMemberPrice(product);
+    const earlyBirdPrice = getEarlyBirdPrice(product);
+
+    if (useEarlyBird && earlyBirdPrice && isBeforeEarlyBirdEndDate(product)) {
+        return earlyBirdPrice;
+    }
+    else if (true) {
+        return memberPrice;
+    }
+
+    return standardPrice;
 }
 
+// uncomment and fix this
+// function fubar() {
+//         const contactQuery = formatContactQuery(contactIds);
 
+//         const contactResp = await client.query(contactQuery);
+
+//         const contacts = contactResp.records;
+
+//         let algorithms = [selectBestProductByMemberStatus, selectBestProductByIsMember, oneTicketAlgorithm];
+
+//         const recommendations = {};
+
+//         contacts.forEach(contact => {
+
+//             const suggestion = algorithms.map(fn => fn(contact, records)).find(result => !!result);
+
+//             if (!suggestion) {
+//                 recommendations[contact.Id] = null;
+//                 return;
+//             }
+
+//             const calculatedPrice = calculateProductPrice(suggestion, contact,
+//             );
+
+//             recommendations[contact.Id] = {
+//                 productId: suggestion.Id,
+//                 price: calculatedPrice
+//             };
+//         });
+
+
+
+//         return res.json({
+//             records: records,
+//             recommendations: recommendations
+//         });
+//     });
 
 export default router;

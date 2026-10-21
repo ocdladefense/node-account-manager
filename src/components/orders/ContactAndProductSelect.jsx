@@ -17,7 +17,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        if (!selectedEventId) {
+        if (!selectedEventId || selectedContactIds.length === 0) {
             return;
         }
 
@@ -25,14 +25,39 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
             try {
 
-                const resp = await fetch(`/api/query/event-products?eventId=${encodeURIComponent(selectedEventId)}`);
+                const resp = await fetch("/event-products", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        eventId: selectedEventId
+                    })
+                });
+
                 const result = await resp.json();
 
                 if (!resp.ok) {
-                    throw new Error(result.error || "Unable to retrieve event products.");
+                    throw new Error(
+                        result.error || "Unable to retrieve event products."
+                    );
                 }
 
                 setEventProducts(result.records);
+
+                // const recommendedProductIds = selectedContactIds.map(
+                //     contactId => result.recommendations[contactId]?.productId || ""
+                // );
+
+                // const recommendedPrices = selectedContactIds.map(
+                //     contactId => result.recommendations[contactId]?.price ?? null
+                // );
+
+                // setData(prev => ({
+                //     ...prev,
+                //     productIds: recommendedProductIds,
+                //     prices: recommendedPrices
+                // }));
 
             } catch (error) {
                 console.error("Error fetching event products:", error);
@@ -40,62 +65,10 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
         };
 
         fetchEventProducts();
-    }, [selectedEventId]);
 
-    useEffect(() => {
-
-        if (!selectedEventId || selectedContactIds.length === 0) {
-            return;
-        }
-
-        const fetchRecommendations = async () => {
-
-            try {
-
-                const resp = await fetch("/event/recommendations", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        contactIds: selectedContactIds,
-                        eventId: selectedEventId
-                    })
-                });
-
-                const suggested = await resp.json();
-
-                if (!resp.ok) {
-                    throw new Error(
-                        suggested.error || "Unable to retrieve recommendations."
-                    );
-                }
-
-
-                console.log("RECOMMENDATIONS:", suggested);
-
-
-                const recommendedProductIds = selectedContactIds.map(contactId => suggested[contactId]?.productId || "");
-
-                const recommendedPrices = selectedContactIds.map(contactId => suggested[contactId]?.price ?? null);
-
-                setData(prev => ({ ...prev, productIds: recommendedProductIds, prices: recommendedPrices }));
-
-                console.log("RECOMMENDED PRODUCT IDS:", recommendedProductIds);
-                console.log("RECOMMENDED PRICES:", recommendedPrices);
-
-            } catch (error) {
-
-                console.error(
-                    "Error fetching recommendations:",
-                    error
-                );
-            }
-        };
-
-        fetchRecommendations();
 
     }, [selectedEventId, selectedContactIds]);
+
 
 
     const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
@@ -120,7 +93,10 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
         setData(prev => ({ ...prev, selectedContactIds: fn(prev) }));
     };
 
+    // We can remove error handling whenever you want, I just had it in here for testing purposes (and it helped too lol)
+    // We now make calls to the new event/price endpoint to calculate the correct price to display, and also store it in data.prices
 
+    // Had to move this function back inside the component to access selectedEventId and setData
     const handleProductSelect = async (contactId, product) => {
 
         try {
@@ -152,6 +128,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
                 const contactIndex = contactIds.indexOf(contactId);
 
+                // testing buffer because indexOf returns '-1' when value isn't found (user removes a contact while price is updating)
                 if (contactIndex === -1) {
                     return prev;
                 }
@@ -173,6 +150,9 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
 
 
+
+
+
     return (
 
         <div>
@@ -188,7 +168,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
                     <tr className="border-b bg-gray-100">
 
-                        <th className="px-4 py-3"></th>
+                        {/* <th className="px-4 py-3"></th> */}
 
                         <th className="px-4 py-3 text-left">Name</th>
 
@@ -203,7 +183,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                 <tbody>
 
                     {selectedContacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} price={data.prices?.[selectedContactIds.indexOf(contact.Id)]} />
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} price={data.prices?.[selectedContactIds.indexOf(contact.Id)]} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
                     ))}
                 </tbody>
 
@@ -215,21 +195,27 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
 
 
-function TableRow({ id, name, status, product, products, handleProductSelect, addToSelectedContactIds, price }) {
+function TableRow({ id, name, status, product, products, handleProductSelect, price }) {
 
     // This value didn't work with a useState initial value, but I don't think the useState was necessary for this step? Ask Jose about it.
     const selectedProduct = products.find(item => item.Id === product);
 
     function thingThatGetsDisplayed(product) {
-        return product.Name + " - $" + product.ClickpdxCatalog__StandardPrice__c;
+
+        // let timeLeft = product.timeLeftInDays;
+        let timeLeft = 2;
+
+        return `${product.Name} - $${product.EarlyBirdPrice} ($${product.Price} in ${timeLeft} day(s)!)`;
+        //product.MemberPrice
+        //product.EarlyBirdPrice
     }
 
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
 
-            <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+            {/* <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                 <CheckBox label="" name="" value={id} defaultValue={false} onChange={addToSelectedContactIds} />
-            </td>
+            </td> */}
 
             <td className="px-4 py-3">{name}</td>
 
@@ -244,3 +230,8 @@ function TableRow({ id, name, status, product, products, handleProductSelect, ad
         </tr>
     )
 }
+
+
+
+
+
