@@ -8,7 +8,7 @@ let client;
 
 // this route needs to return the id, name, and price of product
 router.post("/event-products", async (req, res) => {
-    const _suggest = new Map();
+
     const instanceUrl = req.cookies.instance_url;
     const accessToken = req.cookies.access_token;
     const { contactIds, eventId } = req.body;
