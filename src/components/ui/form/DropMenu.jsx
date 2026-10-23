@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function DropMenu({ label, entries = [], handler, thingThatGetsDisplayed }) {
+export default function DropMenu({ entries = [], handler, thingThatGetsDisplayed }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    const [label, setLabel] = useState("Select a Product.");
+
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target))
-            {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);
             }
         };
@@ -17,9 +18,20 @@ export default function DropMenu({ label, entries = [], handler, thingThatGetsDi
     }, []);
 
     const handleSelection = (entry) => {
-        handler(entry);
+        // handler(entry);
+        let labelString = entry ? `${entry.Name} - ${entry.Price != null ? `$${entry.Price}` : "Price unavailable"}` : "Select Product";
+
+        setLabel(labelString);
+
         setIsOpen(false);
+
     };
+
+    // Id: product.Id,
+    //     Name: product.Name,
+    //         Price: getStandardPrice(product),
+    //             MemberPrice: getMemberPrice(product),
+    //                 EarlyBirdPrice: getEarlyBirdPrice(product)
 
     return (
         <div ref={dropdownRef} className="relative inline-block w-full max-w-xs text-left">

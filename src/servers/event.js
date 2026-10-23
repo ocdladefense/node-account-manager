@@ -66,13 +66,7 @@ router.post("/event-products", async (req, res) => {
 
 router.post("/event/price", async (req, res) => {
 
-    const { contactId, productId, eventId } = req.body;
-
-    if (!contactId || !productId || !eventId) {
-        return res.status(400).json({
-            error: "Contact ID, product ID, and event ID are required."
-        });
-    }
+    const { contactId, productId } = req.body;
 
     try {
         const instanceUrl = req.cookies.instance_url;

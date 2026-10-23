@@ -23,45 +23,41 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
         const fetchEventProducts = async () => {
 
-            try {
 
-                const resp = await fetch("/event-products", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        eventId: selectedEventId
-                    })
-                });
+            const resp = await fetch("/event-products", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    eventId: selectedEventId
+                })
+            });
 
-                const result = await resp.json();
+            const result = await resp.json();
 
-                if (!resp.ok) {
-                    throw new Error(
-                        result.error || "Unable to retrieve event products."
-                    );
-                }
-
-                setEventProducts(result.records);
-
-                // const recommendedProductIds = selectedContactIds.map(
-                //     contactId => result.recommendations[contactId]?.productId || ""
-                // );
-
-                // const recommendedPrices = selectedContactIds.map(
-                //     contactId => result.recommendations[contactId]?.price ?? null
-                // );
-
-                // setData(prev => ({
-                //     ...prev,
-                //     productIds: recommendedProductIds,
-                //     prices: recommendedPrices
-                // }));
-
-            } catch (error) {
-                console.error("Error fetching event products:", error);
+            if (!resp.ok) {
+                throw new Error(
+                    result.error || "Unable to retrieve event products."
+                );
             }
+
+            setEventProducts(result.records);
+
+            // const recommendedProductIds = selectedContactIds.map(
+            //     contactId => result.recommendations[contactId]?.productId || ""
+            // );
+
+            // const recommendedPrices = selectedContactIds.map(
+            //     contactId => result.recommendations[contactId]?.price ?? null
+            // );
+
+            // setData(prev => ({
+            //     ...prev,
+            //     productIds: recommendedProductIds,
+            //     prices: recommendedPrices
+            // }));
+
         };
 
         fetchEventProducts();
@@ -96,57 +92,6 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
     // We can remove error handling whenever you want, I just had it in here for testing purposes (and it helped too lol)
     // We now make calls to the new event/price endpoint to calculate the correct price to display, and also store it in data.prices
 
-    // Had to move this function back inside the component to access selectedEventId and setData
-    const handleProductSelect = async (contactId, product) => {
-
-        try {
-            const resp = await fetch("/event/price", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    contactId: contactId,
-                    productId: product.Id,
-                    eventId: selectedEventId
-                })
-            });
-
-            const result = await resp.json();
-
-            if (!resp.ok) {
-                throw new Error(
-                    result.error || "Unable to calculate product price."
-                );
-            }
-
-            setData(prev => {
-
-                const contactIds = prev.selectedContactIds || [];
-                const productIds = [...(prev.productIds || [])];
-                const prices = [...(prev.prices || [])];
-
-                const contactIndex = contactIds.indexOf(contactId);
-
-                // testing buffer because indexOf returns '-1' when value isn't found (user removes a contact while price is updating)
-                if (contactIndex === -1) {
-                    return prev;
-                }
-
-                productIds[contactIndex] = result.productId;
-                prices[contactIndex] = result.price;
-
-                return {
-                    ...prev,
-                    productIds,
-                    prices
-                };
-            });
-
-        } catch (error) {
-            console.error("Error updating selected product:", error);
-        }
-    };
 
 
 
@@ -183,7 +128,7 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
                 <tbody>
 
                     {selectedContacts.map((contact) => (
-                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} price={data.prices?.[selectedContactIds.indexOf(contact.Id)]} products={eventProducts} handleProductSelect={handleProductSelect} addToSelectedContactIds={addToSelectedContactIds} />
+                        <TableRow key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={fn => { }} addToSelectedContactIds={addToSelectedContactIds} />
                     ))}
                 </tbody>
 
@@ -210,6 +155,10 @@ function TableRow({ id, name, status, product, products, handleProductSelect, pr
         //product.EarlyBirdPrice
     }
 
+
+    let theLabel = selectedProduct ? `${selectedProduct.Name} - ${price != null ? `$${price}` : "Price unavailable"}` : "Select Product";
+
+
     return (
         <tr className="border-b cursor-pointer hover:bg-gray-100">
 
@@ -223,7 +172,7 @@ function TableRow({ id, name, status, product, products, handleProductSelect, pr
             <td className="px-4 py-3">{status || "-"}</td>
 
             <td className="px-4 py-3 w-[300px]">
-                <DropMenu label={selectedProduct ? `${selectedProduct.Name} - ${price != null ? `$${price}` : "Price unavailable"}` : "Select Product"} entries={products} handler={(product) => { handleProductSelect(id, product); }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
+                <DropMenu label={theLabel} entries={products} handler={(product) => { handleProductSelect(id, product); }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
             </td>
 
 
@@ -231,6 +180,73 @@ function TableRow({ id, name, status, product, products, handleProductSelect, pr
     )
 }
 
+
+
+
+// Had to move this function back inside the component to access selectedEventId and setData
+const handleTicketSelect = async (contactId, product) => {
+
+
+    // const resp = await fetch("/event/price", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //         contactId: contactId,
+    //         productId: product.Id,
+    //         eventId: selectedEventId
+    //     })
+    // });
+
+    // const result = await resp.json();
+
+    // if (!resp.ok) {
+    //     throw new Error(
+    //         result.error || "Unable to calculate product price."
+    //     );
+    // }
+
+    setData(prev => {
+        // This structure will be something where each lone item is going to be indexed by a contact id
+
+
+        let lineItem = { contactId, productId, UnitPrice };
+
+
+        const orderLines = prev.orderLines || {};
+
+
+        orderLines[contactId] = { Product2Id: productId, UnitPrice: somePrice };
+
+
+        //     const contactIds = prev.selectedContactIds || [];
+        //     const productIds = [...(prev.productIds || [])];
+        //     const prices = [...(prev.prices || [])];
+
+        //     const contactIndex = contactIds.indexOf(contactId);
+
+        //     // testing buffer because indexOf returns '-1' when value isn't found (user removes a contact while price is updating)
+        //     if (contactIndex === -1) {
+        //         return prev;
+        //     }
+
+        //     productIds[contactIndex] = result.productId;
+        //     prices[contactIndex] = result.price;
+
+        //     return {
+        //         ...prev,
+        //         productIds,
+        //         prices
+        //     };
+
+        return {
+            ...prev,
+            orderLines
+        };
+    });
+
+};
 
 
 
