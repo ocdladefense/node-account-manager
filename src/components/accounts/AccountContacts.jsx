@@ -7,7 +7,7 @@ import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 // Import these in this order to reinforce the correct sequence of steps in the order creation process.
 import SelectContacts from "../workflows/contact/SelectContacts.jsx";
 import SelectEvent from "../workflows/events/SelectEvent.jsx";
-import SelectEventTicket from "../workflows/events/SelectEventTicket.jsx";
+import EventTicketOrder from "../workflows/events/EventTicketOrder.jsx";
 // import SelectProduct from "../orders/SelectProduct.jsx";
 import SelectPaymentMethod from "../workflows/payment/SelectPaymentMethod.jsx";
 import CreateNewPaymentMethod from "../workflows/payment/CreateNewPaymentMethod.jsx";
@@ -68,7 +68,7 @@ export default function AccountContacts() {
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={true} data={data} setData={setData}>
                     <SelectEvent />
                     {/*<SelectProduct />*/}
-                    <SelectEventTicket contacts={contacts} />
+                    <EventTicketOrder contacts={contacts} data={data} setData={setData} />
                     <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentMethodId") == "new_card" ? 4 : 5} />
                     <CreateNewPaymentMethod />
                     {/*<ReviewOrder />*/}
