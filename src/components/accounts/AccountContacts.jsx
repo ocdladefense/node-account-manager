@@ -4,16 +4,14 @@ import Button from "../ui/Button.jsx";
 import useModal from '../hooks/useModal.js';
 import Modal from '../ui/Modal.jsx';
 import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
-
-
 // Import these in this order to reinforce the correct sequence of steps in the order creation process.
-import SelectContacts from "../orders/SelectContacts.jsx";
-import SelectEvent from "../orders/SelectEvent.jsx";
-import ContactAndProductSelect from "../orders/ContactAndProductSelect.jsx";
+import SelectContacts from "../workflows/contact/SelectContacts.jsx";
+import SelectEvent from "../workflows/events/SelectEvent.jsx";
+import SelectEventTicket from "../workflows/events/SelectEventTicket.jsx";
 // import SelectProduct from "../orders/SelectProduct.jsx";
-import SelectPaymentMethod from "../payment/SelectPaymentMethod.jsx";
-import NewPaymentMethod from "../payment/NewPaymentMethod.jsx";
-import ConfirmOrder from "../orders/ConfirmOrder.jsx";
+import SelectPaymentMethod from "../workflows/payment/SelectPaymentMethod.jsx";
+import CreateNewPaymentMethod from "../workflows/payment/CreateNewPaymentMethod.jsx";
+import ConfirmOrder from "../workflows/order/ConfirmOrder.jsx";
 
 
 
@@ -58,14 +56,6 @@ export default function AccountContacts() {
         fetchContacts();
     }, []);
 
-    // data.contactIds;
-    // data.contacts; // Has all contact info for display?
-    // data.paymentTypeId;
-    // data.productIds;
-    // data.products; // Has all product info for display?
-
-
-
 
 
     return (
@@ -78,9 +68,10 @@ export default function AccountContacts() {
                 <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={true} data={data} setData={setData}>
                     <SelectEvent />
                     {/*<SelectProduct />*/}
-                    <ContactAndProductSelect contacts={contacts} />
+                    <SelectEventTicket contacts={contacts} />
                     <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentMethodId") == "new_card" ? 4 : 5} />
-                    <NewPaymentMethod />
+                    <CreateNewPaymentMethod />
+                    {/*<ReviewOrder />*/}
                     <ConfirmOrder />
                 </Modal>
                 {/*-------------------- END OF MODAL SECTION -------------------- */}

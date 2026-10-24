@@ -1,9 +1,7 @@
 import { SubscriptionsWidget } from './dashboard/SubscriptionsWidget';
 import { EventsWidget } from './dashboard/EventsWidget';
 import { StatusWidget } from './dashboard/StatusWidget';
-import Modal from './ui/Modal';
 import useModal from './hooks/useModal';
-import ConfirmOrder from './orders/ConfirmOrder';
 import { getCookie } from '@ocdla/salesforce/CookieUtils';
 import { useNavigate } from "react-router-dom";
 import { useToast, NewToast } from "./ui/notifications/ToastService";

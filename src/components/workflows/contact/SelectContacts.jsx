@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
-import CheckBox from "../ui/form/CheckBox.jsx";
-import DateDisplay from "../ui/DateDisplay.jsx";
+import CheckBox from "../../ui/form/CheckBox.jsx";
+import DateDisplay from "../../ui/DateDisplay.jsx";
 import { useNavigate } from "react-router";
 
 

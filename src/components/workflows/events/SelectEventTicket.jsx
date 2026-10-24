@@ -1,10 +1,10 @@
 
 import { useState, useEffect } from "react";
-import CheckBox from "../ui/form/CheckBox.jsx";
-import DropMenu from "../ui/form/DropMenu.jsx";
+import CheckBox from "../../ui/form/CheckBox.jsx";
+import DropMenu from "../../ui/form/DropMenu.jsx";
 
 
-export default function ContactAndProductSelect({ contacts, data, setData }) {
+export default function SelectEventTicket({ contacts, data, setData }) {
 
     // Step 1: Prove that we can construct and use a JavaScript Map.
 
@@ -17,7 +17,8 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        if (!selectedEventId || selectedContactIds.length === 0) {
+        if (!selectedEventId || selectedContactIds.length === 0)
+        {
             return;
         }
 
@@ -36,7 +37,8 @@ export default function ContactAndProductSelect({ contacts, data, setData }) {
 
             const result = await resp.json();
 
-            if (!resp.ok) {
+            if (!resp.ok)
+            {
                 throw new Error(
                     result.error || "Unable to retrieve event products."
                 );

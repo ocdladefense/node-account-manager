@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function NewPaymentMethod() {
+export default function CreateNewPaymentMethod() {
     const [formData, setFormData] = useState({
         cardholderName: '',
         cardNumber: '',
