@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function DropMenu({ entries = [], handler, thingThatGetsDisplayed }) {
+export default function DropMenu({ label = "Select an option", entries = [], handler, thingThatGetsDisplayed }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
-    const [label, setLabel] = useState("Select a Product.");
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -18,13 +17,8 @@ export default function DropMenu({ entries = [], handler, thingThatGetsDisplayed
     }, []);
 
     const handleSelection = (entry) => {
-        // handler(entry);
-        let labelString = entry ? `${entry.Name} - ${entry.Price != null ? `$${entry.Price}` : "Price unavailable"}` : "Select Product";
-
-        setLabel(labelString);
-
+        handler(entry);
         setIsOpen(false);
-
     };
 
     // Id: product.Id,

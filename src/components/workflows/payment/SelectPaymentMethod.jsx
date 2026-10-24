@@ -63,7 +63,7 @@ export default function SelectPaymentMethod() {
 
 
             <DropMenu
-                label={selectedOption ? selectedOption.Name : "Choose a card"}
+                label={selectedOption ? selectedOption.Name : "Choose a payment method."}
                 entries={paymentOptions}
                 handler={(option) => { setSelectedOption(option); }}
                 thingThatGetsDisplayed={(option) => option.Name}
