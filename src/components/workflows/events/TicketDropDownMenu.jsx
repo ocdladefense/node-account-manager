@@ -8,7 +8,8 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target))
+            {
                 setIsOpen(false);
             }
         };
@@ -17,7 +18,7 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const handleSelection = (entry) => {
+    const setTicketLabel = (entry) => {
         // handler(entry);
         let labelString = entry ? `${entry.Name} - ${entry.Price != null ? `$${entry.Price}` : "Price unavailable"}` : "Select Product";
 
@@ -25,6 +26,11 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
 
         setIsOpen(false);
 
+    };
+
+    const handleSelection = (entry) => {
+        setTicketLabel(entry);
+        handler(entry);
     };
 
     // Id: product.Id,

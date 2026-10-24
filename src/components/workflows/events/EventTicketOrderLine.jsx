@@ -9,10 +9,10 @@ import TicketDropDownMenu from "./TicketDropDownMenu.jsx";
  * @param {*} param0 
  * @returns 
  */
-export default function EventTicketOrderLine({ id, name, status, product, products, handleProductSelect, price }) {
+export default function EventTicketOrderLine({ id, name, status, selectedTicketId, tickets, handleTicketSelect, price }) {
 
     // This value didn't work with a useState initial value, but I don't think the useState was necessary for this step? Ask Jose about it.
-    const selectedProduct = products.find(item => item.Id === product);
+    const selectedProduct = tickets.find(item => item.Id === selectedTicketId);
 
     function thingThatGetsDisplayed(product) {
 
@@ -41,7 +41,7 @@ export default function EventTicketOrderLine({ id, name, status, product, produc
             <td className="px-4 py-3">{status || "-"}</td>
 
             <td className="px-4 py-3 w-[300px]">
-                <TicketDropDownMenu label={theLabel} entries={products} handler={(product) => { handleProductSelect(id, product); }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
+                <TicketDropDownMenu label={theLabel} entries={tickets} handler={(product) => { handleTicketSelect(id, product); }} thingThatGetsDisplayed={thingThatGetsDisplayed} />
             </td>
 
 

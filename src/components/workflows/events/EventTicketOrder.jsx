@@ -11,7 +11,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
     let selectedContactIds = data.selectedContactIds || [];
 
     // Step 2.5: Use the event selected in the previous step to populate the drop menu with the associated tickets from the server.
-    const [eventProducts, setEventProducts] = useState([]);
+    const [tickets, setTickets] = useState([]);
     const selectedEventId = data.selectedEvent?.Id;
 
     useEffect(() => {
@@ -21,7 +21,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
             return;
         }
 
-        const fetchEventProducts = async () => {
+        const fetchTickets = async () => {
 
 
             const resp = await fetch("/event-products", {
@@ -43,58 +43,16 @@ export default function EventTicketOrder({ contacts, data, setData }) {
                 );
             }
 
-            setEventProducts(result.records);
-
-            // const recommendedProductIds = selectedContactIds.map(
-            //     contactId => result.recommendations[contactId]?.productId || ""
-            // );
-
-            // const recommendedPrices = selectedContactIds.map(
-            //     contactId => result.recommendations[contactId]?.price ?? null
-            // );
-
-            // setData(prev => ({
-            //     ...prev,
-            //     productIds: recommendedProductIds,
-            //     prices: recommendedPrices
-            // }));
-
+            setTickets(result.records);
         };
 
-        fetchEventProducts();
-
+        fetchTickets();
 
     }, [selectedEventId, selectedContactIds]);
 
 
 
     const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
-
-    // This Map would actually happen on the server, returning the recommended ticket for each contact.
-    let theMap = new Map();
-
-    selectedContactIds.forEach((contactId, index) => {
-
-        const productId = data.productIds?.[index] || "";
-        theMap.set(contactId, productId);
-    });
-
-
-    const addToSelectedContactIds = (event) => {
-        const { value, checked } = event.target;
-
-        let fn = checked
-            ? (prev) => [...prev, value]
-            : (prev) => prev.filter((item) => item !== value);
-
-        setData(prev => ({ ...prev, selectedContactIds: fn(prev) }));
-    };
-
-    // We can remove error handling whenever you want, I just had it in here for testing purposes (and it helped too lol)
-    // We now make calls to the new event/price endpoint to calculate the correct price to display, and also store it in data.prices
-
-
-
 
 
 
@@ -105,7 +63,6 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
             <h1 className="text-2xl font-bold mb-4"> {selectedContacts.length} people selected.</h1>
 
-            <input name="productIds" type="hidden" value={Array.from(theMap.values())} readOnly form="batch-action" />
 
 
             <table className="w-full border-collapse">
@@ -128,9 +85,10 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
                 <tbody>
 
-                    {selectedContacts.map((contact) => (
-                        <EventTicketOrderLine key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} product={theMap.get(contact.Id)} products={eventProducts} handleProductSelect={fn => { }} addToSelectedContactIds={addToSelectedContactIds} />
-                    ))}
+                    {selectedContacts.map((contact) => {
+                        let selectedTicketId = "";
+                        return <EventTicketOrderLine key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} selectedTicketId={data.orderLines?.[contact.Id]?.Product2Id || ""} tickets={tickets} handleTicketSelect={handleTicketSelect.bind(null, setData)} />
+                    })}
                 </tbody>
 
             </table>
@@ -143,7 +101,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 
 // Had to move this function back inside the component to access selectedEventId and setData
-const handleTicketSelect = async (contactId, product) => {
+function handleTicketSelect(setData, contactId, product) {
 
 
     // const resp = await fetch("/event/price", {
@@ -170,34 +128,15 @@ const handleTicketSelect = async (contactId, product) => {
         // This structure will be something where each lone item is going to be indexed by a contact id
 
 
-        let lineItem = { contactId, productId, UnitPrice };
 
+
+
+
+        let lineItem = { contactId, productId: product.Id, UnitPrice: product.UnitPrice };
 
         const orderLines = prev.orderLines || {};
+        orderLines[contactId] = lineItem;
 
-
-        orderLines[contactId] = { Product2Id: productId, UnitPrice: somePrice };
-
-
-        //     const contactIds = prev.selectedContactIds || [];
-        //     const productIds = [...(prev.productIds || [])];
-        //     const prices = [...(prev.prices || [])];
-
-        //     const contactIndex = contactIds.indexOf(contactId);
-
-        //     // testing buffer because indexOf returns '-1' when value isn't found (user removes a contact while price is updating)
-        //     if (contactIndex === -1) {
-        //         return prev;
-        //     }
-
-        //     productIds[contactIndex] = result.productId;
-        //     prices[contactIndex] = result.price;
-
-        //     return {
-        //         ...prev,
-        //         productIds,
-        //         prices
-        //     };
 
         return {
             ...prev,
