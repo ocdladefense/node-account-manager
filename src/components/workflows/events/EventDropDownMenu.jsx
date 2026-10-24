@@ -26,7 +26,7 @@ export default function EventDropDownMenu({ label, entries = [], handler }) {
 
 
     return (
-        <div ref={dropdownRef} className="relative inline-block w-full min-w-full text-left">
+        <div ref={dropdownRef} className="relative inline-block w-max text-left">
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
@@ -35,7 +35,7 @@ export default function EventDropDownMenu({ label, entries = [], handler }) {
                     : "border-gray-300 text-gray-700 hover:bg-gray-50"
                     }`}
             >
-                <span className="truncate pr-3">{label}</span>
+                <span className="whitespace-nowrap pr-3">{label}</span>
 
                 <svg
                     className={`w-4 h-4 text-gray-500 transition-transform duration-200 shrink-0 ${isOpen ? "rotate-180 text-blue-600" : ""}`}
@@ -48,7 +48,7 @@ export default function EventDropDownMenu({ label, entries = [], handler }) {
             </button>
 
             {isOpen && (
-                <div className="absolute left-0 right-0 z-50 mt-1 bg-white border border-gray-200 rounded-lg shadow-xl max-h-56 overflow-y-auto p-1.5 focus:outline-none">
+                <div className="absolute left-0 right-0 z-50 mt-1 w-max min-w-full bg-white border border-gray-200 rounded-lg shadow-xl max-h-56 overflow-y-auto p-1.5 focus:outline-none">
                     {entries.map((entry) => {
 
                         return (
@@ -56,7 +56,7 @@ export default function EventDropDownMenu({ label, entries = [], handler }) {
                                 key={entry.Id}
                                 type="button"
                                 onClick={() => handleSelection(entry)}
-                                className="w-full text-left px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 active:bg-blue-100 transition-colors whitespace-nowrap overflow-hidden text-ellipsis block"
+                                className="w-full text-left px-3 py-2 rounded-md text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 active:bg-blue-100 transition-colors whitespace-nowrap block"
                             >
                                 {entry.Name}
                             </button>
