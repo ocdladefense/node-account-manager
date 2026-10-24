@@ -16,8 +16,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        if (!selectedEventId || selectedContactIds.length === 0)
-        {
+        if (!selectedEventId || selectedContactIds.length === 0) {
             return;
         }
 
@@ -36,8 +35,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
             const result = await resp.json();
 
-            if (!resp.ok)
-            {
+            if (!resp.ok) {
                 throw new Error(
                     result.error || "Unable to retrieve event products."
                 );
@@ -87,7 +85,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
                     {selectedContacts.map((contact) => {
                         let selectedTicketId = "";
-                        return <EventTicketOrderLine key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} selectedTicketId={data.orderLines?.[contact.Id]?.Product2Id || ""} tickets={tickets} handleTicketSelect={handleTicketSelect.bind(null, setData)} />
+                        return <EventTicketOrderLine key={contact.Id} id={contact.Id} name={contact.Name} status={contact.Ocdla_Member_Status__c} selectedTicketId={data.orderLines?.[contact.Id]?.ProductId || ""} tickets={tickets} handleTicketSelect={handleTicketSelect.bind(null, setData)} />
                     })}
                 </tbody>
 
@@ -98,9 +96,6 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 
 
-
-
-// Had to move this function back inside the component to access selectedEventId and setData
 function handleTicketSelect(setData, contactId, product) {
 
 
@@ -124,23 +119,29 @@ function handleTicketSelect(setData, contactId, product) {
     //     );
     // }
 
+
+    const price = Number(product.Price);
+
     setData(prev => {
-        // This structure will be something where each lone item is going to be indexed by a contact id
 
 
+        let lineItem = { contactId: contactId, productId: product.Id, UnitPrice: price };
 
+        const orderLines = {
+            ...prev.orderLines,
+            [contactId]: lineItem
+        };
 
-
-
-        let lineItem = { contactId, productId: product.Id, UnitPrice: product.UnitPrice };
-
-        const orderLines = prev.orderLines || {};
-        orderLines[contactId] = lineItem;
+        const total = Object.values(orderLines).reduce(
+            (sum, item) => sum + item.UnitPrice,
+            0
+        );
 
 
         return {
             ...prev,
-            orderLines
+            orderLines,
+            total
         };
     });
 

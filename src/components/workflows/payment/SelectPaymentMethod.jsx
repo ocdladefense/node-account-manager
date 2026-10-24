@@ -14,8 +14,7 @@ export default function SelectPaymentMethod() {
 
     useEffect(() => {
         const fetchPaymentMethods = async () => {
-            try
-            {
+            try {
                 // Implement later
                 // const resp = await fetch("/api/query/event-products?eventId=" + selectedEvent?.Id);
                 // const data = await resp.json();
@@ -37,8 +36,7 @@ export default function SelectPaymentMethod() {
                     return [...data.records, ...options];
                 });
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching payment method",
                     error

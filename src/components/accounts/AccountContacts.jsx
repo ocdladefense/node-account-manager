@@ -24,17 +24,21 @@ export default function AccountContacts() {
     const [contacts, setContacts] = useState([]);
     const [data, setData] = useState(() => ({ selectedContactIds: [], orderLines: {} }));
 
+    // Test block to show updates to the data onject in the console.
+    useEffect(() => {
+        console.log("ORDER DATA UPDATED:", data);
+    }, [data]);
+
+
 
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try
-            {
+            try {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok)
-                {
+                if (!resp.ok) {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -42,8 +46,7 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error)
-            {
+            } catch (error) {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -118,8 +121,7 @@ async function handleSubmit(onComplete, onError, e) {
 
     const result = await resp.json();
 
-    if (!resp.ok)
-    {
+    if (!resp.ok) {
         console.error("Order failed:", result);
 
         onError(result.error || "Order could not be created.");
