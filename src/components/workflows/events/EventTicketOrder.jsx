@@ -125,7 +125,7 @@ function handleTicketSelect(setData, contactId, product) {
     setData(prev => {
 
 
-        let lineItem = { contactId: contactId, productId: product.Id, UnitPrice: price };
+        let lineItem = { contactId: contactId, productId: product.Id, productName: product.Name, UnitPrice: price };
 
         const orderLines = {
             ...prev.orderLines,

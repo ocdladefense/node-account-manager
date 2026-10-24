@@ -8,7 +8,6 @@ import { useToast, NewToast } from "../ui/notifications/ToastService.jsx";
 import SelectContacts from "../workflows/contact/SelectContacts.jsx";
 import SelectEvent from "../workflows/events/SelectEvent.jsx";
 import EventTicketOrder from "../workflows/events/EventTicketOrder.jsx";
-// import SelectProduct from "../orders/SelectProduct.jsx";
 import SelectPaymentMethod from "../workflows/payment/SelectPaymentMethod.jsx";
 import CreateNewPaymentMethod from "../workflows/payment/CreateNewPaymentMethod.jsx";
 import ConfirmOrder from "../workflows/order/ConfirmOrder.jsx";
@@ -57,11 +56,33 @@ export default function AccountContacts() {
         fetchContacts();
     }, []);
 
+    function onComplete(postingEntity, orderId) {
+
+        let orderType = postingEntity === "Invoice" ? "invoice" : "order";
+
+        CreateToast(NewToast("Order created successfully."));
+
+        closeModal();
+
+        setData({
+            selectedContactIds: [],
+            orderLines: {},
+            total: 0
+        });
+
+        navigate(`/${orderType}/${orderId}`);
+    };
+
+    function onError(error) {
+        CreateToast(NewToast(error));
+    };
+
+
 
 
     return (
 
-        <form id="batch-action" onSubmit={handleSubmit.bind(null, onComplete, onError)}>
+        <form id="batch-action" onSubmit={handleSubmit.bind(null, data, onComplete, onError)}>
 
             <div className="w-full">
 
@@ -103,45 +124,45 @@ export default function AccountContacts() {
 
 
 
-async function handleSubmit(onComplete, onError, e) {
+async function handleSubmit(data, onComplete, onError, e) {
     e.preventDefault();
     e.stopPropagation();
 
-    const formData = new FormData(document.getElementById("batch-action"));
+    const orderLines = data.selectedContactIds.map(
+        contactId => data.orderLines[contactId]
+    );
 
-    const plainObject = Object.fromEntries(formData);
+    const orderPayload = {
+        orderLines: orderLines,
+        total: data.total
+    };
 
-    const resp = await fetch("/orders", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(plainObject)
-    });
+    console.log("ORDER PAYLOAD:", orderPayload);
 
-    const result = await resp.json();
+    try {
+        const resp = await fetch("/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderPayload)
+        });
 
-    if (!resp.ok) {
-        console.error("Order failed:", result);
+        const result = await resp.json();
 
-        onError(result.error || "Order could not be created.");
-        return;
+        if (!resp.ok || result.error) {
+            throw new Error(result.error || "Order creation failed.");
+        }
+
+        console.log("ORDER CREATED:", result);
+
+        onComplete(result.postingEntity, result.order.id);
+
+    } catch (error) {
+        console.error("Error submitting order:", error);
+
+        onError(error.message || "Unable to submit order.");
     }
-
-    onComplete(result.postingEntity, result.order.id);
-};
+}
 
 
-function onComplete(postingEntity, orderId) {
-
-    let orderType = postingEntity === "Invoice" ? "invoice" : "order";
-    CreateToast(NewToast("Order created successfully."));
-
-    closeModal();
-
-    navigate(`/${orderType}/${orderId}`);
-};
-
-function onError(error) {
-    CreateToast(NewToast(error));
-};

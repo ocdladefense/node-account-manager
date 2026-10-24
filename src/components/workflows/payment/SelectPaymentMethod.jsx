@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import DropMenu from "../ui/form/DropMenu";
+import DropMenu from "../../ui/form/DropMenu";
 
 
 
@@ -61,7 +61,7 @@ export default function SelectPaymentMethod() {
                 form="batch-action"
             />
 
-            {/*
+
             <DropMenu
                 label={selectedOption ? selectedOption.Name : "Choose a card"}
                 entries={paymentOptions}
@@ -69,7 +69,7 @@ export default function SelectPaymentMethod() {
                 thingThatGetsDisplayed={(option) => option.Name}
             />
 
-*/}
+
 
 
             {selectedOption?.type === "invoice" && (

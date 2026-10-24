@@ -19,16 +19,15 @@ const FORCE_PAYMENT_ERROR = false;
  * Goal - execute Salesforce REST api endpoint to create an single order, with one order product for each contactId in the array.
  */
 router.post("/orders", async (req, res) => {
-    // Note created records id field is in fact lowercase "id" and not "Id" as in the Salesforce object model.  This is a quirk of the Salesforce REST API.
 
-    // Data required to create an Order.
-    let contactIds = req.body.contactIds.split(",");
     let accountId = req.cookies.account_id;
-    const productIds = req.body.productIds.split(",");
+
+    const orderLines = req.body.orderLines;
+    const contactIds = orderLines.map(line => line.contactId);
+    const productIds = orderLines.map(line => line.productId);
+
     const paymentMethodId = req.body.paymentMethodId;
 
-
-    // Connection to Salesforce REST API using the access token and instance URL from cookies.
     let url = req.cookies.instance_url;
     let token = req.cookies.access_token;
     client = new SalesforceRestApi(url, token);
@@ -68,7 +67,11 @@ router.post("/orders", async (req, res) => {
 
 
     // Step 4: Create OrderItems for each contactId.
-    const orderItemResults = await createOrderItems(orderResult, contactIds, productIds, pricebookEntries);
+    const orderItemResults = await createOrderItems(
+        orderResult,
+        orderLines,
+        pricebookEntries
+    );
 
 
     // Step 5:  Convert the OrderStatus as appropriate.
@@ -139,31 +142,20 @@ async function getPricebookEntries(productIds) {
 
 
 
-async function createOrderItems(orderResult, contactIds, productIds, pricebookEntries) {
-
+async function createOrderItems(orderResult, orderLines, pricebookEntries) {
 
     const orderItemResults = [];
 
-    for (let index = 0; index < contactIds.length; index++) {
+    for (const lineItem of orderLines) {
 
-        const contactId = contactIds[index];
-        const productId = productIds[index];
-
-        const pricebookEntry = pricebookEntries.get(productId);
-
-        if (!pricebookEntry) {
-            throw new Error(
-                `No PricebookEntry found for product: ${productId}`
-            );
-        }
-
+        const pricebookEntry = pricebookEntries.get(lineItem.productId);
 
         const orderItemRecord = {
             OrderId: orderResult.id,
             PricebookEntryId: pricebookEntry.Id,
             Quantity: 1,
-            UnitPrice: pricebookEntry.UnitPrice,
-            Contact__c: contactId,
+            UnitPrice: lineItem.UnitPrice,
+            Contact__c: lineItem.contactId,
             Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
         };
 
@@ -172,12 +164,14 @@ async function createOrderItems(orderResult, contactIds, productIds, pricebookEn
 
         console.log("Item Result:", itemResult);
 
-        // Make sure each order item was successful
-        if (!itemResp.ok) throw new Error(itemResult.errors || `Salesforce failed to create an order item for contact: ${contactId}`);
+        if (!itemResp.ok) {
+            throw new Error(
+                `Salesforce failed to create an order item for contact: ${lineItem.contactId}`
+            );
+        }
 
         orderItemResults.push(itemResult);
     }
-
 
     return orderItemResults;
 }
