@@ -8,8 +8,7 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target))
-            {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setIsOpen(false);
             }
         };
@@ -40,7 +39,7 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
     //                 EarlyBirdPrice: getEarlyBirdPrice(product)
 
     return (
-        <div ref={dropdownRef} className="relative inline-block w-full max-w-xs text-left">
+        <div ref={dropdownRef} className="relative inline-block w-full min-w-full text-left">
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}

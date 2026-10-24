@@ -26,7 +26,7 @@ export default function EventDropDownMenu({ label, entries = [], handler }) {
 
 
     return (
-        <div ref={dropdownRef} className="relative inline-block w-full max-w-xs text-left">
+        <div ref={dropdownRef} className="relative inline-block w-full min-w-full text-left">
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
