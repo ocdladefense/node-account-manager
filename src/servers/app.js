@@ -196,8 +196,8 @@ app.listen(port, () => {
  * Helper function to generate canvas buffer
  */
 function generateCoverBuffer(title) {
-    const width = 600;
-    const height = 900;
+    const width = 500;
+    const height = 500;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
@@ -208,29 +208,26 @@ function generateCoverBuffer(title) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // 2. Decorative Border (Elegant Gold/Bronze)
-    ctx.strokeStyle = '#e0a96d';
-    ctx.lineWidth = 12;
-    ctx.strokeRect(30, 30, width - 60, height - 60);
+    // 2. Main Typography Styling (Bold Sans-Serif / Upper-case formatting)
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#ffffff'; // Pure white text
 
-    // 3. Text Alignment
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // 4. Title with wrapping (White Text)
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 42px Serif';
-
-    const words = title.split(' ');
+    // 3. Process wrapped book title across the expanded width
+    ctx.font = 'bold 36px Sans-Serif';
+    const words = title.toUpperCase().split(' ');
     let lines = [];
     let currentLine = '';
-    const maxWidth = width - 120;
+
+    // Position text with comfortable padding from the canvas edges
+    const textStartX = 40;
+    const maxTextWidth = width - (textStartX * 2);
 
     for (let n = 0; n < words.length; n++)
     {
         let testLine = currentLine + words[n] + ' ';
         let metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0)
+        if (metrics.width > maxTextWidth && n > 0)
         {
             lines.push(currentLine.trim());
             currentLine = words[n] + ' ';
@@ -241,21 +238,13 @@ function generateCoverBuffer(title) {
     }
     lines.push(currentLine.trim());
 
-    // Shift text down slightly since the date elements below it are removed
-    let titleY = 400 - ((lines.length - 1) * 25);
+    // Print out the book header lines starting from the top padding area
+    let textY = 40;
     lines.forEach((line) => {
-        ctx.fillText(line, width / 2, titleY);
-        titleY += 55;
+        ctx.fillText(line, textStartX, textY);
+        textY += 46; // Line height spacing
     });
 
-    // 5. Minimalist Divider Line below the title
-    ctx.beginPath();
-    ctx.moveTo(width / 2 - 80, titleY + 20);
-    ctx.lineTo(width / 2 + 80, titleY + 20);
-    ctx.strokeStyle = '#e0a96d';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Return the raw PNG buffer
+    // Return raw PNG image stream data buffer
     return canvas.toBuffer('image/png');
 }
