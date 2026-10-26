@@ -25,6 +25,7 @@ import queryRoutes from "./query.js";
 import paymentMethodRoutes from "./payment-method.js";
 import eventRoutes from "./event.js";
 import productSuggestionRoutes from "./product-suggestion.js";
+import { createCanvas } from 'canvas';
 
 const app = express();
 const port = process.env.PORT || 80;
@@ -41,7 +42,8 @@ const ALPHANUMERIC_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 function createUniqueAlphanumericId(length = 16) {
     let id = '';
 
-    while (id.length < length) {
+    while (id.length < length)
+    {
         id += ALPHANUMERIC_CHARS[crypto.randomInt(0, ALPHANUMERIC_CHARS.length)];
     }
 
@@ -93,16 +95,19 @@ app.delete("/delete", (req, res) => {
     const uploadsDir = path.join(process.cwd(), "uploads");
     const absolutePath = path.join(uploadsDir, filePath);
 
-    if (!absolutePath.startsWith(uploadsDir)) {
+    if (!absolutePath.startsWith(uploadsDir))
+    {
         return res.status(400).json({
             success: false,
             error: "Invalid path"
         });
     }
 
-    if (isDirectory) {
+    if (isDirectory)
+    {
         fs.rm(absolutePath, rmdirOptions, err => {
-            if (err) {
+            if (err)
+            {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -115,9 +120,11 @@ app.delete("/delete", (req, res) => {
         });
     }
 
-    else {
+    else
+    {
         fs.unlink(absolutePath, err => {
-            if (err) {
+            if (err)
+            {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -132,9 +139,34 @@ app.delete("/delete", (req, res) => {
         let dirPath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
         const files = fs.readdirSync(dirPath);
 
-        if (files.length == 0) {
+        if (files.length == 0)
+        {
             fs.rmdir(dirPath, () => { });
         }
+    }
+});
+
+
+/**
+ * GET /api/cover
+ * Query Params: ?title=Your+Title&date=Your+Date
+ */
+app.get('/api/cover', (req, res) => {
+    // Extract query parameters with fallbacks if missing
+    const title = req.query.title || 'Untitled Book';
+    const date = req.query.date || 'Unknown Date';
+
+    try
+    {
+        const imgBuffer = generateCoverBuffer(title, date);
+
+        // Set content type header to PNG and send the image binary
+        res.setHeader('Content-Type', 'image/png');
+        res.send(imgBuffer);
+    } catch (error)
+    {
+        console.error('Error generating cover:', error);
+        res.status(500).json({ error: 'Failed to generate book cover' });
     }
 });
 
@@ -154,3 +186,77 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
     console.log(`dev link: http://localhost:${port}/`)
 });
+
+
+
+
+
+
+/**
+ * Helper function to generate canvas buffer
+ */
+function generateCoverBuffer(title, date) {
+    const width = 600;
+    const height = 900;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
+
+    // 1. Background (Solid White)
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Decorative Border (Solid Black)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(30, 30, width - 60, height - 60);
+
+    // 3. Text Alignment
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // 4. Title with wrapping (Solid Black Text)
+    ctx.fillStyle = '#000000';
+    ctx.font = 'bold 42px Serif';
+
+    const words = title.split(' ');
+    let lines = [];
+    let currentLine = '';
+    const maxWidth = width - 120;
+
+    for (let n = 0; n < words.length; n++)
+    {
+        let testLine = currentLine + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0)
+        {
+            lines.push(currentLine.trim());
+            currentLine = words[n] + ' ';
+        } else
+        {
+            currentLine = testLine;
+        }
+    }
+    lines.push(currentLine.trim());
+
+    let titleY = 320 - ((lines.length - 1) * 25);
+    lines.forEach((line) => {
+        ctx.fillText(line, width / 2, titleY);
+        titleY += 55;
+    });
+
+    // 5. Divider Line (Solid Black)
+    ctx.beginPath();
+    ctx.moveTo(width / 2 - 80, 520);
+    ctx.lineTo(width / 2 + 80, 520);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 6. Publication Date (Solid Black Text)
+    ctx.fillStyle = '#000000';
+    ctx.font = 'italic 24px Sans-Serif';
+    ctx.fillText(`Published: ${date}`, width / 2, 580);
+
+    // Return the raw PNG buffer
+    return canvas.toBuffer('image/png');
+}
