@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function TicketDropDownMenu({ entries = [], handler, thingThatGetsDisplayed }) {
+export default function TicketDropDownMenu({ label = "Select a Product.", entries = [], handler, thingThatGetsDisplayed }) {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
-
-    const [label, setLabel] = useState("Select a Product.");
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -17,19 +15,10 @@ export default function TicketDropDownMenu({ entries = [], handler, thingThatGet
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    const setTicketLabel = (entry) => {
-        // handler(entry);
-        let labelString = entry ? `${entry.Name} - ${entry.Price != null ? `$${entry.Price}` : "Price unavailable"}` : "Select Product";
-
-        setLabel(labelString);
-
-        setIsOpen(false);
-
-    };
 
     const handleSelection = (entry) => {
-        setTicketLabel(entry);
         handler(entry);
+        setIsOpen(false);
     };
 
     // Id: product.Id,

@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.post("/product-suggestions", async (req, res) => {
 
-    const _suggest = new Map();
 
     const instanceUrl = req.cookies.instance_url;
     const accessToken = req.cookies.access_token;
@@ -61,7 +60,6 @@ router.post("/product-suggestions", async (req, res) => {
 
         recommendations[contact.Id] = {
             productId: suggestion.Id,
-            price: calculatedPrice
         };
     });
 
