@@ -27,14 +27,12 @@ export default function Modal({
 
 
     useEffect(() => {
-        if (containerRef.current && externalNode)
-        {
+        if (containerRef.current && externalNode) {
             containerRef.current.appendChild(externalNode);
         }
 
         return () => {
-            if (containerRef.current && externalNode && containerRef.current.contains(externalNode))
-            {
+            if (containerRef.current && externalNode && containerRef.current.contains(externalNode)) {
                 containerRef.current.removeChild(externalNode);
             }
         };
@@ -76,15 +74,6 @@ export default function Modal({
             >
 
 
-                {
-                    currentStep > 0 && (
-                        <div className="absolute top-6 left-6 z-20">
-                            <BackButton className="px-6 w-25 py-1 cursor-pointer rounded-md bg-white text-black hover:bg-gray-100 active:bg-gray-200 transition-colors duration-150" label="< Back" action={() => setCurrentStep(currentStep - 1)} />
-                        </div>
-                    )
-                }
-
-
                 {/* transition-transform duration-300 ease-in-out */}
                 <div id="multi-step-container" className="overflow-x-hidden overflow-y-auto pr-2 flex-1 w-full">
                     {isMultiStep && (
@@ -102,12 +91,10 @@ export default function Modal({
 
                                 let _getNextStep = stepNode.props.getNextStep;
 
-                                if (step == currentStep && _getNextStep)
-                                {
+                                if (step == currentStep && _getNextStep) {
                                     getNextStep = _getNextStep;
                                 }
-                                if (step == currentStep && currentStep == totalSteps && stepNode.props.onSubmit)
-                                {
+                                if (step == currentStep && currentStep == totalSteps && stepNode.props.onSubmit) {
                                     onSubmit = stepNode.props.onSubmit;
                                 }
 
@@ -135,17 +122,17 @@ export default function Modal({
 
 
                 <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
-                    <CautionButton
-                        label="Cancel"
-                        isCancel={true}
-                        action={onClose}
-                    />
+
+                    {currentStep > 1 && (
+                        <div className="mr-auto">
+                            <BackButton label="< Back" action={() => setCurrentStep(currentStep - 1)} />
+                        </div>
+                    )}
+
+                    <CautionButton label="Cancel" isCancel={true} action={onClose} />
 
                     {currentStep == totalSteps ? <input type="submit" value="Submit me" form="batch-action" /> :
-                        <Button
-                            label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'}
-                            action={nextAction}
-                        />}
+                        <Button label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'} action={nextAction} />}
 
                 </div>
 
