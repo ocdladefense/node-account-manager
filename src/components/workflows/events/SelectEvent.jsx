@@ -7,9 +7,6 @@ export default function SelectEvent({ products, setData, data }) {
     const [selectedEvent, setSelectedEvent] = useState("");
 
 
-
-
-    // This fetch is for populating the drop down menu for the registration modal.
     useEffect(() => {
         const fetchEvents = async () => {
             try {

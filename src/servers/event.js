@@ -80,13 +80,9 @@ router.post("/event/price", async (req, res) => {
 
         const contact = contactResponse.records?.[0];
 
-        const productResponse = await apiClient.query(
-            formatProductQuery(eventId)
-        );
+        const productResponse = await apiClient.query(`SELECT Id, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c, OcdlaEligibleMemberStatuses__c, Event__r.Early_Bird_End_Date__c FROM Product2 WHERE Id = '${productId}'`);
 
-        const product = productResponse.records?.find(
-            item => item.Id === productId
-        );
+        const product = productResponse.records?.[0];
 
         if (!contact || !product) {
             return res.status(404).json({

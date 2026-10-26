@@ -7,13 +7,8 @@ const USE_SUGGESTIONS = true;
 
 export default function EventTicketOrder({ contacts, data, setData }) {
 
-    // Step 1: Prove that we can construct and use a JavaScript Map.
-
-    // Step 2: Figuring out how to populate the Map with actual data from the previous step.
     let selectedContactIds = data.selectedContactIds || [];
 
-
-    // Step 2.5: Use the event selected in the previous step to populate the drop menu with the associated tickets from the server.
     const [tickets, setTickets] = useState([]);
     const selectedEventId = data.selectedEvent?.Id;
 
@@ -52,7 +47,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
     }, [selectedEventId, selectedContactIds]);
 
 
-    // Run one more useEffect that only runs once (when the user selects an event) and gets the suggested event ticket product for each selected contact. return immediately if USE_SUGGESTIONS is false. Suggested tickets get passed to the selected contact via data.
+
     useEffect(() => {
 
         if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0 || tickets.length === 0) {
@@ -151,40 +146,62 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 
 
-function handleTicketSelect(setData, contactId, product, isSuggestion = false) {
 
-    const price = Number(product.Price);
+async function handleTicketSelect(setData, contactId, product, isSuggestion = false) {
 
-    setData(prev => {
+    try {
+        const resp = await fetch("/event/price", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                contactId: contactId,
+                productId: product.Id
+            })
+        });
 
-        if (isSuggestion && prev.orderLines?.[contactId]) {
-            return prev;
+        const result = await resp.json();
+
+        if (!resp.ok) {
+            throw new Error(result.error || "Unable to calculate ticket price.");
         }
 
+        const price = Number(result.price);
 
+        setData(prev => {
 
-        let lineItem = { contactId: contactId, productId: product.Id, UnitPrice: price };
+            if (isSuggestion && prev.orderLines?.[contactId]) {
+                return prev;
+            }
 
-        const orderLines = {
-            ...prev.orderLines,
-            [contactId]: lineItem
-        };
+            const lineItem = {
+                contactId: contactId,
+                productId: product.Id,
+                UnitPrice: price
+            };
 
-        const total = Object.values(orderLines).reduce(
-            (sum, item) => sum + item.UnitPrice,
-            0
-        );
+            const orderLines = {
+                ...prev.orderLines,
+                [contactId]: lineItem
+            };
 
+            const total = Object.values(orderLines).reduce(
+                (sum, item) => sum + item.UnitPrice,
+                0
+            );
 
-        return {
-            ...prev,
-            orderLines,
-            total
-        };
-    });
+            return {
+                ...prev,
+                orderLines,
+                total
+            };
+        });
 
-};
-
+    } catch (error) {
+        console.error("Ticket selection failed:", error);
+    }
+}
 
 
 

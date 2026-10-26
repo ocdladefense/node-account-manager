@@ -23,7 +23,6 @@ export default function AccountContacts() {
     const [contacts, setContacts] = useState([]);
     const [data, setData] = useState(() => ({ selectedContactIds: [], orderLines: {} }));
 
-    // Test block to show updates to the data onject in the console.
     useEffect(() => {
         console.log("ORDER DATA UPDATED:", data);
     }, [data]);

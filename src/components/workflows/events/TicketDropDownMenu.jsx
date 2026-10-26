@@ -21,11 +21,6 @@ export default function TicketDropDownMenu({ label = "Select a Product.", entrie
         setIsOpen(false);
     };
 
-    // Id: product.Id,
-    //     Name: product.Name,
-    //         Price: getStandardPrice(product),
-    //             MemberPrice: getMemberPrice(product),
-    //                 EarlyBirdPrice: getEarlyBirdPrice(product)
 
     return (
         <div ref={dropdownRef} className="relative inline-block w-full min-w-full text-left">
