@@ -195,18 +195,21 @@ app.listen(port, () => {
 /**
  * Helper function to generate canvas buffer
  */
-function generateCoverBuffer(title, date) {
+function generateCoverBuffer(title) {
     const width = 600;
     const height = 900;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    // 1. Background (Solid White)
-    ctx.fillStyle = '#ffffff';
+    // 1. Background Gradient (White on Blue Theme)
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, '#1e3c72'); // Deep blue
+    gradient.addColorStop(1, '#2a5298'); // Lighter slate blue
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // 2. Decorative Border (Solid Black)
-    ctx.strokeStyle = '#000000';
+    // 2. Decorative Border (Elegant Gold/Bronze)
+    ctx.strokeStyle = '#e0a96d';
     ctx.lineWidth = 12;
     ctx.strokeRect(30, 30, width - 60, height - 60);
 
@@ -214,8 +217,8 @@ function generateCoverBuffer(title, date) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // 4. Title with wrapping (Solid Black Text)
-    ctx.fillStyle = '#000000';
+    // 4. Title with wrapping (White Text)
+    ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 42px Serif';
 
     const words = title.split(' ');
@@ -238,24 +241,20 @@ function generateCoverBuffer(title, date) {
     }
     lines.push(currentLine.trim());
 
-    let titleY = 320 - ((lines.length - 1) * 25);
+    // Shift text down slightly since the date elements below it are removed
+    let titleY = 400 - ((lines.length - 1) * 25);
     lines.forEach((line) => {
         ctx.fillText(line, width / 2, titleY);
         titleY += 55;
     });
 
-    // 5. Divider Line (Solid Black)
+    // 5. Minimalist Divider Line below the title
     ctx.beginPath();
-    ctx.moveTo(width / 2 - 80, 520);
-    ctx.lineTo(width / 2 + 80, 520);
-    ctx.strokeStyle = '#000000';
+    ctx.moveTo(width / 2 - 80, titleY + 20);
+    ctx.lineTo(width / 2 + 80, titleY + 20);
+    ctx.strokeStyle = '#e0a96d';
     ctx.lineWidth = 2;
     ctx.stroke();
-
-    // 6. Publication Date (Solid Black Text)
-    ctx.fillStyle = '#000000';
-    ctx.font = 'italic 24px Sans-Serif';
-    ctx.fillText(`Published: ${date}`, width / 2, 580);
 
     // Return the raw PNG buffer
     return canvas.toBuffer('image/png');
