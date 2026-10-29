@@ -21,7 +21,7 @@ export default function AccountContacts() {
     const { isOpen, openModal, closeModal } = useModal();
     const { CreateToast } = useToast();
     const [contacts, setContacts] = useState([]);
-    const [data, setData] = useState(() => ({ selectedContactIds: [], orderLines: {} }));
+    const [data, setData] = useState(() => ({ selectedContactIds: [] }));
 
     useEffect(() => {
         console.log("ORDER DATA UPDATED:", data);

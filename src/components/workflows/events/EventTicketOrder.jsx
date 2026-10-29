@@ -9,12 +9,45 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
     let selectedContactIds = data.selectedContactIds || [];
 
+
     const [tickets, setTickets] = useState([]);
     const selectedEventId = data.selectedEvent?.Id;
 
+
     useEffect(() => {
 
-        if (!selectedEventId || selectedContactIds.length === 0) {
+        const orderLines = {};
+
+        selectedContactIds.forEach(contactId => {
+
+            let lineItem = {
+                contactId: contactId,
+                productId: null,
+                UnitPrice: 0
+            };
+
+            orderLines[contactId] = lineItem;
+        });
+
+        setData(prev => {
+
+
+            return {
+                ...prev,
+                orderLines
+            };
+        });
+        console.log(orderLines);
+
+    }, []);
+
+
+
+
+
+    useEffect(() => {
+
+        if (!selectedEventId) {
             return;
         }
 
@@ -50,59 +83,42 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0 || tickets.length === 0) {
+        if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0) {
             return;
         }
 
-        let cancelled = false;
-
         const fetchSuggestions = async () => {
-            try {
-                const resp = await fetch("/product-suggestions", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        contactIds: selectedContactIds,
-                        eventId: selectedEventId
-                    })
-                });
 
-                const result = await resp.json();
+            const resp = await fetch("/product-suggestions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contactIds: selectedContactIds,
+                    eventId: selectedEventId
+                })
+            });
 
-                if (!resp.ok) {
-                    throw new Error(result.error || "Unable to retrieve ticket suggestions.");
-                }
+            const suggest = await resp.json();
 
-                if (cancelled) return;
-
-                selectedContactIds.forEach(contactId => {
-
-                    const productId =
-                        result.recommendations?.[contactId]?.productId;
-
-                    const product = tickets.find(ticket => ticket.Id === productId);
-
-                    if (product) {
-                        handleTicketSelect(setData, contactId, product, true);
-                    }
-                });
-
-            } catch (error) {
-                if (!cancelled) {
-                    console.error("Error fetching ticket suggestions:", error);
-                }
+            if (!resp.ok) {
+                throw new Error(result.error || "Unable to retrieve ticket suggestions.");
             }
+
+            // '003hr000000NvVXAA0' is not in my oder lines (as a contactId)
+            //  003hr000000NvVXAA0
+
+            for (const [contactId, productId] of Object.entries(suggest)) {
+                let orderLine = data.orderLines[contactId];
+                orderLine.productId = productId;
+            }
+
         };
 
         fetchSuggestions();
 
-        return () => {
-            cancelled = true;
-        };
-
-    }, [selectedEventId, selectedContactIds, tickets, setData]);
+    }, [Object.keys(data.orderLines || {})]);
 
 
     const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));

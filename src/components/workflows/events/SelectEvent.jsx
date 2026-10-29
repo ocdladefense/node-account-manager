@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import EventDropDownMenu from "./EventDropDownMenu.jsx";
 
-export default function SelectEvent({ products, setData, data }) {
+export default function SelectEvent({ setData }) {
     const [events, setEvents] = useState([]);
     const [selectedEvent, setSelectedEvent] = useState("");
 
@@ -43,7 +43,7 @@ export default function SelectEvent({ products, setData, data }) {
                 entries={events}
                 handler={(event) => {
                     setSelectedEvent(event); setData(prev => ({
-                        ...prev, selectedEvent: event, orderLines: {}, total: 0
+                        ...prev, selectedEvent: event
                     }));
                 }}
             />

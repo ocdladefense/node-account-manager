@@ -58,16 +58,11 @@ router.post("/product-suggestions", async (req, res) => {
         }
 
 
-        recommendations[contact.Id] = {
-            productId: suggestion.Id,
-        };
+        recommendations[contact.Id] = suggestion.Id;
     });
 
 
-    return res.json({
-        records: products,
-        recommendations: recommendations
-    });
+    return res.json(recommendations);
 
 });
 
