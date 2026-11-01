@@ -1,6 +1,6 @@
 import express from "express";
 import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
-import { getPrices, getStandardPrice, getMemberPrice, getEarlyBirdPrice } from "../utils/event.js";
+import { getPrices, getStandardPrice, getMemberPrice, getEarlyBirdPrice } from "../utils/product.js";
 
 const router = express.Router();
 
@@ -17,7 +17,8 @@ router.post("/event-products", async (req, res) => {
     const { contactIds, eventId } = req.body;
 
 
-    if (!instanceUrl || !accessToken) {
+    if (!instanceUrl || !accessToken)
+    {
         return res.status(401).json({
             error: "You must be logged in."
         });
@@ -33,7 +34,8 @@ router.post("/event-products", async (req, res) => {
     const resp = await client.query(query);
     let records = [];
 
-    if (!resp.records) {
+    if (!resp.records)
+    {
         console.error(
             "Event products Salesforce response:",
             resp
@@ -42,7 +44,8 @@ router.post("/event-products", async (req, res) => {
         return res.status(502).json({
             error: "Unable to retrieve data."
         });
-    } else {
+    } else
+    {
         records = resp.records;
     }
 

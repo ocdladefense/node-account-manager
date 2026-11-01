@@ -1,10 +1,12 @@
 import express from "express";
 import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
-import { getPrices, getStandardPrice, getMemberPrice, getEarlyBirdPrice } from "../utils/event.js";
-
+import { getPrices } from "../utils/product.js";
+import { formatTicketQuery, formatContactQuery } from "../utils/query.js";
 const router = express.Router();
 
-let client;
+
+
+
 
 router.post("/product-suggestions", async (req, res) => {
 
@@ -14,13 +16,14 @@ router.post("/product-suggestions", async (req, res) => {
 
     const { contactIds, eventId } = req.body;
 
-    if (!instanceUrl || !accessToken) {
+    if (!instanceUrl || !accessToken)
+    {
         return res.status(401).json({
             error: "You must be logged in."
         });
     }
 
-    client = new SalesforceRestApi(
+    let client = new SalesforceRestApi(
         instanceUrl,
         accessToken
     );
@@ -36,7 +39,7 @@ router.post("/product-suggestions", async (req, res) => {
 
 
 
-    const productQuery = formatProductQuery(eventId);
+    const productQuery = formatTicketQuery(eventId);
 
     const productResp = await client.query(productQuery);
 
@@ -54,7 +57,8 @@ router.post("/product-suggestions", async (req, res) => {
 
         const suggestion = algorithms.map(fn => fn(contact, products)).find(result => !!result);
 
-        if (!suggestion) {
+        if (!suggestion)
+        {
             recommendations[contact.Id] = null;
             return;
         }
@@ -74,19 +78,6 @@ router.post("/product-suggestions", async (req, res) => {
 
 });
 
-
-
-// CODE IMPORT FROM UTILS FOLDER
-function formatContactQuery(ids) {
-    const idList = ids.map(id => `'${id}'`).join(",");
-    return `SELECT Id, Name, Ocdla_Current_Member_Flag__c, Ocdla_Member_Status__c FROM Contact WHERE Id IN (${idList})`;
-}
-
-
-// CODE IMPORT FROM UTILS FOLDER
-function formatProductQuery(eventId) {
-    return `SELECT Id, Name, Event__c, Event__r.Early_Bird_End_Date__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
-}
 
 
 
@@ -109,7 +100,8 @@ function selectBestProductByMemberStatus(contact, products) {
 
     return products.find(product => {
 
-        if (!product.OcdlaEligibleMemberStatuses__c) {
+        if (!product.OcdlaEligibleMemberStatuses__c)
+        {
 
             return false;
 
@@ -127,7 +119,8 @@ function selectBestProductByMemberStatus(contact, products) {
 
 
 function oneTicketAlgorithm(contact, products) {
-    if (products.length === 1) {
+    if (products.length === 1)
+    {
         return products[0];
     }
 }
@@ -141,5 +134,7 @@ function selectBestProductRandomly(contact, products, index) {
 
     return products[rand];
 }
+
+
 
 export default router;

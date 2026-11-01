@@ -49,7 +49,8 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        if (!selectedEventId) {
+        if (!selectedEventId)
+        {
             return;
         }
 
@@ -68,7 +69,8 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
             const result = await resp.json();
 
-            if (!resp.ok) {
+            if (!resp.ok)
+            {
                 throw new Error(
                     result.error || "Unable to retrieve event products."
                 );
@@ -86,9 +88,11 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 
     let contactIdsHash = hashContactIds(Object.keys(data.orderLines || {}));
+
     useEffect(() => {
 
-        if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0) {
+        if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0)
+        {
             return;
         }
 
@@ -107,11 +111,13 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
             const suggest = await resp.json();
 
-            if (!resp.ok) {
+            if (!resp.ok)
+            {
                 throw new Error(result.error || "Unable to retrieve ticket suggestions.");
             }
 
-            for (const suggestion of suggest) {
+            for (const suggestion of suggest)
+            {
                 let orderLine = data.orderLines[suggestion.contactId];
                 orderLine.productId = suggestion.productId;
                 orderLine.UnitPrice = suggestion.price;
@@ -183,7 +189,8 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 async function handleTicketSelect(setData, contactId, product, isSuggestion = false) {
 
-    try {
+    try
+    {
         const resp = await fetch("/event/price", {
             method: "POST",
             headers: {
@@ -197,7 +204,8 @@ async function handleTicketSelect(setData, contactId, product, isSuggestion = fa
 
         const suggestedPrices = await resp.json();
 
-        if (!resp.ok) {
+        if (!resp.ok)
+        {
             throw new Error(prices.error || "Unable to calculate ticket price.");
         }
 
@@ -207,7 +215,8 @@ async function handleTicketSelect(setData, contactId, product, isSuggestion = fa
 
             let orderLines = {};
 
-            for (let suggested of suggestedPrices) {
+            for (let suggested of suggestedPrices)
+            {
                 const price = Number(suggested.price);
                 const contactId = suggested.contactId;
                 const productId = suggested.productId;
@@ -229,10 +238,7 @@ async function handleTicketSelect(setData, contactId, product, isSuggestion = fa
 
 
             // This will also need to change to "price"
-            const total = Object.values(orderLines).reduce(
-                (sum, item) => sum + item.UnitPrice,
-                0
-            );
+            const total = getOrderTotal(orderLines);
 
             return {
                 ...prev,
@@ -241,7 +247,8 @@ async function handleTicketSelect(setData, contactId, product, isSuggestion = fa
             };
         });
 
-    } catch (error) {
+    } catch (error)
+    {
         console.error("Ticket selection failed:", error);
     }
 }
