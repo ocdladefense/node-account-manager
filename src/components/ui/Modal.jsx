@@ -23,6 +23,7 @@ export default function Modal({
     let getNextStep = function() {
         return currentStep + 1;
     };
+
     let onSubmit = function() { console.log("Executing default submit.") };
 
 
@@ -47,6 +48,8 @@ export default function Modal({
 
     console.log("Current step:", currentStep);
     console.log("Total steps:", totalSteps);
+
+
     let nextAction = isMultiStep && currentStep < totalSteps ?
         () => {
             let formData = new FormData(document.getElementById("batch-action"));

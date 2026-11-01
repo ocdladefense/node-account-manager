@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from "react";
 import EventTicketOrderLine from "./EventTicketOrderLine.jsx";
+import { hashContactIds, getOrderTotal } from "../../../utils/order.js";
+
 
 
 const USE_SUGGESTIONS = true;
@@ -16,7 +18,7 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
     useEffect(() => {
 
-        const orderLines = {};
+        let orderLines = {};
 
         selectedContactIds.forEach(contactId => {
 
@@ -81,6 +83,9 @@ export default function EventTicketOrder({ contacts, data, setData }) {
 
 
 
+
+
+    let contactIdsHash = hashContactIds(Object.keys(data.orderLines || {}));
     useEffect(() => {
 
         if (!USE_SUGGESTIONS || !selectedEventId || selectedContactIds.length === 0) {
@@ -106,19 +111,22 @@ export default function EventTicketOrder({ contacts, data, setData }) {
                 throw new Error(result.error || "Unable to retrieve ticket suggestions.");
             }
 
-            // '003hr000000NvVXAA0' is not in my oder lines (as a contactId)
-            //  003hr000000NvVXAA0
-
-            for (const [contactId, productId] of Object.entries(suggest)) {
-                let orderLine = data.orderLines[contactId];
-                orderLine.productId = productId;
+            for (const suggestion of suggest) {
+                let orderLine = data.orderLines[suggestion.contactId];
+                orderLine.productId = suggestion.productId;
+                orderLine.UnitPrice = suggestion.price;
             }
+
+
+            data.total = getOrderTotal(data.orderLines);
 
         };
 
         fetchSuggestions();
 
-    }, [Object.keys(data.orderLines || {})]);
+
+
+    }, [contactIdsHash, selectedEventId]);
 
 
     const selectedContacts = contacts.filter(contact => selectedContactIds.includes(contact.Id));
@@ -156,6 +164,16 @@ export default function EventTicketOrder({ contacts, data, setData }) {
                 </tbody>
 
             </table>
+
+            <div>
+                <p>
+                    Order Total: ${data.total}
+                </p>
+
+            </div>
+
+
+
         </div>
     )
 }
@@ -171,37 +189,46 @@ async function handleTicketSelect(setData, contactId, product, isSuggestion = fa
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
+            body: JSON.stringify([{
                 contactId: contactId,
                 productId: product.Id
-            })
+            }])
         });
 
-        const result = await resp.json();
+        const suggestedPrices = await resp.json();
 
         if (!resp.ok) {
-            throw new Error(result.error || "Unable to calculate ticket price.");
+            throw new Error(prices.error || "Unable to calculate ticket price.");
         }
 
-        const price = Number(result.price);
+
 
         setData(prev => {
 
-            if (isSuggestion && prev.orderLines?.[contactId]) {
-                return prev;
+            let orderLines = {};
+
+            for (let suggested of suggestedPrices) {
+                const price = Number(suggested.price);
+                const contactId = suggested.contactId;
+                const productId = suggested.productId;
+
+                const lineItem = {
+                    contactId,
+                    productId,
+                    UnitPrice: price
+                };
+                // change this prop to "price"
+
+                orderLines = {
+                    ...prev.orderLines,
+                    [contactId]: lineItem
+                };
+
+
             }
 
-            const lineItem = {
-                contactId: contactId,
-                productId: product.Id,
-                UnitPrice: price
-            };
 
-            const orderLines = {
-                ...prev.orderLines,
-                [contactId]: lineItem
-            };
-
+            // This will also need to change to "price"
             const total = Object.values(orderLines).reduce(
                 (sum, item) => sum + item.UnitPrice,
                 0

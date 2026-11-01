@@ -1,8 +1,10 @@
 import express from "express";
 import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
+import { getPrices, getStandardPrice, getMemberPrice, getEarlyBirdPrice } from "../utils/event.js";
 
 const router = express.Router();
 
+let client;
 
 router.post("/product-suggestions", async (req, res) => {
 
@@ -18,7 +20,7 @@ router.post("/product-suggestions", async (req, res) => {
         });
     }
 
-    const client = new SalesforceRestApi(
+    client = new SalesforceRestApi(
         instanceUrl,
         accessToken
     );
@@ -46,7 +48,7 @@ router.post("/product-suggestions", async (req, res) => {
 
 
 
-    const recommendations = {};
+    let recommendations = [];
 
     contacts.forEach(contact => {
 
@@ -57,25 +59,31 @@ router.post("/product-suggestions", async (req, res) => {
             return;
         }
 
+        let rec = {
+            contactId: contact.Id,
+            productId: suggestion.Id
+        };
 
-        recommendations[contact.Id] = suggestion.Id;
+        recommendations.push(rec);
+
     });
 
+    let prices = await getPrices(recommendations, instanceUrl, accessToken);
 
-    return res.json(recommendations);
+    return res.json(prices);
 
 });
 
 
 
-
+// CODE IMPORT FROM UTILS FOLDER
 function formatContactQuery(ids) {
     const idList = ids.map(id => `'${id}'`).join(",");
     return `SELECT Id, Name, Ocdla_Current_Member_Flag__c, Ocdla_Member_Status__c FROM Contact WHERE Id IN (${idList})`;
 }
 
 
-
+// CODE IMPORT FROM UTILS FOLDER
 function formatProductQuery(eventId) {
     return `SELECT Id, Name, Event__c, Event__r.Early_Bird_End_Date__c, ClickpdxCatalog__IsMembersOnly__c, OcdlaEligibleMemberStatuses__c, ClickpdxCatalog__StandardPrice__c, ClickpdxCatalog__MemberPrice__c, EarlyBirdPrice__c FROM Product2 WHERE Event__c = '${eventId}' AND IsActive = True AND IsAddOn__c = False`;
 }
