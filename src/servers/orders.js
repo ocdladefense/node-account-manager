@@ -20,11 +20,18 @@ const FORCE_PAYMENT_ERROR = false;
  */
 router.post("/orders", async (req, res) => {
 
+    console.log(req.body);
     let accountId = req.cookies.account_id;
 
     const orderLines = req.body.orderLines;
-    const contactIds = orderLines.map(line => line.contactId);
-    const productIds = orderLines.map(line => line.productId);
+
+    // const productIds = orderLines.map(line => line.productId);
+    let productIds = [];
+
+    for (let contactId in orderLines) {
+        let orderLine = orderLines[contactId];
+        productIds.push(orderLine.productId);
+    }
 
     const paymentMethodId = req.body.paymentMethodId;
 
@@ -59,6 +66,7 @@ router.post("/orders", async (req, res) => {
     const resp = await client.create("Order", orderRecord);
     const orderResult = await resp.json();
     console.log("Order Result:", orderResult);
+    // We want to get the order number back as well, do a second query for this
 
 
     if (!resp.ok) throw new Error(orderResult.errors || "Salesforce failed to create an order.");
@@ -100,7 +108,7 @@ router.post("/orders", async (req, res) => {
 
 
 
-async function updateOrderStatus(orderId) {
+async function updateOrderStatus(orderId, response) {
     // For invoices Status will be Activated;
     // For all others, Status will be Posted Payment.
 
@@ -146,7 +154,7 @@ async function createOrderItems(orderResult, orderLines, pricebookEntries) {
 
     const orderItemResults = [];
 
-    for (const lineItem of orderLines) {
+    for (const lineItem of Object.values(orderLines)) {
 
         const pricebookEntry = pricebookEntries.get(lineItem.productId);
 

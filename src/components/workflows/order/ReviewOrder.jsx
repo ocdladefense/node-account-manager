@@ -1,4 +1,4 @@
-export default function ConfirmOrder({ data }) {
+export default function ReviewOrder({ data }) {
 
     const eventName = data.selectedEvent?.Name;
     const attendeeCount = data.selectedContactIds?.length ?? 0;

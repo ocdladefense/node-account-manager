@@ -24,7 +24,7 @@ export default function Modal({
         return currentStep + 1;
     };
 
-    let onSubmit = function() { console.log("Executing default submit.") };
+    let onSubmit = function() { console.log("Executing submit of step: " + currentStep) };
 
 
     useEffect(() => {
@@ -43,6 +43,7 @@ export default function Modal({
 
     const isMultiStep = Children.count(children) > 1;
     const totalSteps = Children.count(children);
+    const submitStep = 5;
 
 
 
@@ -50,14 +51,17 @@ export default function Modal({
     console.log("Total steps:", totalSteps);
 
 
-    let nextAction = isMultiStep && currentStep < totalSteps ?
-        () => {
+    let nextAction = isMultiStep ?
+        async (e) => {
+            // Not sure we need this anymore ????
             let formData = new FormData(document.getElementById("batch-action"));
+            //  && currentStep != submitStep (we can always do this later if we want to)
+            await onSubmit(e);
             let theNextStep = getNextStep(formData);
             setCurrentStep(theNextStep);
         } :
-        () => {
-            onSubmit();
+        (e) => {
+            onSubmit(e);
             // Also reset the steps to 0 or whatever?
         };
 
@@ -97,7 +101,9 @@ export default function Modal({
                                 if (step == currentStep && _getNextStep) {
                                     getNextStep = _getNextStep;
                                 }
-                                if (step == currentStep && currentStep == totalSteps && stepNode.props.onSubmit) {
+                                // We may not want to calculate whether to use the onSubmit by comparing step to totaleSteps
+                                // we may want to use lastStep
+                                if (step == currentStep && currentStep == submitStep && stepNode.props.onSubmit) {
                                     onSubmit = stepNode.props.onSubmit;
                                 }
 
@@ -134,8 +140,8 @@ export default function Modal({
 
                     <CautionButton label="Cancel" isCancel={true} action={onClose} />
 
-                    {currentStep == totalSteps ? <input type="submit" value="Submit me" form="batch-action" /> :
-                        <Button label={isMultiStep && currentStep < totalSteps ? 'Next' : 'Confirm'} action={nextAction} />}
+                    {/* {currentStep == submitStep ? <input type="submit" value="Submit me" form="batch-action" /> : */}
+                    <Button label={isMultiStep && currentStep != submitStep ? 'Next' : 'Confirm'} action={nextAction} />
 
                 </div>
 

@@ -10,7 +10,9 @@ import SelectEvent from "../workflows/events/SelectEvent.jsx";
 import EventTicketOrder from "../workflows/events/EventTicketOrder.jsx";
 import SelectPaymentMethod from "../workflows/payment/SelectPaymentMethod.jsx";
 import CreateNewPaymentMethod from "../workflows/payment/CreateNewPaymentMethod.jsx";
-import ConfirmOrder from "../workflows/order/ConfirmOrder.jsx";
+import ReviewOrder from "../workflows/order/ReviewOrder.jsx";
+import OrderConfirmation from "../workflows/order/OrderConfirmation.jsx";
+
 
 
 
@@ -55,21 +57,24 @@ export default function AccountContacts() {
         fetchContacts();
     }, []);
 
-    function onComplete(postingEntity, orderId) {
+    function onComplete(orderId, postingEntity) {
 
         let orderType = postingEntity === "Invoice" ? "invoice" : "order";
 
         CreateToast(NewToast("Order created successfully."));
 
-        closeModal();
+        // closeModal();
 
+        // Is this the appropriate place to zero out data? (No its not)
+        // Special kind of done button !!!
         setData({
+            orderNumber: orderId,
             selectedContactIds: [],
             orderLines: {},
             total: 0
         });
 
-        navigate(`/${orderType}/${orderId}`);
+        // navigate(`/${orderType}/${orderId}`);
     };
 
     function onError(error) {
@@ -92,8 +97,8 @@ export default function AccountContacts() {
                     <EventTicketOrder contacts={contacts} data={data} setData={setData} />
                     <SelectPaymentMethod getNextStep={(formData) => formData.get("paymentMethodId") == "new_card" ? 4 : 5} />
                     <CreateNewPaymentMethod />
-                    {/*<ReviewOrder />*/}
-                    <ConfirmOrder />
+                    <ReviewOrder onSubmit={handleSubmit.bind(null, data, onComplete, onError)} />
+                    <OrderConfirmation onSubmit={closeModal} />
                 </Modal>
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
 
@@ -127,24 +132,13 @@ async function handleSubmit(data, onComplete, onError, e) {
     e.preventDefault();
     e.stopPropagation();
 
-    const orderLines = data.selectedContactIds.map(
-        contactId => data.orderLines[contactId]
-    );
-
-    const orderPayload = {
-        orderLines: orderLines,
-        total: data.total
-    };
-
-    console.log("ORDER PAYLOAD:", orderPayload);
-
     try {
         const resp = await fetch("/orders", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(orderPayload)
+            body: JSON.stringify(data)
         });
 
         const result = await resp.json();
@@ -155,7 +149,7 @@ async function handleSubmit(data, onComplete, onError, e) {
 
         console.log("ORDER CREATED:", result);
 
-        onComplete(result.postingEntity, result.order.id);
+        onComplete(result.order.id, result.postingEntity);
 
     } catch (error) {
         console.error("Error submitting order:", error);

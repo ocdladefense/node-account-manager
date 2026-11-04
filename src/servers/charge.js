@@ -129,6 +129,9 @@ export default function chargeCreditCard(callback) {
     var transactionSettings = new APIContracts.ArrayOfSetting();
     transactionSettings.setSetting(transactionSettingList);
 
+
+    // Figure out what we really need for this function
+    // Reflect teh actual order data
     var transactionRequestType = new APIContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
@@ -163,45 +166,36 @@ export default function chargeCreditCard(callback) {
         //pretty print response
         console.log(JSON.stringify(response, null, 2));
 
-        if (response != null)
-        {
-            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK)
-            {
-                if (response.getTransactionResponse().getMessages() != null)
-                {
+        if (response != null) {
+            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+                if (response.getTransactionResponse().getMessages() != null) {
                     console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
                     console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
                     console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
                     console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
                 }
-                else
-                {
+                else {
                     console.log('Failed Transaction.');
-                    if (response.getTransactionResponse().getErrors() != null)
-                    {
+                    if (response.getTransactionResponse().getErrors() != null) {
                         console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                         console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                     }
                 }
             }
-            else
-            {
+            else {
                 console.log('Failed Transaction. ');
-                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null)
-                {
+                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
                     console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                     console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
                 }
-                else
-                {
+                else {
                     console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
                     console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
                 }
             }
         }
-        else
-        {
+        else {
             var apiError = ctrl.getError();
             console.log(apiError);
             console.log('Null Response.');
