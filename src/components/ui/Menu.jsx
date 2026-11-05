@@ -35,20 +35,20 @@ export default function Menu() {
 
             <div className="drawer-side">
                 <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-lg">
+                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-lg text-lg">
 
 
                     {/* Sidebar content here */}
                     <li className="mt-10 md:mt-0">
-                        <a href="/" className={`p-3 font-semibold text-xl ${currentPath == '/' ? active : ""}`}>
-                            <IoHomeOutline className='text-xl' />
+                        <a href="/" className={`p-2 font-semibold  ${currentPath == '/' ? active : ""}`}>
+                            <IoHomeOutline className='' />
                             Home
                         </a>
                     </li>
 
 
                     <li>
-                        <a href="/account" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.account) ? active : ""}`}>
+                        <a href="/account" className={`p-2 font-semibold  ${currentPath.match(routePatterns.account) ? active : ""}`}>
                             <MdAccountBalance />
                             Account
                         </a>
@@ -56,7 +56,7 @@ export default function Menu() {
 
 
                     <li>
-                        <a href="/contact" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.contact) ? active : ''}`}>
+                        <a href="/contact" className={`p-2 font-semibold  ${currentPath.match(routePatterns.contact) ? active : ''}`}>
                             <VscAccount />
                             Profile
                         </a>
@@ -65,7 +65,7 @@ export default function Menu() {
 
                     <li>
                         <a href="/account/orders"
-                            className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.orders) || currentPath.match(routePatterns.order)
+                            className={`p-2 font-semibold  ${currentPath.match(routePatterns.orders) || currentPath.match(routePatterns.order)
                                 ? active : ''}`}>
                             <TbPackages />
                             Orders
@@ -75,7 +75,7 @@ export default function Menu() {
 
                     <li>
                         <a href="/account/invoices"
-                            className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.invoices) || currentPath.match(routePatterns.invoice)
+                            className={`p-2 font-semibold  ${currentPath.match(routePatterns.invoices) || currentPath.match(routePatterns.invoice)
                                 ? active : ''}`}>
                             <SlEnvolopeLetter />
                             Invoices
@@ -84,7 +84,7 @@ export default function Menu() {
 
 
                     <li>
-                        <a href="/documents" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.documents) ? active : ''}`}>
+                        <a href="/documents" className={`p-2 font-semibold  ${currentPath.match(routePatterns.documents) ? active : ''}`}>
                             <MdDescription />
                             Documents
                         </a>
@@ -92,7 +92,7 @@ export default function Menu() {
 
 
                     <li>
-                        <a href="/upload" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.upload) ? active : ''}`}>
+                        <a href="/upload" className={`p-2 font-semibold  ${currentPath.match(routePatterns.upload) ? active : ''}`}>
                             <MdCloudUpload />
                             Upload
                         </a>
@@ -100,19 +100,19 @@ export default function Menu() {
 
 
                     {/* <li>
-                         <a href=`/account/${process.env.SF_ACCOUNT_ID}/payments`"#" className={`p-3 font-semibold text-xl ${currentPath.includes('payments') ? active : ''}`}>
+                         <a href=`/account/${process.env.SF_ACCOUNT_ID}/payments`"#" className={`p-2 font-semibold  ${currentPath.includes('payments') ? active : ''}`}>
                             <MdPayment />
                             Upcoming Payments
                         </a>
                     </li>
                     <li>
-                        <a href=`/account/${process.env.SF_ACCOUNT_ID}/events'`"#" className={`p-3 font-semibold text-xl ${currentPath.includes('events') ? active : ''}`}>
+                        <a href=`/account/${process.env.SF_ACCOUNT_ID}/events'`"#" className={`p-2 font-semibold  ${currentPath.includes('events') ? active : ''}`}>
                             <VscSymbolEvent />
                             Seminars and Events
                         </a>
                     </li>     Restore commented out href links!!!! */}
                     <li>
-                        <a href="/jobs" className={`p-3 font-semibold text-xl ${currentPath.match(routePatterns.jobs) ? active : ''}`}>
+                        <a href="/jobs" className={`p-2 font-semibold  ${currentPath.match(routePatterns.jobs) ? active : ''}`}>
                             <IoIosHammer />
                             Jobs
                         </a>
