@@ -81,6 +81,15 @@ router.post("/orders", async (req, res) => {
         pricebookEntries
     );
 
+    // Salesforce OrderNumber === orderDetails.setInvoiceNumber ???
+    const soql = `SELECT Id, OrderNumber, TotalAmount FROM Order WHERE Id = '${orderResult.id}'`;
+    const orderResponse = await client.query(soql);
+
+    const completedOrder = orderResponse.records?.[0];
+
+    // Testing log: what are we getting back from the query?
+    console.log("Completed Salesforce Order:", completedOrder);
+
 
     // Step 5:  Convert the OrderStatus as appropriate.
     // This needs some kind of "await".
