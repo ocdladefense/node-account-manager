@@ -77,7 +77,8 @@ export default function App() {
 
     useEffect(() => {
         let link = document.querySelector("link[rel*='icon']");
-        if (!link) {
+        if (!link)
+        {
             link = document.createElement("link");
             link.rel = "icon";
             document.head.appendChild(link);
@@ -88,12 +89,14 @@ export default function App() {
 
     useEffect(() => {
         async function fn() {
-            try {
+            try
+            {
                 const apiClient = await getApiClient();
 
                 setClient(apiClient);
                 setAppReady(true);
-            } catch (err) {
+            } catch (err)
+            {
                 console.log("Auth notice:", err.message);
                 setAppReady(false);
             }
@@ -104,11 +107,20 @@ export default function App() {
 
     return (
         <ToastProvider>
-            <div className="mx-auto" style = {{maxWidth: 2000}}>
+            <div className="mx-auto" style={{ maxWidth: 2000 }}>
                 <Header client={client} />
-                <div className='flex w-full lg:mt-15' style={{ minHeight: "calc(100vh - 60px)" }}>
-                    <Menu className="flex-1" />
-                    {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
+                <div className="w-full h-[30px] bg-gray-300 hidden md:block">
+                    <label htmlFor="my-drawer-3" className="btn drawer-button items-center text-sm w-20">
+                        Menu
+                    </label>
+                </div>
+                <div className='block md:flex w-full' style={{ minHeight: "calc(100vh - 60px)" }}>
+                    <div className="drawer md:drawer-open w-full md:w-1/6">
+                        <Menu className="flex-1" />
+                    </div>
+                    <div className="w-full md:w-5/6 px-2 mt-7">
+                        {appReady ? <Outlet context={{ client }} /> : <LoginPrompt />}
+                    </div>
                 </div>
                 <Footer />
             </div>
