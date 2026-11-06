@@ -43,21 +43,6 @@ export default function chargeCreditCard(callback) {
     orderDetails.setInvoiceNumber('INV-12345');
     orderDetails.setDescription('Product Description');
 
-    var tax = new APIContracts.ExtendedAmountType();
-    tax.setAmount('4.26');
-    tax.setName('level2 tax name');
-    tax.setDescription('level2 tax');
-
-    var duty = new APIContracts.ExtendedAmountType();
-    duty.setAmount('8.55');
-    duty.setName('duty name');
-    duty.setDescription('duty description');
-
-    var shipping = new APIContracts.ExtendedAmountType();
-    shipping.setAmount('8.55');
-    shipping.setName('shipping name');
-    shipping.setDescription('shipping description');
-
     var billTo = new APIContracts.CustomerAddressType();
     billTo.setFirstName('Ellen');
     billTo.setLastName('Johnson');
@@ -67,16 +52,6 @@ export default function chargeCreditCard(callback) {
     billTo.setState('TX');
     billTo.setZip('44628');
     billTo.setCountry('USA');
-
-    var shipTo = new APIContracts.CustomerAddressType();
-    shipTo.setFirstName('China');
-    shipTo.setLastName('Bayles');
-    shipTo.setCompany('Thyme for Tea');
-    shipTo.setAddress('12 Main Street');
-    shipTo.setCity('Pecan Springs');
-    shipTo.setState('TX');
-    shipTo.setZip('44628');
-    shipTo.setCountry('USA');
 
     var lineItem_id1 = new APIContracts.LineItemType();
     lineItem_id1.setItemId('1');
@@ -98,21 +73,6 @@ export default function chargeCreditCard(callback) {
 
     var lineItems = new APIContracts.ArrayOfLineItem();
     lineItems.setLineItem(lineItemList);
-
-    var userField_a = new APIContracts.UserField();
-    userField_a.setName('A');
-    userField_a.setValue('Aval');
-
-    var userField_b = new APIContracts.UserField();
-    userField_b.setName('B');
-    userField_b.setValue('Bval');
-
-    var userFieldList = [];
-    userFieldList.push(userField_a);
-    userFieldList.push(userField_b);
-
-    var userFields = new APIContracts.TransactionRequestType.UserFields();
-    userFields.setUserField(userFieldList);
 
     var transactionSetting1 = new APIContracts.SettingType();
     transactionSetting1.setSettingName('duplicateWindow');
@@ -137,13 +97,8 @@ export default function chargeCreditCard(callback) {
     transactionRequestType.setPayment(paymentType);
     transactionRequestType.setAmount(SAMPLE_CHARGE_AMOUNT);
     transactionRequestType.setLineItems(lineItems);
-    transactionRequestType.setUserFields(userFields);
     transactionRequestType.setOrder(orderDetails);
-    transactionRequestType.setTax(tax);
-    transactionRequestType.setDuty(duty);
-    transactionRequestType.setShipping(shipping);
     transactionRequestType.setBillTo(billTo);
-    transactionRequestType.setShipTo(shipTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
 
     var createRequest = new APIContracts.CreateTransactionRequest();
