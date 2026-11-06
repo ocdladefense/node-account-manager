@@ -79,22 +79,20 @@ export default function HomePage() {
 
 
     return (
-        <div className="w-full">
-            <div className="container mx-auto px-2 mt-7">
-                <h1 className="text-2xl font-bold mb-4">Welcome to OCDLA!</h1>
+        <>
+            <h1 className="text-2xl font-bold mb-4">Welcome to OCDLA!</h1>
 
-                <StatusWidget renewHandler={openOrderConfirmation} />
+            <StatusWidget renewHandler={openOrderConfirmation} />
 
-                <EventsWidget registerHandler={openOrderConfirmationForEvent} />
+            <EventsWidget registerHandler={openOrderConfirmationForEvent} />
 
-                <SubscriptionsWidget subscribeHandler={openOrderConfirmation} />
+            <SubscriptionsWidget subscribeHandler={openOrderConfirmation} />
 
-                {/*-------------------- START OF MODAL SECTION -------------------- */}
+            {/*-------------------- START OF MODAL SECTION -------------------- */}
 
-                {/*-------------------- END OF MODAL SECTION -------------------- */}
+            {/*-------------------- END OF MODAL SECTION -------------------- */}
 
-            </div>
-        </div>
+        </>
     )
 
 }

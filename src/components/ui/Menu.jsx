@@ -28,14 +28,14 @@ export default function Menu() {
     let active = "bg-gray-300 hover:bg-gray-400";
 
     return (
-        <div className="drawer md:drawer-open" style={{ width: "auto" }}>
+        <>
             <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
 
 
 
             <div className="drawer-side">
                 <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 min-h-full w-80 p-4 rounded-lg text-lg">
+                <ul className="menu bg-base-200 min-h-full p-4 rounded-lg text-lg">
 
 
                     {/* Sidebar content here */}
@@ -119,7 +119,7 @@ export default function Menu() {
                     </li>
                 </ul>
             </div>
-        </div>
+        </>
     )
 }
 
