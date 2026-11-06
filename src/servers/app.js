@@ -19,12 +19,12 @@ import legislatorsRoutes from './legislators.js';
 import uploadRoutes from './upload.js';
 import downloadRoutes from './download.js';
 import filesRoutes from "./files.js";
-import orderRoutes from "./orders.js";
+import orderRoutes from "./orders/orders.js";
 import fs from 'fs';
 import queryRoutes from "./query.js";
-import paymentMethodRoutes from "./payment-method.js";
-import eventRoutes from "./event.js";
-import productSuggestionRoutes from "./product-suggestion.js";
+import paymentMethodRoutes from "./orders/payment-method.js";
+import eventRoutes from "./orders/event.js";
+import productSuggestionRoutes from "./orders/product-suggestion.js";
 import { createCanvas } from 'canvas';
 
 const app = express();
@@ -42,8 +42,7 @@ const ALPHANUMERIC_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 function createUniqueAlphanumericId(length = 16) {
     let id = '';
 
-    while (id.length < length)
-    {
+    while (id.length < length) {
         id += ALPHANUMERIC_CHARS[crypto.randomInt(0, ALPHANUMERIC_CHARS.length)];
     }
 
@@ -95,19 +94,16 @@ app.delete("/delete", (req, res) => {
     const uploadsDir = path.join(process.cwd(), "uploads");
     const absolutePath = path.join(uploadsDir, filePath);
 
-    if (!absolutePath.startsWith(uploadsDir))
-    {
+    if (!absolutePath.startsWith(uploadsDir)) {
         return res.status(400).json({
             success: false,
             error: "Invalid path"
         });
     }
 
-    if (isDirectory)
-    {
+    if (isDirectory) {
         fs.rm(absolutePath, rmdirOptions, err => {
-            if (err)
-            {
+            if (err) {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -120,11 +116,9 @@ app.delete("/delete", (req, res) => {
         });
     }
 
-    else
-    {
+    else {
         fs.unlink(absolutePath, err => {
-            if (err)
-            {
+            if (err) {
                 return res.status(500).json({
                     success: false,
                     error: err.message
@@ -139,8 +133,7 @@ app.delete("/delete", (req, res) => {
         let dirPath = absolutePath.substring(0, absolutePath.lastIndexOf("/"));
         const files = fs.readdirSync(dirPath);
 
-        if (files.length == 0)
-        {
+        if (files.length == 0) {
             fs.rmdir(dirPath, () => { });
         }
     }
@@ -156,15 +149,13 @@ app.get('/api/cover', (req, res) => {
     const title = req.query.title || 'Untitled Book';
     const date = req.query.date || 'Unknown Date';
 
-    try
-    {
+    try {
         const imgBuffer = generateCoverBuffer(title, date);
 
         // Set content type header to PNG and send the image binary
         res.setHeader('Content-Type', 'image/png');
         res.send(imgBuffer);
-    } catch (error)
-    {
+    } catch (error) {
         console.error('Error generating cover:', error);
         res.status(500).json({ error: 'Failed to generate book cover' });
     }
@@ -223,16 +214,13 @@ function generateCoverBuffer(title) {
     const textStartX = 40;
     const maxTextWidth = width - (textStartX * 2);
 
-    for (let n = 0; n < words.length; n++)
-    {
+    for (let n = 0; n < words.length; n++) {
         let testLine = currentLine + words[n] + ' ';
         let metrics = ctx.measureText(testLine);
-        if (metrics.width > maxTextWidth && n > 0)
-        {
+        if (metrics.width > maxTextWidth && n > 0) {
             lines.push(currentLine.trim());
             currentLine = words[n] + ' ';
-        } else
-        {
+        } else {
             currentLine = testLine;
         }
     }

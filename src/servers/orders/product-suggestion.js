@@ -1,7 +1,7 @@
 import express from "express";
 import SalesforceRestApi from "@ocdla/salesforce/SalesforceRestApi.js";
-import { getPrices } from "../utils/product.js";
-import { formatTicketQuery, formatContactQuery } from "../utils/query.js";
+import { getPrices } from "../../utils/product.js";
+import { formatTicketQuery, formatContactQuery } from "../../utils/query.js";
 const router = express.Router();
 
 
@@ -16,8 +16,7 @@ router.post("/product-suggestions", async (req, res) => {
 
     const { contactIds, eventId } = req.body;
 
-    if (!instanceUrl || !accessToken)
-    {
+    if (!instanceUrl || !accessToken) {
         return res.status(401).json({
             error: "You must be logged in."
         });
@@ -57,8 +56,7 @@ router.post("/product-suggestions", async (req, res) => {
 
         const suggestion = algorithms.map(fn => fn(contact, products)).find(result => !!result);
 
-        if (!suggestion)
-        {
+        if (!suggestion) {
             recommendations[contact.Id] = null;
             return;
         }
@@ -100,8 +98,7 @@ function selectBestProductByMemberStatus(contact, products) {
 
     return products.find(product => {
 
-        if (!product.OcdlaEligibleMemberStatuses__c)
-        {
+        if (!product.OcdlaEligibleMemberStatuses__c) {
 
             return false;
 
@@ -119,8 +116,7 @@ function selectBestProductByMemberStatus(contact, products) {
 
 
 function oneTicketAlgorithm(contact, products) {
-    if (products.length === 1)
-    {
+    if (products.length === 1) {
         return products[0];
     }
 }
