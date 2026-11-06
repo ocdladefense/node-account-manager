@@ -11,7 +11,7 @@ const { APIContracts, APIControllers } = AuthorizeNet;
 
 const AUTHORIZE_NET_API_LOGIN_ID = process.env.AUTHORIZE_NET_API_LOGIN_ID;
 const AUTHORIZE_NET_TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
-const SAMPLE_CHARGE_AMOUNT = 120.00; // Example charge amount
+// const SAMPLE_CHARGE_AMOUNT = 120.00; // Example charge amount
 
 // REPLACE COMMON JS WITH ABOVE IMPORTS.
 // var APIContracts = require('authorizenet').APIContracts;
@@ -26,7 +26,7 @@ const SAMPLE_CHARGE_AMOUNT = 120.00; // Example charge amount
 
 
 
-export default function chargeCreditCard(callback) {
+export default function chargeCreditCard({ amount, orderNumber }, callback) {
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(AUTHORIZE_NET_API_LOGIN_ID);
     merchantAuthenticationType.setTransactionKey(AUTHORIZE_NET_TRANSACTION_KEY);
@@ -40,7 +40,8 @@ export default function chargeCreditCard(callback) {
     paymentType.setCreditCard(creditCard);
 
     var orderDetails = new APIContracts.OrderType();
-    orderDetails.setInvoiceNumber('INV-12345');
+    // orderDetails.setInvoiceNumber('INV-12345'); // Replace this with the actual orderNumber passed into chargeCreditCard
+    orderDetails.setInvoiceNumber(orderNumber);
     orderDetails.setDescription('Product Description');
 
     var billTo = new APIContracts.CustomerAddressType();
@@ -95,8 +96,7 @@ export default function chargeCreditCard(callback) {
     var transactionRequestType = new APIContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
-    transactionRequestType.setAmount(SAMPLE_CHARGE_AMOUNT);
-    transactionRequestType.setLineItems(lineItems);
+    transactionRequestType.setAmount(amount);
     transactionRequestType.setOrder(orderDetails);
     transactionRequestType.setBillTo(billTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
@@ -106,9 +106,19 @@ export default function chargeCreditCard(callback) {
     createRequest.setTransactionRequest(transactionRequestType);
 
     // Pretty print request
-    console.log(JSON.stringify(createRequest.getJSON(), null, 2));
+    // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
 
-    var ctrl = new APIControllers.CreateTransactionController(createRequest.getJSON());
+    // Testing the actual transaction request with the amount and invoiceNumber properties
+    // Pass this new variable to ctrl
+    const requestJson = createRequest.getJSON();
+
+    console.log("Authorize.Net Transaction Preview:", {
+        amount: requestJson.createTransactionRequest.transactionRequest.amount,
+        invoiceNumber: requestJson.createTransactionRequest.transactionRequest.order?.invoiceNumber
+    });
+
+    var ctrl = new APIControllers.CreateTransactionController(requestJson);
+
     //Defaults to sandbox
     //ctrl.setEnvironment(SDKConstants.endpoint.production);
 

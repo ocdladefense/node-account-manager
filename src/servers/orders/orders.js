@@ -90,11 +90,16 @@ router.post("/orders", async (req, res) => {
     // Testing log: what are we getting back from the query?
     console.log("Completed Salesforce Order:", completedOrder);
 
+    const amount = Number(completedOrder.TotalAmount);
+
+    const orderNumber = completedOrder.OrderNumber;
+
+
 
     // Step 5:  Convert the OrderStatus as appropriate.
     // This needs some kind of "await".
     // build in error message
-    chargeCreditCard(updateOrderStatus.bind(null, orderResult.id));
+    chargeCreditCard({ amount, orderNumber }, updateOrderStatus.bind(null, orderItemResults.id));
 
     let successfulOrder = {
         postingEntity: paymentMethodId == "invoice" ? "Invoice" : "Receipt",
