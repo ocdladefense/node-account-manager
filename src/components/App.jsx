@@ -115,7 +115,7 @@ export default function App() {
                     </label>
                 </div>
                 <div className='block md:flex w-full' style={{ minHeight: "calc(100vh - 60px)" }}>
-                    <div className="drawer md:drawer-open w-full md:w-1/6">
+                    <div className="drawer md:drawer-open w-full md:w-1/6" style={{ display: "flex", flexDirection: "column", alignItems: "stretch" }}>
                         <Menu className="flex-1" />
                     </div>
                     <div className="w-full md:w-5/6 px-2 mt-7">
