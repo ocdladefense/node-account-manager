@@ -87,7 +87,8 @@ router.post("/orders", async (req, res) => {
     const orderItemResults = await createOrderItems(
         orderResult,
         orderLines,
-        pricebookEntries
+        pricebookEntries,
+        serverPrices
     );
 
     // Salesforce OrderNumber === orderDetails.setInvoiceNumber ???
@@ -181,7 +182,7 @@ async function getPricebookEntries(productIds) {
 
 
 
-async function createOrderItems(orderResult, orderLines, pricebookEntries) {
+async function createOrderItems(orderResult, orderLines, pricebookEntries, serverPrices) {
 
     const orderItemResults = [];
 
@@ -189,11 +190,15 @@ async function createOrderItems(orderResult, orderLines, pricebookEntries) {
 
         const pricebookEntry = pricebookEntries.get(lineItem.productId);
 
+        const serverPrice = serverPrices.find(
+            (result) => result.contactId === lineItem.contactId && result.productId === lineItem.productId
+        );
+
         const orderItemRecord = {
             OrderId: orderResult.id,
             PricebookEntryId: pricebookEntry.Id,
             Quantity: 1,
-            UnitPrice: lineItem.UnitPrice,
+            UnitPrice: serverPrice.price,
             Contact__c: lineItem.contactId,
             Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
         };
