@@ -1,6 +1,7 @@
 import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import chargeCreditCard from './charge.js';
+import { getPrices } from "../../utils/product.js";
 
 
 const router = express.Router();
@@ -39,6 +40,14 @@ router.post("/orders", async (req, res) => {
     let token = req.cookies.access_token;
     client = new SalesforceRestApi(url, token);
 
+    const priceRequests = Object.values(orderLines).map(line => ({
+        contactId: line.contactId,
+        productId: line.productId
+    }));
+
+    const serverPrices = await getPrices(priceRequests, url, token);
+
+    console.log("Server-calculated order prices:", serverPrices);
 
     // Step 1: Get the PricebookEntry for the first productId.
     let pricebookEntries = await getPricebookEntries(productIds);
