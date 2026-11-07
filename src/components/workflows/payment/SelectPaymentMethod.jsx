@@ -8,7 +8,7 @@ const defaultPaymentOption = [
     { Id: "invoice", Name: "Bill via Invoice", type: "invoice" },
 ];
 
-export default function SelectPaymentMethod() {
+export default function SelectPaymentMethod({ setData }) {
     const [selectedOption, setSelectedOption] = useState(null);
     const [paymentOptions, setPaymentOptions] = useState(defaultPaymentOption);
 
@@ -65,7 +65,7 @@ export default function SelectPaymentMethod() {
             <DropMenu
                 label={selectedOption ? selectedOption.Name : "Choose a payment method."}
                 entries={paymentOptions}
-                handler={(option) => { setSelectedOption(option); }}
+                handler={(option) => { setSelectedOption(option); setData(prev => ({ ...prev, paymentMethodId: option.Id })); }}
                 thingThatGetsDisplayed={(option) => option.Name}
             />
 

@@ -99,7 +99,11 @@ router.post("/orders", async (req, res) => {
     // Step 5:  Convert the OrderStatus as appropriate.
     // This needs some kind of "await".
     // build in error message
-    chargeCreditCard({ amount, orderNumber }, updateOrderStatus.bind(null, orderItemResults.id));
+    if (paymentMethodId === "invoice") {
+        await updateOrderStatus(orderResult.id);
+    } else {
+        chargeCreditCard({ amount, orderNumber }, updateOrderStatus.bind(null, orderResult.id));
+    }
 
     let successfulOrder = {
         postingEntity: paymentMethodId == "invoice" ? "Invoice" : "Receipt",
@@ -131,6 +135,10 @@ async function updateOrderStatus(orderId, response) {
 
 
     console.log("updateResp:", updateResp.status);
+
+    if (!updateResp.ok) {
+        throw new Error(`Failed to update Salesforce Order. Status: ${updateResp.status}`);
+    }
 }
 
 
