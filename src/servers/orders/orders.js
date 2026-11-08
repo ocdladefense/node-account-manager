@@ -1,16 +1,15 @@
 import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import chargeCreditCard from './charge.js';
-import { getPrices } from "../../utils/product.js";
+// import { getPrices, getPricebookEntries } from "../../utils/product.js";
+// import Order from "../../utils/Order.js";
 
 
 const router = express.Router();
-
-
-
+const FORCE_PAYMENT_ERROR = false;
 let client;
 
-const FORCE_PAYMENT_ERROR = false;
+
 
 
 /**
@@ -23,203 +22,119 @@ router.post("/orders", async (req, res) => {
 
     console.log(req.body);
     let accountId = req.cookies.account_id;
-
-    const orderLines = req.body.orderLines;
-
-    // const productIds = orderLines.map(line => line.productId);
-    let productIds = [];
-
-    for (let contactId in orderLines) {
-        let orderLine = orderLines[contactId];
-        productIds.push(orderLine.productId);
-    }
-
-    const paymentMethodId = req.body.paymentMethodId;
-
+    let orderLines = req.body.orderLines;
     let url = req.cookies.instance_url;
     let token = req.cookies.access_token;
+    let paymentMethodId = req.body.paymentMethodId;
+
+
+
     client = new SalesforceRestApi(url, token);
 
-    const priceRequests = Object.values(orderLines).map(line => ({
-        contactId: line.contactId,
-        productId: line.productId
-    }));
 
-    const serverPrices = await getPrices(priceRequests, url, token);
+    let order = new Order(accountId);
+    order.addLines(Object.values(orderLines));
+    let result = await order.insert();
 
-    console.log("Server-calculated order prices:", serverPrices);
-
-    // Step 1: Get the PricebookEntry for the first productId.
-    let pricebookEntries = await getPricebookEntries(productIds);
-
-    // Step 1.5: Get the Pricebook2Id from the first product queried for. Use the key (the productId) for the .get
-    const pricebook2Id = pricebookEntries.get(productIds[0]).Pricebook2Id;
+    let orderInfo = await order.getOrderInfo();
+    // order.setPaymentMethod(paymentMethodId); // Uncomment and set the payment method if needed
 
 
-    // Step 2: Construct the Order object in Salesforce.
-    // Test Order Record
-    let orderRecord = {
-        AccountId: accountId,
-        EffectiveDate: new Date().toISOString().split('T')[0],
-        Status: "Draft",
-        Pricebook2Id: pricebook2Id,
-        BillToContactId: req.cookies.contact_id,
-    };
+    let processTransaction = new Promise((resolve, reject) => {
+        if (!order.isCreditCard())
+        {
+            resolve();
+            return;
+        }
 
-    if (paymentMethodId == "invoice") {
-        orderRecord.PostingEntity__c = "Invoice";
-    }
+        chargeCreditCard(order, function(resp) {
 
 
-    // Step 3: Create the Order in Salesforce.
-    const resp = await client.create("Order", orderRecord);
-    const orderResult = await resp.json();
-    console.log("Order Result:", orderResult);
-    // We want to get the order number back as well, do a second query for this
 
-
-    if (!resp.ok) throw new Error(orderResult.errors || "Salesforce failed to create an order.");
+            if (resp != null)
+            {
+                // parseTransactionResponse(resp);
+                let sometingImportantAboutTheResponse = {};
+                resolve(sometingImportantAboutTheResponse);
+            }
+            else
+            {
+                // var apiError = ctrl.getError();
+                //console.log(apiError);
+                reject(new Error('Null Response'));
+            }
 
 
 
 
-    // Step 4: Create OrderItems for each contactId.
-    const orderItemResults = await createOrderItems(
-        orderResult,
-        orderLines,
-        pricebookEntries,
-        serverPrices
-    );
-
-    // Salesforce OrderNumber === orderDetails.setInvoiceNumber ???
-    const soql = `SELECT Id, OrderNumber, TotalAmount FROM Order WHERE Id = '${orderResult.id}'`;
-    const orderResponse = await client.query(soql);
-
-    const completedOrder = orderResponse.records?.[0];
-
-    // Testing log: what are we getting back from the query?
-    console.log("Completed Salesforce Order:", completedOrder);
-
-    const amount = Number(completedOrder.TotalAmount);
-
-    const orderNumber = completedOrder.OrderNumber;
+        });
+    });
 
 
-
-    // Step 5:  Convert the OrderStatus as appropriate.
-    // This needs some kind of "await".
-    // build in error message
-    if (paymentMethodId === "invoice") {
-        await updateOrderStatus(orderResult.id);
-    } else {
-        chargeCreditCard({ amount, orderNumber }, updateOrderStatus.bind(null, orderResult.id));
-    }
-
-    let successfulOrder = {
-        postingEntity: paymentMethodId == "invoice" ? "Invoice" : "Receipt",
-        order: orderResult,
-        orderItems: orderItemResults
-    };
-
-    // Otherwise, maybe there was an error
-
-    let failedOrder = {
-        error: "Salesforce failed to create the order.",
-        details: orderResult
-    };
-
-    res.json(FORCE_PAYMENT_ERROR ? failedOrder : successfulOrder);
+    let cc = await processTransaction();
 
 
+    // Get interesting stuff from the resp
+    let resp = {};
+    // Okay, now we can any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
 
+    res.json(resp);
 });
 
 
 
-async function updateOrderStatus(orderId, response) {
-    // For invoices Status will be Activated;
-    // For all others, Status will be Posted Payment.
 
-    const updateResp = await client.update("Order", { Id: orderId, Activate__c: true });
-    // const updatedOrderResult = await updateResp.json();
-
-
-    console.log("updateResp:", updateResp.status);
-
-    if (!updateResp.ok) {
-        throw new Error(`Failed to update Salesforce Order. Status: ${updateResp.status}`);
-    }
-}
+function parseTransactionResponse(response) {
 
 
 
-async function getPricebookEntries(productIds) {
-
-    const soql = productIds.map(productId => `'${productId}'`).join(', ');
-
-    const entriesByProduct = new Map();
-
-    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
-
-    console.log(pricebookQuery);
-    const pricebookResp = await client.query(pricebookQuery);
-    const pricebookEntries = pricebookResp.records;
-
-
-    for (const entry of pricebookEntries) {
-        entriesByProduct.set(entry.Product2Id, entry);
-    }
-
-
-    // Make sure we found a Pricebook entry for the product
-    if (!pricebookEntries) {
-        throw new Error(`No PricebookEntry found for product(s): ${productIds}`);
-    }
-
-    return entriesByProduct;
-}
-
-
-
-
-async function createOrderItems(orderResult, orderLines, pricebookEntries, serverPrices) {
-
-    const orderItemResults = [];
-
-    for (const lineItem of Object.values(orderLines)) {
-
-        const pricebookEntry = pricebookEntries.get(lineItem.productId);
-
-        const serverPrice = serverPrices.find(
-            (result) => result.contactId === lineItem.contactId && result.productId === lineItem.productId
-        );
-
-        const orderItemRecord = {
-            OrderId: orderResult.id,
-            PricebookEntryId: pricebookEntry.Id,
-            Quantity: 1,
-            UnitPrice: serverPrice.price,
-            Contact__c: lineItem.contactId,
-            Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
-        };
-
-        const itemResp = await client.create("OrderItem", orderItemRecord);
-        const itemResult = await itemResp.json();
-
-        console.log("Item Result:", itemResult);
-
-        if (!itemResp.ok) {
-            throw new Error(
-                `Salesforce failed to create an order item for contact: ${lineItem.contactId}`
-            );
+    if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK)
+    {
+        if (response.getTransactionResponse().getMessages() != null)
+        {
+            console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
+            console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
+            console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
+            console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
         }
+        else
+        {
+            console.log('Failed Transaction.');
+            if (response.getTransactionResponse().getErrors() != null)
+            {
+                console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+                console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+            }
+        }
+    }
+    else
+    {
+        console.log('Failed Transaction. ');
+        if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null)
+        {
 
-        orderItemResults.push(itemResult);
+            console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
+            console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
+        }
+        else
+        {
+            console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
+            console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
+        }
     }
 
-    return orderItemResults;
+
 }
 
+
+
+function doSomething() {
+
+
+
+
+
+}
 
 
 

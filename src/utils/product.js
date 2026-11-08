@@ -57,6 +57,41 @@ export async function getPrices(params, instanceUrl, accessToken) {
 
 
 
+
+
+export async function getPricebookEntries(productIds, instanceUrl, accessToken) {
+
+    const soql = productIds.map(productId => `'${productId}'`).join(', ');
+
+    const entriesByProduct = new Map();
+
+    const pricebookQuery = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
+
+    console.log(pricebookQuery);
+    const client = new SalesforceRestApi(instanceUrl, accessToken);
+    const pricebookResp = await client.query(pricebookQuery);
+    const pricebookEntries = pricebookResp.records;
+
+
+    for (const entry of pricebookEntries)
+    {
+        entriesByProduct.set(entry.Product2Id, entry);
+    }
+
+
+    // Make sure we found a Pricebook entry for the product
+    if (!pricebookEntries)
+    {
+        throw new Error(`No PricebookEntry found for product(s): ${productIds}`);
+    }
+
+    return entriesByProduct;
+}
+
+
+
+
+
 function calculateProductPrice(contact, product) {
 
     const standardPrice = product.ClickpdxCatalog__StandardPrice__c;

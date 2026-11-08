@@ -26,7 +26,7 @@ const AUTHORIZE_NET_TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
 
 
 
-export default function chargeCreditCard({ amount, orderNumber }, callback) {
+export default function chargeCreditCard(order, callback) {
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(AUTHORIZE_NET_API_LOGIN_ID);
     merchantAuthenticationType.setTransactionKey(AUTHORIZE_NET_TRANSACTION_KEY);
@@ -41,7 +41,7 @@ export default function chargeCreditCard({ amount, orderNumber }, callback) {
 
     var orderDetails = new APIContracts.OrderType();
     // orderDetails.setInvoiceNumber('INV-12345'); // Replace this with the actual orderNumber passed into chargeCreditCard
-    orderDetails.setInvoiceNumber(orderNumber);
+    orderDetails.setInvoiceNumber(order.orderNumber);
     orderDetails.setDescription('Product Description');
 
     var billTo = new APIContracts.CustomerAddressType();
@@ -96,7 +96,7 @@ export default function chargeCreditCard({ amount, orderNumber }, callback) {
     var transactionRequestType = new APIContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
-    transactionRequestType.setAmount(amount);
+    transactionRequestType.setAmount(order.amount);
     transactionRequestType.setOrder(orderDetails);
     transactionRequestType.setBillTo(billTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
@@ -131,40 +131,7 @@ export default function chargeCreditCard({ amount, orderNumber }, callback) {
         //pretty print response
         console.log(JSON.stringify(response, null, 2));
 
-        if (response != null) {
-            if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
-                if (response.getTransactionResponse().getMessages() != null) {
-                    console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
-                    console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
-                    console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
-                    console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
-                }
-                else {
-                    console.log('Failed Transaction.');
-                    if (response.getTransactionResponse().getErrors() != null) {
-                        console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-                        console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-                    }
-                }
-            }
-            else {
-                console.log('Failed Transaction. ');
-                if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
-                    console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
-                    console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
-                }
-                else {
-                    console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
-                    console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
-                }
-            }
-        }
-        else {
-            var apiError = ctrl.getError();
-            console.log(apiError);
-            console.log('Null Response.');
-        }
 
         callback(response);
     });
