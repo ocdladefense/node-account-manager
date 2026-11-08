@@ -2,7 +2,7 @@ import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import chargeCreditCard from './charge.js';
 // import { getPrices, getPricebookEntries } from "../../utils/product.js";
-// import Order from "../../utils/Order.js";
+import Order from "../../utils/Order.js";
 
 
 const router = express.Router();
@@ -122,16 +122,6 @@ function parseTransactionResponse(response) {
             console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
         }
     }
-
-
-}
-
-
-
-function doSomething() {
-
-
-
 
 
 }

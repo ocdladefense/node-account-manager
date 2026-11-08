@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import EventTicketOrderLine from "./EventTicketOrderLine.jsx";
-// import { hashContactIds, getOrderTotal } from "../../../utils/Order.js";
+import { hashContactIds, getOrderTotal } from "../../../utils/Order.js";
 
 
 
