@@ -23,9 +23,10 @@ router.post("/orders", async (req, res) => {
     console.log(req.body);
     let accountId = req.cookies.account_id;
     let orderLines = req.body.orderLines;
+    let paymentMethodId = req.body.paymentMethodId;
     let url = req.cookies.instance_url;
     let token = req.cookies.access_token;
-    let paymentMethodId = req.body.paymentMethodId;
+
 
 
 
@@ -33,6 +34,7 @@ router.post("/orders", async (req, res) => {
 
 
     let order = new Order(accountId);
+    // order.setupRequest(url,token);
     order.addLines(Object.values(orderLines));
     let result = await order.insert();
 
