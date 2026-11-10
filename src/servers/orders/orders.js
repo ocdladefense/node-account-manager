@@ -1,5 +1,6 @@
 import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
+import SalesforceCompositeRequest from '@ocdla/salesforce/SalesforceCompositeRequest.js';
 import chargeCreditCard from './charge.js';
 // import { getPrices, getPricebookEntries } from "../../utils/product.js";
 import Order from "../../utils/Order.js";
@@ -31,21 +32,33 @@ router.post("/orders", async (req, res) => {
 
 
     client = new SalesforceRestApi(url, token);
-
-
-    let order = new Order(accountId);
-    // order.setupRequest(url,token);
+    let order = new Order(accountId, req.cookies.contact_id);
     order.addLines(Object.values(orderLines));
-    let result = await order.insert();
+    order.setPaymentMethod(paymentMethodId);
 
-    let orderInfo = await order.getOrderInfo();
-    // order.setPaymentMethod(paymentMethodId); // Uncomment and set the payment method if needed
 
+    let { records: [{ Id: standardPricebookId }] } = await client.query("SELECT Id FROM Pricebook2 WHERE IsStandard = true");
+    // Step 1: Get the PricebookEntry for the first productId.
+    let pricebookEntries = await getPricebookEntries(Object.values(orderLines));
+    order.setPricebook2Id(standardPricebookId);
+    order.setPricebookEntries(pricebookEntries);
+
+
+    let sf = new SalesforceCompositeRequest("Order");
+    let body = await order.toObject()
+    console.log("PROCESSING ORDER");
+    console.dir(body, { depth: null });
+    sf.setBody(JSON.stringify(body));
+
+    console.log("COMPOSITE RESPONSE");
+    let result = await client.composite(sf);
+
+    console.log(result);
 
     let processTransaction = new Promise((resolve, reject) => {
         if (!order.isCreditCard())
         {
-            resolve();
+            resolve({ Id: "roobar", PostingEntity__c: "Invoice" });
             return;
         }
 
@@ -56,7 +69,7 @@ router.post("/orders", async (req, res) => {
             if (resp != null)
             {
                 // parseTransactionResponse(resp);
-                let sometingImportantAboutTheResponse = {};
+                let sometingImportantAboutTheResponse = { Id: "roobar", PostingEntity__c: "Invoice" };
                 resolve(sometingImportantAboutTheResponse);
             }
             else
@@ -66,22 +79,43 @@ router.post("/orders", async (req, res) => {
                 reject(new Error('Null Response'));
             }
 
-
-
-
         });
     });
 
 
-    let cc = await processTransaction();
+    let cc = await processTransaction;
 
 
-    // Get interesting stuff from the resp
-    let resp = {};
     // Okay, now we can any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
 
-    res.json(resp);
+    res.json(cc);
 });
+
+
+
+
+
+async function getPricebookEntries(orderLines) {
+
+    const productIds = orderLines.map(line => line.productId);
+    const entries = new Map();
+    const soql = productIds.map(productId => `'${productId}'`).join(', ');
+    const query = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
+
+
+
+    const { records: pricebookEntries } = await client.query(query);
+
+
+    for (const entry of pricebookEntries)
+    {
+        entries.set(entry.Product2Id, entry);
+    }
+
+
+    return entries;
+}
+
 
 
 

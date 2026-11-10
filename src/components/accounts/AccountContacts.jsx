@@ -34,11 +34,13 @@ export default function AccountContacts() {
 
     useEffect(() => {
         const fetchContacts = async () => {
-            try {
+            try
+            {
                 const resp = await fetch("/api/query/account-contacts");
                 const data = await resp.json();
 
-                if (!resp.ok) {
+                if (!resp.ok)
+                {
                     throw new Error(
                         data.error || "Unable to retrieve account contacts."
                     );
@@ -46,7 +48,8 @@ export default function AccountContacts() {
 
                 setContacts(data.records);
 
-            } catch (error) {
+            } catch (error)
+            {
                 console.error(
                     "Error fetching account contacts:",
                     error
@@ -132,7 +135,8 @@ async function handleSubmit(data, onComplete, onError, e) {
     e.preventDefault();
     e.stopPropagation();
 
-    try {
+    try
+    {
         const resp = await fetch("/orders", {
             method: "POST",
             headers: {
@@ -143,15 +147,17 @@ async function handleSubmit(data, onComplete, onError, e) {
 
         const result = await resp.json();
 
-        if (!resp.ok || result.error) {
+        if (!resp.ok || result.error)
+        {
             throw new Error(result.error || "Order creation failed.");
         }
 
         console.log("ORDER CREATED:", result);
 
-        onComplete(result.order.id, result.postingEntity);
+        onComplete(result.Id, result.PostingEntity__c);
 
-    } catch (error) {
+    } catch (error)
+    {
         console.error("Error submitting order:", error);
 
         onError(error.message || "Unable to submit order.");

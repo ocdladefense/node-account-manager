@@ -1,43 +1,93 @@
 
 export default class Order {
 
+    order = {};
+
     lines = [];
+    contactId = null;
+    pricebookEntries = null;
+    paymentMethodId = null;
+    pricebook2Id = null;
 
-
-    constructor() {
+    constructor(accountId, contactId) {
         this.lines = [];
 
 
         // Step 2: Construct the Order object in Salesforce.
         // Test Order Record
-        let orderRecord = {
+        this.order = {
             AccountId: accountId,
             EffectiveDate: new Date().toISOString().split('T')[0],
             Status: "Draft",
-            Pricebook2Id: standardPricebookId,
-            BillToContactId: req.cookies.contact_id,
+            Pricebook2Id: null,
+            BillToContactId: contactId,
+            PostingEntity__c: "Invoice"
         };
 
-        if (paymentMethodId == "invoice")
-        {
-            orderRecord.PostingEntity__c = "Invoice";
-        }
+
     }
 
 
-    async loadThings() {
+    async toObject() {
+
+        if (this.paymentMethodId == "invoice")
+        {
+            this.order.PostingEntity__c = "Invoice";
+        }
+
+        let lines = this.toOrderItems();
+
+        this.order.OrderItems = {
+            records: lines.map((line, index) => ({
+                attributes: { type: "OrderItem", referenceId: "refItem" + (index + 1) },
+                ...line
+            }))
+        };
+
+        return {
+            records: [{ attributes: { type: "Order", referenceId: "refOrder1" }, ...this.order }]
+        };
+    }
 
 
-        // Step 1: Get the Pricebook2Id from the first product queried for. Use the key (the productId) for the .get
-        let { records: [{ Id: standardPricebookId }] } = await client.query("SELECT Id FROM Pricebook2 WHERE IsStandard = true");
+    setPaymentMethod(paymentMethodId) {
+        this.paymentMethodId = paymentMethodId;
+    }
 
 
+    setPricebook2Id(standardPricebookId) {
+        this.order.Pricebook2Id = standardPricebookId;
     }
 
 
     addLines(orderLines) {
         this.lines = this.lines || [];
         this.lines.push(...orderLines);
+    }
+
+
+
+    setPricebookEntries(pricebookEntries) {
+        this.pricebookEntries = pricebookEntries;
+    }
+
+
+    toOrderItems() {
+
+        return this.lines.map(line => {
+            const pricebookEntry = this.pricebookEntries.get(line.productId);
+            const serverPrice = { price: 0 }; // Placeholder, as serverPrices is not passed here
+
+            return {
+                // OrderId: this.orderId,
+                PricebookEntryId: pricebookEntry.Id,
+                Quantity: 1,
+                UnitPrice: serverPrice.price,
+                Contact__c: line.contactId,
+                Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
+            };
+        });
+
     }
 
 
@@ -53,39 +103,6 @@ export default class Order {
     }
 
 
-    async insert() {
-
-
-        // Step 1: Get the PricebookEntry for the first productId.
-        let pricebookEntries = await getPricebookEntries(productIds);
-
-
-
-
-        // Step 3: Create the Order in Salesforce.
-        const { id: orderId } = await client.create("Order", orderRecord);
-        this.orderId = orderId;
-        let orderLines = toOrderItems(this.orderLines, orderId, pricebookEntries);
-
-        this.insertOrderItems(orderLines);
-    }
-
-
-    async persist() {
-
-        toOrderItems(Object.values(orderLines), orderId, pricebookEntries);
-
-    }
-
-
-
-    async insertOrderItems(orderItems) {
-
-        return orderItems.map(async (line) => {
-            const result = await client.create("OrderItem", line).then(resp => resp.json());
-            return result;
-        });
-    }
 
 
 
@@ -158,28 +175,6 @@ export async function updateOrderStatus(orderId, response) {
     }
 }
 
-
-
-// toOrderItems( Object.values(orderLines), orderResult.id, pricebookEntries);
-
-export function toOrderItems(orderLines, orderId, pricebookEntries) {
-
-    let lines = orderLines.map(lineItem => {
-        const pricebookEntry = pricebookEntries.get(lineItem.productId);
-        const serverPrice = { price: 0 }; // Placeholder, as serverPrices is not passed here
-
-        return {
-            OrderId: orderId,
-            PricebookEntryId: pricebookEntry.Id,
-            Quantity: 1,
-            UnitPrice: serverPrice.price,
-            Contact__c: lineItem.contactId,
-            Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
-        };
-    });
-
-    return lines;
-}
 
 
 
