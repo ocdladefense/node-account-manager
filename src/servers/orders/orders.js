@@ -52,12 +52,15 @@ router.post("/orders", async (req, res) => {
 
     console.log("COMPOSITE RESPONSE");
     let result = await client.composite(sf);
+    let foobar = await result.json();
 
-    console.log(result);
+    console.log(foobar);
 
     let processTransaction = new Promise((resolve, reject) => {
-        if (!order.isCreditCard())
-        {
+        if (!order.isCreditCard()) {
+
+
+
             resolve({ Id: "roobar", PostingEntity__c: "Invoice" });
             return;
         }
@@ -66,14 +69,12 @@ router.post("/orders", async (req, res) => {
 
 
 
-            if (resp != null)
-            {
+            if (resp != null) {
                 // parseTransactionResponse(resp);
                 let sometingImportantAboutTheResponse = { Id: "roobar", PostingEntity__c: "Invoice" };
                 resolve(sometingImportantAboutTheResponse);
             }
-            else
-            {
+            else {
                 // var apiError = ctrl.getError();
                 //console.log(apiError);
                 reject(new Error('Null Response'));
@@ -83,7 +84,14 @@ router.post("/orders", async (req, res) => {
     });
 
 
-    let cc = await processTransaction;
+    let cc = await processTransaction.then((order) => {
+        client.update("Order", {
+            Id: order.Id,
+            Status: "Activated"
+        })
+
+        return order;
+    });
 
 
     // Okay, now we can any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
@@ -107,8 +115,7 @@ async function getPricebookEntries(orderLines) {
     const { records: pricebookEntries } = await client.query(query);
 
 
-    for (const entry of pricebookEntries)
-    {
+    for (const entry of pricebookEntries) {
         entries.set(entry.Product2Id, entry);
     }
 
@@ -124,36 +131,29 @@ function parseTransactionResponse(response) {
 
 
 
-    if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK)
-    {
-        if (response.getTransactionResponse().getMessages() != null)
-        {
+    if (response.getMessages().getResultCode() == APIContracts.MessageTypeEnum.OK) {
+        if (response.getTransactionResponse().getMessages() != null) {
             console.log('Successfully created transaction with Transaction ID: ' + response.getTransactionResponse().getTransId());
             console.log('Response Code: ' + response.getTransactionResponse().getResponseCode());
             console.log('Message Code: ' + response.getTransactionResponse().getMessages().getMessage()[0].getCode());
             console.log('Description: ' + response.getTransactionResponse().getMessages().getMessage()[0].getDescription());
         }
-        else
-        {
+        else {
             console.log('Failed Transaction.');
-            if (response.getTransactionResponse().getErrors() != null)
-            {
+            if (response.getTransactionResponse().getErrors() != null) {
                 console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
                 console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
             }
         }
     }
-    else
-    {
+    else {
         console.log('Failed Transaction. ');
-        if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null)
-        {
+        if (response.getTransactionResponse() != null && response.getTransactionResponse().getErrors() != null) {
 
             console.log('Error Code: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorCode());
             console.log('Error message: ' + response.getTransactionResponse().getErrors().getError()[0].getErrorText());
         }
-        else
-        {
+        else {
             console.log('Error Code: ' + response.getMessages().getMessage()[0].getCode());
             console.log('Error message: ' + response.getMessages().getMessage()[0].getText());
         }
@@ -161,6 +161,8 @@ function parseTransactionResponse(response) {
 
 
 }
+
+
 
 
 

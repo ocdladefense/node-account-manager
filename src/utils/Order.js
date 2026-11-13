@@ -28,10 +28,10 @@ export default class Order {
     }
 
 
+
     async toObject() {
 
-        if (this.paymentMethodId == "invoice")
-        {
+        if (this.paymentMethodId == "invoice") {
             this.order.PostingEntity__c = "Invoice";
         }
 
@@ -49,6 +49,10 @@ export default class Order {
         };
     }
 
+
+    getStatus() {
+        return this.order.Status;
+    }
 
     setPaymentMethod(paymentMethodId) {
         this.paymentMethodId = paymentMethodId;
@@ -95,8 +99,7 @@ export default class Order {
 
         let vals = [];
 
-        for (let orderLine of this.lines)
-        {
+        for (let orderLine of this.lines) {
             vals.push(orderLine[prop]);
         }
         return vals;
@@ -134,19 +137,12 @@ export default class Order {
 
 
 
-
-
-
-
-
-
 export function hashContactIds(arr) {
     // Join array with a separator to preserve string boundaries
     const combinedString = arr.join('|');
     let hash = 0;
 
-    for (let i = 0; i < combinedString.length; i++)
-    {
+    for (let i = 0; i < combinedString.length; i++) {
         const char = combinedString.charCodeAt(i);
         // Bitwise operations to generate the 32-bit integer hash
         hash = ((hash << 5) - hash) + char;
@@ -156,6 +152,19 @@ export function hashContactIds(arr) {
     // Return an unsigned 32-bit integer string in base 36 (alphanumeric)
     return (hash >>> 0).toString(36).padStart(7, '0');
 }
+
+
+
+export function getOrderTotal(orderLines) {
+    return Object.values(orderLines).reduce(
+        (sum, item) => sum + item.UnitPrice,
+        0
+    );
+}
+
+
+
+
 
 
 
@@ -169,20 +178,8 @@ export async function updateOrderStatus(orderId, response) {
 
     console.log("updateResp:", updateResp.status);
 
-    if (!updateResp.ok)
-    {
+    if (!updateResp.ok) {
         throw new Error(`Failed to update Salesforce Order. Status: ${updateResp.status}`);
     }
 }
 
-
-
-
-
-
-export function getOrderTotal(orderLines) {
-    return Object.values(orderLines).reduce(
-        (sum, item) => sum + item.UnitPrice,
-        0
-    );
-}
