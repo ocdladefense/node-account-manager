@@ -45,23 +45,24 @@ router.post("/orders", async (req, res) => {
 
 
     let sf = new SalesforceCompositeRequest("Order");
-    let body = await order.toObject()
+    let body = await order.toObject();
     console.log("PROCESSING ORDER");
     console.dir(body, { depth: null });
     sf.setBody(JSON.stringify(body));
 
     console.log("COMPOSITE RESPONSE");
-    let result = await client.composite(sf);
-    let foobar = await result.json();
+    let resp = await client.composite(sf);
+    let respBody = await resp.json();
 
-    console.log(foobar);
+    console.log(resp);
+    console.dir(respBody, { depth: null });
 
     let processTransaction = new Promise((resolve, reject) => {
         if (!order.isCreditCard()) {
 
 
 
-            resolve({ Id: "roobar", PostingEntity__c: "Invoice" });
+            resolve({ Id: respBody.results[0].id, PostingEntity__c: "Invoice" });
             return;
         }
 
@@ -71,7 +72,7 @@ router.post("/orders", async (req, res) => {
 
             if (resp != null) {
                 // parseTransactionResponse(resp);
-                let sometingImportantAboutTheResponse = { Id: "roobar", PostingEntity__c: "Invoice" };
+                let sometingImportantAboutTheResponse = { Id: respBody.results[0].id, PostingEntity__c: "Invoice" };
                 resolve(sometingImportantAboutTheResponse);
             }
             else {
@@ -84,17 +85,19 @@ router.post("/orders", async (req, res) => {
     });
 
 
-    let cc = await processTransaction.then((order) => {
-        client.update("Order", {
+    let cc = await processTransaction.then(async (order) => {
+        let resp = await client.update("Order", {
             Id: order.Id,
-            Status: "Activated"
-        })
+            Activate__c: true,
+        });
 
+
+        console.log(resp);
         return order;
     });
 
 
-    // Okay, now we can any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
+    // Okay, now we can attach any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
 
     res.json(cc);
 });
@@ -164,7 +167,32 @@ function parseTransactionResponse(response) {
 
 
 
+// Testing if I can change order with ID "801hr000004QY29AAG" to Activated status with a route that will fire without creating a new order.
+router.post("/test-activate", async (req, res) => {
+    const url = req.cookies.instance_url;
+    const token = req.cookies.access_token;
 
+    const client = new SalesforceRestApi(url, token);
 
+    const resp = await client.update("Order", {
+        Id: "801hr000004QY29AAG",
+        Status: "Activated"
+    });
+
+    console.log("Activation response:", resp.status);
+
+    res.status(resp.ok ? 200 : resp.status).json({
+        success: resp.ok,
+        status: resp.status,
+        error: resp.ok ? null : await resp.text()
+    });
+});
+
+// testing script for dev console:
+// fetch("/test-activate", {
+//     method: "POST"
+// })
+//     .then(resp => resp.json())
+//     .then(console.log);
 
 export default router;
