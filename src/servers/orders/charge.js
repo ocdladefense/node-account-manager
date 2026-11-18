@@ -26,15 +26,17 @@ const AUTHORIZE_NET_TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
 
 
 
-export default function chargeCreditCard(order, callback) {
+export default function chargeCreditCard(order, cc, callback) {
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
     merchantAuthenticationType.setName(AUTHORIZE_NET_API_LOGIN_ID);
     merchantAuthenticationType.setTransactionKey(AUTHORIZE_NET_TRANSACTION_KEY);
 
+
+
     var creditCard = new APIContracts.CreditCardType();
-    creditCard.setCardNumber('4242424242424242');
-    creditCard.setExpirationDate('0842');
-    creditCard.setCardCode('999');
+    creditCard.setCardNumber(cc.cardNumber);
+    creditCard.setExpirationDate(cc.expirationDate);
+    creditCard.setCardCode(cc.cardCode);
 
     var paymentType = new APIContracts.PaymentType();
     paymentType.setCreditCard(creditCard);
@@ -42,39 +44,31 @@ export default function chargeCreditCard(order, callback) {
     var orderDetails = new APIContracts.OrderType();
     // orderDetails.setInvoiceNumber('INV-12345'); // Replace this with the actual orderNumber passed into chargeCreditCard
     orderDetails.setInvoiceNumber(order.orderNumber);
-    orderDetails.setDescription('Product Description');
+    orderDetails.setDescription('Description of entire order goes here.'); // Replace this with the actual description of the order
 
+
+
+    // Which of these are actually required?  Do we need to pass in the line items?  Do we need to pass in the billing address?  Do we need to pass in the transaction settings?
     var billTo = new APIContracts.CustomerAddressType();
-    billTo.setFirstName('Ellen');
-    billTo.setLastName('Johnson');
-    billTo.setCompany('Souveniropolis');
-    billTo.setAddress('14 Main Street');
-    billTo.setCity('Pecan Springs');
-    billTo.setState('TX');
-    billTo.setZip('44628');
-    billTo.setCountry('USA');
+    billTo.setFirstName(order.firstName);
+    billTo.setLastName(order.lastName);
+    // billTo.setCompany('Souveniropolis');
+    // billTo.setAddress('14 Main Street');
+    // billTo.setCity('Pecan Springs');
+    // billTo.setState('TX');
+    // billTo.setZip('44628');
+    // billTo.setCountry('USA');
 
-    var lineItem_id1 = new APIContracts.LineItemType();
-    lineItem_id1.setItemId('1');
-    lineItem_id1.setName('vase');
-    lineItem_id1.setDescription('cannes logo');
-    lineItem_id1.setQuantity('18');
-    lineItem_id1.setUnitPrice(45.00);
 
-    var lineItem_id2 = new APIContracts.LineItemType();
-    lineItem_id2.setItemId('2');
-    lineItem_id2.setName('vase2');
-    lineItem_id2.setDescription('cannes logo2');
-    lineItem_id2.setQuantity('28');
-    lineItem_id2.setUnitPrice('25.00');
 
-    var lineItemList = [];
-    lineItemList.push(lineItem_id1);
-    lineItemList.push(lineItem_id2);
 
-    var lineItems = new APIContracts.ArrayOfLineItem();
-    lineItems.setLineItem(lineItemList);
 
+
+
+
+    // Do we need these?
+    // Recurring billing may be necessary if we're handling subscription services through this site.
+    // (Autocomplete gave me this description of duplicateWindow: "Duplicate window may be necessary if we want to prevent duplicate transactions from being processed within a certain time frame.")
     var transactionSetting1 = new APIContracts.SettingType();
     transactionSetting1.setSettingName('duplicateWindow');
     transactionSetting1.setSettingValue('120');
@@ -91,8 +85,11 @@ export default function chargeCreditCard(order, callback) {
     transactionSettings.setSetting(transactionSettingList);
 
 
+
+
+
     // Figure out what we really need for this function
-    // Reflect teh actual order data
+    // Reflect the actual order data
     var transactionRequestType = new APIContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
@@ -131,9 +128,33 @@ export default function chargeCreditCard(order, callback) {
         //pretty print response
         console.log(JSON.stringify(response, null, 2));
 
-
-
         callback(response);
     });
 }
 
+
+
+
+function addLineItems() {
+    // Replace this with the actual line items from the order. Perhaps an iterator to make a new line item for each product in the order.
+    var lineItem_id1 = new APIContracts.LineItemType();
+    lineItem_id1.setItemId('1');
+    lineItem_id1.setName('vase');
+    lineItem_id1.setDescription('cannes logo');
+    lineItem_id1.setQuantity('18');
+    lineItem_id1.setUnitPrice(45.00);
+
+    var lineItem_id2 = new APIContracts.LineItemType();
+    lineItem_id2.setItemId('2');
+    lineItem_id2.setName('vase2');
+    lineItem_id2.setDescription('cannes logo2');
+    lineItem_id2.setQuantity('28');
+    lineItem_id2.setUnitPrice('25.00');
+
+    var lineItemList = [];
+    lineItemList.push(lineItem_id1);
+    lineItemList.push(lineItem_id2);
+
+    var lineItems = new APIContracts.ArrayOfLineItem();
+    lineItems.setLineItem(lineItemList);
+}

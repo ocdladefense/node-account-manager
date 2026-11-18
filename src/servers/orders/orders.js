@@ -12,6 +12,12 @@ let client;
 
 
 
+let cc = {
+    cardNumber: '4242424242424242',
+    expirationDate: '0842',
+    cardCode: '999'
+};
+
 
 /**
  * contactIds - an array of contacts Ids selected from the AccountContacs component.
@@ -53,27 +59,36 @@ router.post("/orders", async (req, res) => {
     console.log("COMPOSITE RESPONSE");
     let resp = await client.composite(sf);
     let respBody = await resp.json();
+    let newOrderId = respBody.results[0].id;
 
-    console.log(resp);
+
+    const { records: [priceRecord] } = await client.query(`SELECT Id, Name, BillToContact.FirstName, BillToContact.LastName, PostingEntity__c, TotalAmount FROM Order WHERE Id = '${newOrderId}'`);
+
+    let info = {
+        Id: newOrderId,
+        OrderNumber: priceRecord.Name,
+        PostingEntity__c: priceRecord.PostingEntity__c,
+        FirstName: priceRecord.BillToContact.FirstName,
+        LastName: priceRecord.BillToContact.LastName,
+        Amount: priceRecord.TotalAmount,
+    };
+
+
     console.dir(respBody, { depth: null });
 
     let processTransaction = new Promise((resolve, reject) => {
         if (!order.isCreditCard()) {
 
-
-
-            resolve({ Id: respBody.results[0].id, PostingEntity__c: "Invoice" });
+            resolve(info);
             return;
         }
 
-        chargeCreditCard(order, function(resp) {
-
-
+        chargeCreditCard(info, cc, function(resp) {
 
             if (resp != null) {
                 // parseTransactionResponse(resp);
-                let sometingImportantAboutTheResponse = { Id: respBody.results[0].id, PostingEntity__c: "Invoice" };
-                resolve(sometingImportantAboutTheResponse);
+                let transId = resp.getTransactionResponse().getTransId();
+                resolve(transId);
             }
             else {
                 // var apiError = ctrl.getError();
@@ -85,21 +100,22 @@ router.post("/orders", async (req, res) => {
     });
 
 
-    let cc = await processTransaction.then(async (order) => {
-        let resp = await client.update("Order", {
-            Id: order.Id,
+
+    let transId = await processTransaction.then((transId) => {
+        return client.update("Order", {
+            Id: newOrderId,
             Activate__c: true,
+            // transactionId__c: transId
+        }).then(() => {
+
+            return transId;
         });
-
-
-        console.log(resp);
-        return order;
     });
 
 
     // Okay, now we can attach any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
 
-    res.json(cc);
+    res.json({ ...info, transactionId: transId });
 });
 
 

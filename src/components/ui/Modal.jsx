@@ -132,15 +132,18 @@ export default function Modal({
 
                 <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
 
+                    {/* This button should not appear in the final step (when user is confirming the order that they just created) */}
                     {currentStep > 1 && (
                         <div className="mr-auto">
                             <BackButton label="< Back" action={() => setCurrentStep(currentStep - 1)} />
                         </div>
                     )}
 
+                    {/* This button should change to "Close" in the final step (when user is confirming the order that they just created) */}
                     <CautionButton label="Cancel" isCancel={true} action={onClose} />
 
                     {/* {currentStep == submitStep ? <input type="submit" value="Submit me" form="batch-action" /> : */}
+                    {/* This button should change to "Navigate" in the final step (when user is confirming the order that they just created) */}
                     <Button label={isMultiStep && currentStep != submitStep ? 'Next' : 'Confirm'} action={nextAction} />
 
                 </div>
