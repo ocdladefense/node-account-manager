@@ -12,9 +12,6 @@ export default class Order {
     constructor(accountId, contactId) {
         this.lines = [];
 
-
-        // Step 2: Construct the Order object in Salesforce.
-        // Test Order Record
         this.order = {
             AccountId: accountId,
             EffectiveDate: new Date().toISOString().split('T')[0],
@@ -33,6 +30,8 @@ export default class Order {
 
         if (this.paymentMethodId == "invoice") {
             this.order.PostingEntity__c = "Invoice";
+        } else {
+            this.order.PostingEntity__c = "Receipt";
         }
 
         let lines = this.toOrderItems();
@@ -80,13 +79,11 @@ export default class Order {
 
         return this.lines.map(line => {
             const pricebookEntry = this.pricebookEntries.get(line.productId);
-            const serverPrice = { price: 0 }; // Placeholder, as serverPrices is not passed here
 
             return {
-                // OrderId: this.orderId,
                 PricebookEntryId: pricebookEntry.Id,
                 Quantity: 1,
-                UnitPrice: serverPrice.price,
+                UnitPrice: line.UnitPrice,
                 Contact__c: line.contactId,
                 Description: pricebookEntry.Product2.ClickpdxCatalog__LineDescription__c
             };
@@ -115,23 +112,11 @@ export default class Order {
 
 
     async getOrderInfo() {
-
-
-
-        // Salesforce OrderNumber === orderDetails.setInvoiceNumber ???
         const soql = `SELECT Id, OrderNumber, TotalAmount FROM Order WHERE Id = '${this.orderId}'`;
         const resp = await client.query(soql);
 
         return resp.records?.[0];
     }
-
-
-    // const priceRequests = Object.values(orderLines).map(line => ({
-    //     contactId: line.contactId,
-    //     productId: line.productId
-    // }));
-
-    // const serverPrices = await getPrices(priceRequests, url, token);
 
 }
 

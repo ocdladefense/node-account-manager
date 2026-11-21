@@ -44,25 +44,25 @@ export default function Modal({
     const isMultiStep = Children.count(children) > 1;
     const totalSteps = Children.count(children);
     const submitStep = 5;
-
-
-
-    console.log("Current step:", currentStep);
-    console.log("Total steps:", totalSteps);
+    const stepButtons = Children.toArray(children)[currentStep - 1]?.props?.children;
 
 
     let nextAction = isMultiStep ?
         async (e) => {
-            // Not sure we need this anymore ????
+
             let formData = new FormData(document.getElementById("batch-action"));
-            //  && currentStep != submitStep (we can always do this later if we want to)
-            await onSubmit(e);
+
+            const success = await onSubmit(e);
+
+            if (currentStep === submitStep && !success) {
+                return;
+            }
+
             let theNextStep = getNextStep(formData);
             setCurrentStep(theNextStep);
         } :
         (e) => {
             onSubmit(e);
-            // Also reset the steps to 0 or whatever?
         };
 
 
@@ -101,8 +101,7 @@ export default function Modal({
                                 if (step == currentStep && _getNextStep) {
                                     getNextStep = _getNextStep;
                                 }
-                                // We may not want to calculate whether to use the onSubmit by comparing step to totaleSteps
-                                // we may want to use lastStep
+
                                 if (step == currentStep && currentStep == submitStep && stepNode.props.onSubmit) {
                                     onSubmit = stepNode.props.onSubmit;
                                 }
@@ -132,19 +131,19 @@ export default function Modal({
 
                 <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end items-center">
 
-                    {/* This button should not appear in the final step (when user is confirming the order that they just created) */}
-                    {currentStep > 1 && (
-                        <div className="mr-auto">
-                            <BackButton label="< Back" action={() => setCurrentStep(currentStep - 1)} />
-                        </div>
+                    {stepButtons ?? (
+                        <>
+                            {currentStep > 1 && (
+                                <div className="mr-auto">
+                                    <BackButton label="< Back" action={() => setCurrentStep(currentStep - 1)} />
+                                </div>
+                            )}
+
+                            <CautionButton label="Cancel" isCancel={true} action={onClose} />
+
+                            <Button label={isMultiStep && currentStep != submitStep ? 'Next' : 'Confirm'} action={nextAction} />
+                        </>
                     )}
-
-                    {/* This button should change to "Close" in the final step (when user is confirming the order that they just created) */}
-                    <CautionButton label="Cancel" isCancel={true} action={onClose} />
-
-                    {/* {currentStep == submitStep ? <input type="submit" value="Submit me" form="batch-action" /> : */}
-                    {/* This button should change to "Navigate" in the final step (when user is confirming the order that they just created) */}
-                    <Button label={isMultiStep && currentStep != submitStep ? 'Next' : 'Confirm'} action={nextAction} />
 
                 </div>
 

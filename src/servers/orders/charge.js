@@ -1,30 +1,10 @@
-/**
- * Example of how to charge a credit card using the Authorize.Net API.
- */
-
-// 1. Import the default object from the package
 import AuthorizeNet from 'authorizenet';
 
-// 2. Extract the sub-modules you need
 const { APIContracts, APIControllers } = AuthorizeNet;
 
 
 const AUTHORIZE_NET_API_LOGIN_ID = process.env.AUTHORIZE_NET_API_LOGIN_ID;
 const AUTHORIZE_NET_TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
-// const SAMPLE_CHARGE_AMOUNT = 120.00; // Example charge amount
-
-// REPLACE COMMON JS WITH ABOVE IMPORTS.
-// var APIContracts = require('authorizenet').APIContracts;
-// var APIControllers = require('authorizenet').APIControllers;
-// var SDKConstants = require('authorizenet').Constants;
-
-
-
-
-// var utils = require('../utils.js');
-// var constants = require('../constants.js');
-
-
 
 export default function chargeCreditCard(order, cc, callback) {
     var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
@@ -42,16 +22,13 @@ export default function chargeCreditCard(order, cc, callback) {
     paymentType.setCreditCard(creditCard);
 
     var orderDetails = new APIContracts.OrderType();
-    // orderDetails.setInvoiceNumber('INV-12345'); // Replace this with the actual orderNumber passed into chargeCreditCard
-    orderDetails.setInvoiceNumber(order.orderNumber);
-    orderDetails.setDescription('Description of entire order goes here.'); // Replace this with the actual description of the order
+    orderDetails.setInvoiceNumber(order.OrderNumber);
+    orderDetails.setDescription(getOrderDescription(order.lineItems));
 
 
-
-    // Which of these are actually required?  Do we need to pass in the line items?  Do we need to pass in the billing address?  Do we need to pass in the transaction settings?
     var billTo = new APIContracts.CustomerAddressType();
-    billTo.setFirstName(order.firstName);
-    billTo.setLastName(order.lastName);
+    billTo.setFirstName(order.FirstName);
+    billTo.setLastName(order.LastName);
     // billTo.setCompany('Souveniropolis');
     // billTo.setAddress('14 Main Street');
     // billTo.setCity('Pecan Springs');
@@ -60,15 +37,6 @@ export default function chargeCreditCard(order, cc, callback) {
     // billTo.setCountry('USA');
 
 
-
-
-
-
-
-
-    // Do we need these?
-    // Recurring billing may be necessary if we're handling subscription services through this site.
-    // (Autocomplete gave me this description of duplicateWindow: "Duplicate window may be necessary if we want to prevent duplicate transactions from being processed within a certain time frame.")
     var transactionSetting1 = new APIContracts.SettingType();
     transactionSetting1.setSettingName('duplicateWindow');
     transactionSetting1.setSettingValue('120');
@@ -85,15 +53,11 @@ export default function chargeCreditCard(order, cc, callback) {
     transactionSettings.setSetting(transactionSettingList);
 
 
-
-
-
-    // Figure out what we really need for this function
-    // Reflect the actual order data
     var transactionRequestType = new APIContracts.TransactionRequestType();
     transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
     transactionRequestType.setPayment(paymentType);
-    transactionRequestType.setAmount(order.amount);
+    transactionRequestType.setAmount(order.Amount);
+    transactionRequestType.setLineItems(addLineItems(order.lineItems));
     transactionRequestType.setOrder(orderDetails);
     transactionRequestType.setBillTo(billTo);
     transactionRequestType.setTransactionSettings(transactionSettings);
@@ -102,22 +66,9 @@ export default function chargeCreditCard(order, cc, callback) {
     createRequest.setMerchantAuthentication(merchantAuthenticationType);
     createRequest.setTransactionRequest(transactionRequestType);
 
-    // Pretty print request
-    // console.log(JSON.stringify(createRequest.getJSON(), null, 2));
-
-    // Testing the actual transaction request with the amount and invoiceNumber properties
-    // Pass this new variable to ctrl
     const requestJson = createRequest.getJSON();
 
-    console.log("Authorize.Net Transaction Preview:", {
-        amount: requestJson.createTransactionRequest.transactionRequest.amount,
-        invoiceNumber: requestJson.createTransactionRequest.transactionRequest.order?.invoiceNumber
-    });
-
     var ctrl = new APIControllers.CreateTransactionController(requestJson);
-
-    //Defaults to sandbox
-    //ctrl.setEnvironment(SDKConstants.endpoint.production);
 
     ctrl.execute(function() {
 
@@ -125,7 +76,6 @@ export default function chargeCreditCard(order, cc, callback) {
 
         if (apiResponse != null) var response = new APIContracts.CreateTransactionResponse(apiResponse);
 
-        //pretty print response
         console.log(JSON.stringify(response, null, 2));
 
         callback(response);
@@ -135,26 +85,39 @@ export default function chargeCreditCard(order, cc, callback) {
 
 
 
-function addLineItems() {
-    // Replace this with the actual line items from the order. Perhaps an iterator to make a new line item for each product in the order.
-    var lineItem_id1 = new APIContracts.LineItemType();
-    lineItem_id1.setItemId('1');
-    lineItem_id1.setName('vase');
-    lineItem_id1.setDescription('cannes logo');
-    lineItem_id1.setQuantity('18');
-    lineItem_id1.setUnitPrice(45.00);
 
-    var lineItem_id2 = new APIContracts.LineItemType();
-    lineItem_id2.setItemId('2');
-    lineItem_id2.setName('vase2');
-    lineItem_id2.setDescription('cannes logo2');
-    lineItem_id2.setQuantity('28');
-    lineItem_id2.setUnitPrice('25.00');
+function addLineItems(orderLines) {
+    const itemList = orderLines.map(line => {
+        const item = new APIContracts.LineItemType();
 
-    var lineItemList = [];
-    lineItemList.push(lineItem_id1);
-    lineItemList.push(lineItem_id2);
+        item.setItemId(line.id);
+        item.setName(line.name.slice(0, 31));
+        item.setDescription((line.description ?? "").slice(0, 255));
+        item.setQuantity(line.quantity);
+        item.setUnitPrice(line.unitPrice);
 
-    var lineItems = new APIContracts.ArrayOfLineItem();
-    lineItems.setLineItem(lineItemList);
+        return item;
+    });
+
+    const lineItems = new APIContracts.ArrayOfLineItem();
+    lineItems.setLineItem(itemList);
+
+    return lineItems;
+}
+
+
+function getOrderDescription(orderLines) {
+    const productQuantities = new Map();
+
+    for (const line of orderLines) {
+        const quantity = productQuantities.get(line.name) ?? 0;
+        productQuantities.set(line.name, quantity + line.quantity);
+    }
+
+    const description = [...productQuantities]
+        .map(([name, quantity]) => `${quantity} x ${name}`)
+        .join(", ")
+        .slice(0, 255);
+
+    return description;
 }

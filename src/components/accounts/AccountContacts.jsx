@@ -57,29 +57,30 @@ export default function AccountContacts() {
         fetchContacts();
     }, []);
 
-    function onComplete(orderId, postingEntity) {
-
-        let orderType = postingEntity === "Invoice" ? "invoice" : "order";
+    function onComplete(orderResult) {
 
         CreateToast(NewToast("Order created successfully."));
 
-        // closeModal();
+        setData((previousData) => ({
+            ...previousData,
+            orderId: orderResult.Id,
+            orderNumber: orderResult.OrderNumber,
+            postingEntity: orderResult.PostingEntity__c,
+            transactionId: orderResult.transactionId ?? null
+        }));
 
-        // Is this the appropriate place to zero out data? (No its not)
-        // Special kind of done button !!!
-        setData({
-            orderNumber: orderId,
-            selectedContactIds: [],
-            orderLines: {},
-            total: 0
-        });
-
-        // navigate(`/${orderType}/${orderId}`);
     };
 
     function onError(error) {
         CreateToast(NewToast(error));
     };
+
+
+    function handleGoToOrder() {
+        const orderType = data.postingEntity === "Invoice" ? "invoice" : "order";
+        closeModal();
+        navigate(`/${orderType}/${data.orderId}`);
+    }
 
 
 
@@ -91,7 +92,7 @@ export default function AccountContacts() {
             <div className="w-full">
 
                 {/*-------------------- START OF MODAL SECTION -------------------- */}
-                <Modal isOpen={isOpen} onClose={closeModal} defaultButtons={true} data={data} setData={setData}>
+                <Modal isOpen={isOpen} onClose={closeModal} data={data} setData={setData}>
                     <SelectEvent />
                     {/*<SelectProduct />*/}
                     <EventTicketOrder contacts={contacts} data={data} setData={setData} />
@@ -99,8 +100,8 @@ export default function AccountContacts() {
                     <CreateNewPaymentMethod />
                     <ReviewOrder onSubmit={handleSubmit.bind(null, data, onComplete, onError)} />
                     <OrderConfirmation onSubmit={closeModal}>
-                        {/* <button>Navigate</button>
-                        <button>Close</button> */}
+                        <Button label="Done" action={closeModal} />
+                        <Button label="Go-To-Order" action={handleGoToOrder} />
                     </OrderConfirmation>
                 </Modal>
                 {/*-------------------- END OF MODAL SECTION -------------------- */}
@@ -150,14 +151,14 @@ async function handleSubmit(data, onComplete, onError, e) {
             throw new Error(result.error || "Order creation failed.");
         }
 
-        console.log("ORDER CREATED:", result);
-
-        onComplete(result.Id, result.PostingEntity__c);
+        onComplete(result);
+        return true;
 
     } catch (error) {
         console.error("Error submitting order:", error);
 
         onError(error.message || "Unable to submit order.");
+        return false;
     }
 }
 

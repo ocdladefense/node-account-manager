@@ -2,7 +2,6 @@ import express from "express";
 import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import SalesforceCompositeRequest from '@ocdla/salesforce/SalesforceCompositeRequest.js';
 import chargeCreditCard from './charge.js';
-// import { getPrices, getPricebookEntries } from "../../utils/product.js";
 import Order from "../../utils/Order.js";
 
 
@@ -44,11 +43,23 @@ router.post("/orders", async (req, res) => {
 
 
     let { records: [{ Id: standardPricebookId }] } = await client.query("SELECT Id FROM Pricebook2 WHERE IsStandard = true");
-    // Step 1: Get the PricebookEntry for the first productId.
     let pricebookEntries = await getPricebookEntries(Object.values(orderLines));
+
+
+    const lineItems = Object.values(orderLines).map(line => {
+        const product = pricebookEntries.get(line.productId).Product2;
+
+        return {
+            id: line.productId,
+            quantity: 1,
+            unitPrice: line.UnitPrice,
+            name: product.Name,
+            description: product.ClickpdxCatalog__LineDescription__c
+        };
+    });
+
     order.setPricebook2Id(standardPricebookId);
     order.setPricebookEntries(pricebookEntries);
-
 
     let sf = new SalesforceCompositeRequest("Order");
     let body = await order.toObject();
@@ -62,15 +73,17 @@ router.post("/orders", async (req, res) => {
     let newOrderId = respBody.results[0].id;
 
 
-    const { records: [priceRecord] } = await client.query(`SELECT Id, Name, BillToContact.FirstName, BillToContact.LastName, PostingEntity__c, TotalAmount FROM Order WHERE Id = '${newOrderId}'`);
+    const { records: [priceRecord] } = await client.query(`SELECT Id, OrderNumber, BillToContact.FirstName, BillToContact.LastName, PostingEntity__c, TotalAmount FROM Order WHERE Id = '${newOrderId}'`);
+    console.log("ORDER INFO:", priceRecord);
 
     let info = {
         Id: newOrderId,
-        OrderNumber: priceRecord.Name,
+        OrderNumber: priceRecord.OrderNumber,
         PostingEntity__c: priceRecord.PostingEntity__c,
         FirstName: priceRecord.BillToContact.FirstName,
         LastName: priceRecord.BillToContact.LastName,
         Amount: priceRecord.TotalAmount,
+        lineItems
     };
 
 
@@ -91,8 +104,6 @@ router.post("/orders", async (req, res) => {
                 resolve(transId);
             }
             else {
-                // var apiError = ctrl.getError();
-                //console.log(apiError);
                 reject(new Error('Null Response'));
             }
 
@@ -105,15 +116,11 @@ router.post("/orders", async (req, res) => {
         return client.update("Order", {
             Id: newOrderId,
             Activate__c: true,
-            // transactionId__c: transId
         }).then(() => {
 
             return transId;
         });
     });
-
-
-    // Okay, now we can attach any relevant properties to resp.  For example, OrderNumber, TotalAmount, AuthorizationCode.
 
     res.json({ ...info, transactionId: transId });
 });
@@ -127,7 +134,7 @@ async function getPricebookEntries(orderLines) {
     const productIds = orderLines.map(line => line.productId);
     const entries = new Map();
     const soql = productIds.map(productId => `'${productId}'`).join(', ');
-    const query = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
+    const query = `SELECT Id, Product2Id, Pricebook2Id, UnitPrice, Product2.Name, Product2.ClickpdxCatalog__LineDescription__c FROM PricebookEntry WHERE Product2Id IN (${soql})`;
 
 
 
@@ -180,35 +187,5 @@ function parseTransactionResponse(response) {
 
 
 }
-
-
-
-// Testing if I can change order with ID "801hr000004QY29AAG" to Activated status with a route that will fire without creating a new order.
-router.post("/test-activate", async (req, res) => {
-    const url = req.cookies.instance_url;
-    const token = req.cookies.access_token;
-
-    const client = new SalesforceRestApi(url, token);
-
-    const resp = await client.update("Order", {
-        Id: "801hr000004QY29AAG",
-        Status: "Activated"
-    });
-
-    console.log("Activation response:", resp.status);
-
-    res.status(resp.ok ? 200 : resp.status).json({
-        success: resp.ok,
-        status: resp.status,
-        error: resp.ok ? null : await resp.text()
-    });
-});
-
-// testing script for dev console:
-// fetch("/test-activate", {
-//     method: "POST"
-// })
-//     .then(resp => resp.json())
-//     .then(console.log);
 
 export default router;
