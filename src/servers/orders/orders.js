@@ -3,6 +3,7 @@ import SalesforceRestApi from '@ocdla/salesforce/SalesforceRestApi.js';
 import SalesforceCompositeRequest from '@ocdla/salesforce/SalesforceCompositeRequest.js';
 import chargeCreditCard from './charge.js';
 import Order from "../../utils/Order.js";
+import CreditCard from "./CreditCard.js";
 
 
 const router = express.Router();
@@ -11,12 +12,11 @@ let client;
 
 
 
-let cc = {
-    cardNumber: '4242424242424242',
-    expirationDate: '0842',
-    cardCode: '999'
-};
-
+// let cc = {
+//     cardNumber: '4242424242424242',
+//     expirationDate: '0842',
+//     cardCode: '999'
+// };
 
 /**
  * contactIds - an array of contacts Ids selected from the AccountContacs component.
@@ -33,7 +33,10 @@ router.post("/orders", async (req, res) => {
     let url = req.cookies.instance_url;
     let token = req.cookies.access_token;
 
+    // Authorize.net Test Visa Card credentials
+    let visaCC = CreditCard.newVisaTestCard();
 
+    let transId = null;
 
 
     client = new SalesforceRestApi(url, token);
@@ -46,17 +49,7 @@ router.post("/orders", async (req, res) => {
     let pricebookEntries = await getPricebookEntries(Object.values(orderLines));
 
 
-    const lineItems = Object.values(orderLines).map(line => {
-        const product = pricebookEntries.get(line.productId).Product2;
 
-        return {
-            id: line.productId,
-            quantity: 1,
-            unitPrice: line.UnitPrice,
-            name: product.Name,
-            description: product.ClickpdxCatalog__LineDescription__c
-        };
-    });
 
     order.setPricebook2Id(standardPricebookId);
     order.setPricebookEntries(pricebookEntries);
@@ -70,6 +63,8 @@ router.post("/orders", async (req, res) => {
     console.log("COMPOSITE RESPONSE");
     let resp = await client.composite(sf);
     let respBody = await resp.json();
+    console.dir(respBody, { depth: null });
+
     let newOrderId = respBody.results[0].id;
 
 
@@ -83,44 +78,27 @@ router.post("/orders", async (req, res) => {
         FirstName: priceRecord.BillToContact.FirstName,
         LastName: priceRecord.BillToContact.LastName,
         Amount: priceRecord.TotalAmount,
-        lineItems
+        lineItems: order.getLineItems()
     };
 
 
-    console.dir(respBody, { depth: null });
 
-    let processTransaction = new Promise((resolve, reject) => {
-        if (!order.isCreditCard()) {
+    if (order.isCreditCard()) {
 
-            resolve(info);
-            return;
-        }
+        await chargeCreditCard(info, visaCC).then((resp) => {
 
-        chargeCreditCard(info, cc, function(resp) {
-
-            if (resp != null) {
-                // parseTransactionResponse(resp);
-                let transId = resp.getTransactionResponse().getTransId();
-                resolve(transId);
-            }
-            else {
-                reject(new Error('Null Response'));
-            }
-
+            transId = resp.getTransactionResponse().getTransId();
+            // Now we need to save the transactionId to the order in Salesforce, and activate the order.
         });
+    }
+
+
+    await client.update("Order", {
+        Id: newOrderId,
+        Activate__c: true,
+        TransactionId__c: transId
     });
 
-
-
-    let transId = await processTransaction.then((transId) => {
-        return client.update("Order", {
-            Id: newOrderId,
-            Activate__c: true,
-        }).then(() => {
-
-            return transId;
-        });
-    });
 
     res.json({ ...info, transactionId: transId });
 });

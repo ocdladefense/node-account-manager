@@ -1,4 +1,6 @@
 import AuthorizeNet from 'authorizenet';
+import Order from "../../utils/Order.js";
+
 
 const { APIContracts, APIControllers } = AuthorizeNet;
 
@@ -6,25 +8,22 @@ const { APIContracts, APIControllers } = AuthorizeNet;
 const AUTHORIZE_NET_API_LOGIN_ID = process.env.AUTHORIZE_NET_API_LOGIN_ID;
 const AUTHORIZE_NET_TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
 
-export default function chargeCreditCard(order, cc, callback) {
-    var merchantAuthenticationType = new APIContracts.MerchantAuthenticationType();
-    merchantAuthenticationType.setName(AUTHORIZE_NET_API_LOGIN_ID);
-    merchantAuthenticationType.setTransactionKey(AUTHORIZE_NET_TRANSACTION_KEY);
-
-
+export default function chargeCreditCard(order, cc) {
+    var credentials = new APIContracts.MerchantAuthenticationType();
+    credentials.setName(AUTHORIZE_NET_API_LOGIN_ID);
+    credentials.setTransactionKey(AUTHORIZE_NET_TRANSACTION_KEY);
 
     var creditCard = new APIContracts.CreditCardType();
-    creditCard.setCardNumber(cc.cardNumber);
-    creditCard.setExpirationDate(cc.expirationDate);
-    creditCard.setCardCode(cc.cardCode);
+    creditCard.setCardNumber(cc.getCardNumber());
+    creditCard.setExpirationDate(cc.getExpirationDate());
+    creditCard.setCardCode(cc.getCardCode());
 
     var paymentType = new APIContracts.PaymentType();
     paymentType.setCreditCard(creditCard);
 
     var orderDetails = new APIContracts.OrderType();
     orderDetails.setInvoiceNumber(order.OrderNumber);
-    orderDetails.setDescription(getOrderDescription(order.lineItems));
-
+    orderDetails.setDescription(Order.getOrderDescription(order.lineItems));
 
     var billTo = new APIContracts.CustomerAddressType();
     billTo.setFirstName(order.FirstName);
@@ -37,87 +36,60 @@ export default function chargeCreditCard(order, cc, callback) {
     // billTo.setCountry('USA');
 
 
-    var transactionSetting1 = new APIContracts.SettingType();
-    transactionSetting1.setSettingName('duplicateWindow');
-    transactionSetting1.setSettingValue('120');
+    var config1 = new APIContracts.SettingType();
+    config1.setSettingName('duplicateWindow');
+    config1.setSettingValue('120');
 
-    var transactionSetting2 = new APIContracts.SettingType();
-    transactionSetting2.setSettingName('recurringBilling');
-    transactionSetting2.setSettingValue('false');
+    var config2 = new APIContracts.SettingType();
+    config2.setSettingName('recurringBilling');
+    config2.setSettingValue('false');
 
-    var transactionSettingList = [];
-    transactionSettingList.push(transactionSetting1);
-    transactionSettingList.push(transactionSetting2);
-
-    var transactionSettings = new APIContracts.ArrayOfSetting();
-    transactionSettings.setSetting(transactionSettingList);
+    var configs = new APIContracts.ArrayOfSetting();
+    configs.setSetting([config1, config2]);
 
 
-    var transactionRequestType = new APIContracts.TransactionRequestType();
-    transactionRequestType.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
-    transactionRequestType.setPayment(paymentType);
-    transactionRequestType.setAmount(order.Amount);
-    transactionRequestType.setLineItems(addLineItems(order.lineItems));
-    transactionRequestType.setOrder(orderDetails);
-    transactionRequestType.setBillTo(billTo);
-    transactionRequestType.setTransactionSettings(transactionSettings);
+    // finding a new home for this code, but leaving it here for now
+    var lineItems = new APIContracts.ArrayOfLineItem();
+    lineItems.setLineItem(Order.toAuthNetLineItems(order.lineItems, APIContracts));
 
-    var createRequest = new APIContracts.CreateTransactionRequest();
-    createRequest.setMerchantAuthentication(merchantAuthenticationType);
-    createRequest.setTransactionRequest(transactionRequestType);
 
-    const requestJson = createRequest.getJSON();
+    var body = new APIContracts.TransactionRequestType();
+    body.setTransactionType(APIContracts.TransactionTypeEnum.AUTHCAPTURETRANSACTION);
+    body.setPayment(paymentType);
+    body.setAmount(order.Amount);
+    body.setLineItems(lineItems);
+    body.setOrder(orderDetails);
+    body.setBillTo(billTo);
+    body.setTransactionSettings(configs);
 
-    var ctrl = new APIControllers.CreateTransactionController(requestJson);
 
-    ctrl.execute(function() {
 
-        var apiResponse = ctrl.getResponse();
+    var req = new APIContracts.CreateTransactionRequest();
+    req.setMerchantAuthentication(credentials);
+    req.setTransactionRequest(body);
 
-        if (apiResponse != null) var response = new APIContracts.CreateTransactionResponse(apiResponse);
+    var ctrl = new APIControllers.CreateTransactionController(req.getJSON());
 
-        console.log(JSON.stringify(response, null, 2));
+    return new Promise((resolve, reject) => {
+        ctrl.execute(function() {
 
-        callback(response);
+            var resp = ctrl.getResponse();
+
+            if (resp != null) {
+                var response = new APIContracts.CreateTransactionResponse(resp);
+
+                console.log(JSON.stringify(response, null, 2));
+
+                resolve(response);
+            }
+
+            else {
+                reject(new Error('Failed to create transaction'));
+            }
+
+        });
     });
 }
 
 
 
-
-
-function addLineItems(orderLines) {
-    const itemList = orderLines.map(line => {
-        const item = new APIContracts.LineItemType();
-
-        item.setItemId(line.id);
-        item.setName(line.name.slice(0, 31));
-        item.setDescription((line.description ?? "").slice(0, 255));
-        item.setQuantity(line.quantity);
-        item.setUnitPrice(line.unitPrice);
-
-        return item;
-    });
-
-    const lineItems = new APIContracts.ArrayOfLineItem();
-    lineItems.setLineItem(itemList);
-
-    return lineItems;
-}
-
-
-function getOrderDescription(orderLines) {
-    const productQuantities = new Map();
-
-    for (const line of orderLines) {
-        const quantity = productQuantities.get(line.name) ?? 0;
-        productQuantities.set(line.name, quantity + line.quantity);
-    }
-
-    const description = [...productQuantities]
-        .map(([name, quantity]) => `${quantity} x ${name}`)
-        .join(", ")
-        .slice(0, 255);
-
-    return description;
-}

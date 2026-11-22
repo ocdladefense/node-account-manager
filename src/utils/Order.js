@@ -3,14 +3,14 @@ export default class Order {
 
     order = {};
 
-    lines = [];
+    orderLines = [];
     contactId = null;
     pricebookEntries = null;
     paymentMethodId = null;
     pricebook2Id = null;
 
     constructor(accountId, contactId) {
-        this.lines = [];
+        this.orderLines = [];
 
         this.order = {
             AccountId: accountId,
@@ -64,8 +64,8 @@ export default class Order {
 
 
     addLines(orderLines) {
-        this.lines = this.lines || [];
-        this.lines.push(...orderLines);
+        this.orderLines = this.orderLines || [];
+        this.orderLines.push(...orderLines);
     }
 
 
@@ -77,7 +77,7 @@ export default class Order {
 
     toOrderItems() {
 
-        return this.lines.map(line => {
+        return this.orderLines.map(line => {
             const pricebookEntry = this.pricebookEntries.get(line.productId);
 
             return {
@@ -91,17 +91,68 @@ export default class Order {
 
     }
 
+    static getOrderDescription(orderLines) {
+        const productQuantities = new Map();
+
+        for (const line of orderLines) {
+            const quantity = productQuantities.get(line.name) ?? 0;
+            productQuantities.set(line.name, quantity + line.quantity);
+        }
+
+        const description = [...productQuantities]
+            .map(([name, quantity]) => `${quantity} x ${name}`)
+            .join(", ")
+            .slice(0, 255);
+
+        return description;
+    }
+
+
+
+
+    static toAuthNetLineItems(orderLines, APIContracts) {
+        const itemList = orderLines.map(line => {
+            const item = new APIContracts.LineItemType();
+
+            item.setItemId(line.id);
+            item.setName(line.name.slice(0, 31));
+            item.setDescription((line.description ?? "").slice(0, 255));
+            item.setQuantity(line.quantity);
+            item.setUnitPrice(line.unitPrice);
+
+            return item;
+        });
+
+        return itemList;
+    }
+
+
+    getLineItems() {
+        return Object.values(this.orderLines).map(line => {
+            const product = this.pricebookEntries.get(line.productId).Product2;
+
+            return {
+                id: line.productId,
+                quantity: 1,
+                unitPrice: line.UnitPrice,
+                name: product.Name,
+                description: product.ClickpdxCatalog__LineDescription__c
+            };
+        })
+    }
+
+
+
 
     extract(prop) {
 
         let vals = [];
 
-        for (let orderLine of this.lines) {
+        for (let orderLine of this.orderLines) {
             vals.push(orderLine[prop]);
         }
         return vals;
     }
-
 
 
 
